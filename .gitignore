@@ -1,0 +1,11 @@
+*.map
+bin
+res
+lib
+imp
+obj
+tmp
+rsp
+trash
+olog.txt
+elog.txt
