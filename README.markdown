@@ -9,12 +9,9 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
 ### Requirements
 
-* Ruby
-* Rake 0.8.x (included in Ruby 1.9)
-
 #### Windows
 
-These import [libraries](http://downloads.dsource.org/projects/dwt/dwt-win-importlibs.zip)
+All require files contains in the repository.
 
 #### Linux
 
@@ -38,8 +35,14 @@ available in the system package manager.
 #### For D1
 
 * [Tango](http://dsource.org/projects/tango)
+* Ruby
+* Rake 0.8.x (included in Ruby 1.9)
 
 ### Building
+
+If you use D1 with Tango, please replace 'rdmd build' to 'rake'.
+For example:
+	'$ rdmd build base swt' -> '$ rake base swt'
 
 1. Install all the requirements
 2. Clone the repository buy running:
@@ -48,7 +51,7 @@ available in the system package manager.
 
 3. Compile the base and SWT library by running:
 
-		$ rake base swt
+		$ rdmd build base swt
 
 #### Updating the Repository
 
@@ -58,18 +61,18 @@ available in the system package manager.
 ### Debugging
 To enable debug build (symbols for debugging):
 
-	$ rake DEBUG=1 base swt
+	$ rdmd build DEBUG=1 base swt
 
 Alternatively you can set the environment variable DEBUG to '1'.
 
 ### Build the Snippets
 
-	$ rake swtsnippets
+	$ rdmd build swtsnippets
 
 To build a single snippet run:
 
-	$ rake swtsnippets[Snippet107]
+	$ rdmd build swtsnippets[Snippet107]
 
 ### Show Available Rake Tasks
 
-	$ rake -T
+	$ rdmd build -T
