@@ -665,8 +665,8 @@ foreach (arg; args[1 .. $]) {
         isDebug = true;
         continue;
     } else {
-        int pi1 = std.string.indexOf(arg, "[");
-        int pi2 = std.string.lastIndexOf(arg, "]");
+        auto pi1 = std.string.indexOf(arg, "[");
+        auto pi2 = std.string.lastIndexOf(arg, "]");
         if (-1 != pi1 && -1 != pi2 && pi1 < pi2) {
             // Build task with argument.
             auto name = arg[0 .. pi1];
