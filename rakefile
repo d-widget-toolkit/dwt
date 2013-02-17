@@ -133,6 +133,7 @@ def buildTree( basedir, srcdir, resdir, dcargs=nil, libname=nil )
     end
     rsp.puts "-c"
     rsp.puts "-op"
+    rsp.puts "-m32"
     if isDebug
         rsp.puts "-debug"
         rsp.puts "-g"
@@ -207,9 +208,16 @@ def createLib( libobjs, name )
         end
     end
     rsp.close
-    cmd = "#{PROG_LIB} @#{FILE_RSP} > #{LOG_STDOUT}"
+
+    if isWindows
+      cmd = "#{PROG_LIB} @#{FILE_RSP} > #{LOG_STDOUT}"
+    else
+      cmd = "cat #{FILE_RSP} | xargs ar > #{LOG_STDOUT}"
+    end
+
     sh cmd, :verbose => false do |ok, res|
         if !ok then
+            puts cmd
             raise "librarian error"
         end
     end
@@ -230,6 +238,7 @@ def buildApp( basedir, srcdir, resdir, dflags, appnameprefix, appname, filelist,
     rsp.puts "-I#{win_path(DIR_IMP)}"
     rsp.puts "-J#{win_path(resdir_abs)}"
     rsp.puts "-J#{win_path(DIR_RES)}"
+    rsp.puts "-m32"
     if isDebug
         rsp.puts "-debug"
         rsp.puts "-g"

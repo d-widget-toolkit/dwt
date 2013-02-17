@@ -157,7 +157,12 @@ void createLib( in string[] libobjs, string name ) {
         }
     }
     std.file.write(FILE_RSP, rsp.join(.newline));
-    auto cmd = PROG_LIB ~ " @" ~ FILE_RSP ~ " > " ~ LOG_STDOUT;
+
+    static if (isWindows)
+        auto cmd = PROG_LIB ~ " @" ~ FILE_RSP ~ " > " ~ LOG_STDOUT;
+    else
+        auto cmd = "cat " ~ FILE_RSP ~ " | xargs ar > " ~ LOG_STDOUT;
+
     writeln(cmd);
     if (0 != system(cmd)) {
         throw new Exception("librarian error");
@@ -200,6 +205,7 @@ void buildTree( string basedir, string srcdir, string resdir, string[] dcargs=nu
     }
     rsp ~= "-c";
     rsp ~= "-op";
+    rsp ~= "-m32";
     if (isDebug) {
         rsp ~= "-debug";
         rsp ~= "-g";
@@ -281,6 +287,7 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
     rsp ~= "-I" ~ win_path(DIR_IMP);
     rsp ~= "-J" ~ win_path(resdir_abs);
     rsp ~= "-J" ~ win_path(DIR_RES);
+    rsp ~= "-m32";
     if (isDebug) {
         rsp ~= "-debug";
         rsp ~= "-g";
