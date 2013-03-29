@@ -11,6 +11,7 @@ import std.path;
 import std.process;
 import std.stdio;
 import std.string;
+import std.ascii : newline;
 
 //////////////////////////////////////////////////////////////////////////
 // Helpers
