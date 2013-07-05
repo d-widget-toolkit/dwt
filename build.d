@@ -137,6 +137,7 @@ immutable LIBNAMES_DRAW2D     = [ "org.eclipse.draw2d" ];
 //
 
 bool isDebug = ("1" == .getenv("DEBUG"));
+string[] extraOptions;
 
 void createLib( in string[] libobjs, string name ) {
     .mkdirRecurseE(win_path(DIR_LIB));
@@ -157,6 +158,9 @@ void createLib( in string[] libobjs, string name ) {
             rsp ~= win_path(obj);
         }
     }
+    
+    rsp ~= extraOptions;
+    
     std.file.write(FILE_RSP, rsp.join(.newline));
 
     static if (isWindows)
@@ -217,6 +221,9 @@ void buildTree( string basedir, string srcdir, string resdir, string[] dcargs=nu
         if (-1 != std.string.indexOf(path, "mozilla")) continue;
         rsp ~= win_path(path)[ srcdir_abs.length+1 .. $ ];
     }
+    
+    rsp ~= extraOptions;
+    
     std.file.write(FILE_RSP, rsp.join(.newline));
 
     {
@@ -324,6 +331,8 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
         }
     }
 
+    rsp ~= extraOptions;
+    
     std.file.write(FILE_RSP, rsp.join(.newline));
 
     {
@@ -600,6 +609,7 @@ taskEx["bindsnippets"] = (string explicit_snp) {
 bool printTasks = false;
 bool printHelp = false;
 .getopt(args,
+    std.getopt.config.passThrough,
     "T|tasks",  &printTasks,
     "h|H|help", &printHelp
 );
@@ -659,7 +669,11 @@ void addDepAndTask(string task) {
     addTaskSeq(task);
 }
 foreach (arg; args[1 .. $]) {
-    if (arg in task) {
+    if (arg[0] == '-') {
+        extraOptions ~= arg;
+        continue;
+    }
+    else if (arg in task) {
         // Build task.
         addDepAndTask(arg);
         continue;
