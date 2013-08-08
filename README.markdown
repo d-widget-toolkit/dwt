@@ -38,11 +38,11 @@ available in the system package manager.
 * Ruby
 * Rake 0.8.x (included in Ruby 1.9)
 
-### Building
+### <a id="building"></a>Building
 
-If you use D1 with Tango, please replace 'rdmd build' to 'rake'.
+If you use D1 with Tango, please replace `rdmd build` to `rake`.
 For example:
-	'$ rdmd build base swt' -> '$ rake base swt'
+	`$ rdmd build base swt` -> `$ rake base swt`
 
 1. Install all the requirements
 2. Clone the repository buy running:
@@ -52,6 +52,40 @@ For example:
 3. Compile the base and SWT library by running:
 
 		$ rdmd build base swt
+
+### Building Hello World
+
+1. Follow the [build instructions](#building) above
+2. Enter the following code in a file called `main.d`:
+
+	```d
+	module main;
+
+	import org.eclipse.swt.widgets.Display;
+	import org.eclipse.swt.widgets.Shell;
+
+	void main ()
+	{
+	    auto display = new Display;
+	    auto shell = new Shell;
+	    shell.open();
+
+	    while (!shell.isDisposed)
+	        if (!display.readAndDispatch())
+	            display.sleep();
+
+	    display.dispose();
+	}
+	```
+
+3. Compile by running:<br />
+For Windows:
+
+		$ dmd main.d -I<dwt>\imp -J<dwt>\org.eclipse.swt.win32.win32.x86\res -L+org.eclipse.swt.win32.win32.x86.lib -L+dwt-base.lib -L+<dwt>\lib\ -L/SUBSYSTEM:WINDOWS:4.0
+For Linux:
+
+		$ dmd main.d -I<dwt>/imp -J<dwt>/org.eclipse.swt.gtk.linux.x86/res -L-L<dwt>/lib -L-lorg.eclipse.swt.gtk.linux.x86 -L-ldwt-base
+Where `<dwt>` is the path to where DWT was cloned.
 
 #### Updating the Repository
 
