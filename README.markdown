@@ -81,11 +81,24 @@ For example:
 3. Compile by running:<br />
 For Windows:
 
-		$ dmd main.d -I<dwt>\imp -J<dwt>\org.eclipse.swt.win32.win32.x86\res -L+org.eclipse.swt.win32.win32.x86.lib -L+dwt-base.lib -L+<dwt>\lib\ -L/SUBSYSTEM:WINDOWS:4.0
-For Linux:
+  ```
+  $ dmd main.d -I<dwt>\imp -J<dwt>\org.eclipse.swt.win32.win32.x86\res -L+<dwt>\lib\ ^
+    -L+org.eclipse.swt.win32.win32.x86.lib -L+dwt-base.lib -L/SUBSYSTEM:WINDOWS:4.0
+  ```
 
-		$ dmd main.d -I<dwt>/imp -J<dwt>/org.eclipse.swt.gtk.linux.x86/res -L-L<dwt>/lib -L-lorg.eclipse.swt.gtk.linux.x86 -L-ldwt-base
-Where `<dwt>` is the path to where DWT was cloned.
+  For Linux:
+
+  ```
+  $ dmd main.d -I<dwt>/imp -J<dwt>/org.eclipse.swt.gtk.linux.x86/res -L-L<dwt>/lib \
+    -L-l:org.eclipse.swt.gtk.linux.x86 \
+    -L-l:dwt-base -L-lgtk-x11-2.0 -L-lgdk-x11-2.0 -L-latk-1.0 -L-lgdk_pixbuf-2.0 \
+    -L-lgthread-2.0 -L-lpangocairo-1.0 -L-lfontconfig -L-lXtst -L-lXext -L-lXrender \
+    -L-lXinerama -L-lXi -L-lXrandr -L-lXcursor -L-lXcomposite -L-lXdamage -L-lX11 \
+    -L-lXfixes -L-lpango-1.0 -L-lgobject-2.0 -L-lgmodule-2.0 -L-ldl -L-lglib-2.0 \
+    -L-lcairo -L-lgnomeui-2
+  ```
+
+  Where `<dwt>` is the path to where DWT was cloned.
 
 #### Updating the Repository
 
