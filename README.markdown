@@ -7,11 +7,27 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
 ## Building
 
-### Requirements
+
+### <a id="building"></a>Building
+
+1. Install all the [requirements](#requirements)
+2. Clone the repository buy running:
+
+		$ git clone --recursive git://github.com/d-widget-toolkit/dwt.git
+
+3. Compile the base and SWT library by running:
+
+		$ rdmd build base swt
+
+If you use D1 with Tango, please replace `rdmd build` to `rake`.
+For example:
+	`$ rdmd build base swt` -> `$ rake base swt`
+
+### <a id="requirements"></a>Requirements
 
 #### Windows
 
-All require files contains in the repository.
+All required files are included in the repository.
 
 #### Linux
 
@@ -37,21 +53,6 @@ available in the system package manager.
 * [Tango](http://dsource.org/projects/tango)
 * Ruby
 * Rake 0.8.x (included in Ruby 1.9)
-
-### <a id="building"></a>Building
-
-If you use D1 with Tango, please replace `rdmd build` to `rake`.
-For example:
-	`$ rdmd build base swt` -> `$ rake base swt`
-
-1. Install all the requirements
-2. Clone the repository buy running:
-
-		$ git clone --recursive git://github.com/d-widget-toolkit/dwt.git
-
-3. Compile the base and SWT library by running:
-
-		$ rdmd build base swt
 
 ### Building Hello World
 
