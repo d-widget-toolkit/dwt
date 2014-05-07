@@ -1,0 +1,17 @@
+{
+    "name":        "dwt-snippets",
+    "description": "A library for creating cross-platform GUI applications.",
+    "authors":     ["Jacob Carlborg"],
+    "license":     "MIT",
+	"targetType": "executable",
+	"targetPath": ".",
+	"importPaths": ["../imp"],
+	"sourceFiles": ["snippets/Snippet38.d"],
+	"mainSourceFile": "snippets/Snippet38.d",
+	"stringImportPaths": ["res"],
+	"dependencies": {
+		"dwt": { "version": "~master", "path": "../" }
+	},
+	"lflags-windows": ["/SUBSYSTEM:WINDOWS:4.0"],
+	"buildRequirements": ["silenceWarnings"]
+}
