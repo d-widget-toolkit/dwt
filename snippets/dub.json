@@ -1,7 +1,7 @@
 {
     "name":        "dwt-snippets",
     "description": "A library for creating cross-platform GUI applications.",
-    "authors":     ["Jacob Carlborg"],
+    "authors":     ["Jacob Carlborg", "Frank Benoit"],
     "license":     "EPL",
 	"targetType": "executable",
 	"targetPath": ".",
