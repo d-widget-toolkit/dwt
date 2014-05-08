@@ -2,7 +2,7 @@
     "name":        "dwt",
     "description": "A library for creating cross-platform GUI applications.",
     "authors":     ["Jacob Carlborg"],
-    "license":     "MIT",
+    "license":     "EPL",
 	"targetType": "library",
 	"sourcePaths-windows": ["base/src", "org.eclipse.swt.win32.win32.x86/src"],
 	"stringImportPaths-windows": ["org.eclipse.swt.win32.win32.x86/res"],
