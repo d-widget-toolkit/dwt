@@ -6,8 +6,8 @@
 	"targetType": "executable",
 	"targetPath": ".",
 	"importPaths": ["../imp"],
-	"sourceFiles": ["snippets/Snippet150.d"],
-	"mainSourceFile": "snippets/Snippet150.d",
+	"sourceFiles": ["../org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet150.d"],
+	"mainSourceFile": "../org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet150.d",
 	"stringImportPaths": ["res"],
 	"dependencies": {
 		"dwt": { "version": "~master", "path": "../" }
