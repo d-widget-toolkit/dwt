@@ -11,6 +11,6 @@
 						"usp10", "msimg32", "opengl32", "shlwapi"],
 	"lflags-windows": ["/NOM", "+$PACKAGE_DIR\\\\lib\\\\"],
 	"dflags-windows": ["$PACKAGE_DIR\\win-res\\\\resource.res"],
-	"preGenerateCommands-windows": ["if not exist \"$PACKAGE_DIR\\imp\" cd $PACKAGE_DIR && rdmd build base swt"],
+	"preGenerateCommands-windows": ["if not exist \"$PACKAGE_DIR\\imp\" cd $PACKAGE_DIR && git submodule update && rdmd build base swt"],
 	"buildRequirements": ["silenceWarnings"]
 }
