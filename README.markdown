@@ -11,7 +11,7 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 ### <a id="building"></a>Building
 
 1. Install all the [requirements](#requirements)
-2. Clone the repository buy running:
+2. Clone the repository by running:
 
 		$ git clone --recursive git://github.com/d-widget-toolkit/dwt.git
 
