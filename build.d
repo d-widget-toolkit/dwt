@@ -136,7 +136,7 @@ immutable LIBNAMES_DRAW2D     = [ "org.eclipse.draw2d" ];
 // Routines
 //
 
-bool isDebug = ("1" == .getenv("DEBUG"));
+bool isDebug = ("1" == .environment.get("DEBUG", ""));
 string[] extraOptions;
 
 void createLib( in string[] libobjs, string name ) {
@@ -169,7 +169,7 @@ void createLib( in string[] libobjs, string name ) {
         auto cmd = "cat " ~ FILE_RSP ~ " | xargs ar > " ~ LOG_STDOUT;
 
     writeln(cmd);
-    if (0 != system(cmd)) {
+    if (0 != .wait(.spawnShell(cmd))) {
         throw new Exception("librarian error");
     }
     foreach (obj; libobjs) {
@@ -238,7 +238,7 @@ void buildTree( string basedir, string srcdir, string resdir, string[] dcargs=nu
             cmd = "cat " ~ win_path(FILE_RSP) ~ " | xargs " ~ PROG_DMD;
         }
         writeln(cmd);
-        if (0 != .system(cmd)) {
+        if (0 != .wait(.spawnShell(cmd))) {
             foreach (string path; srcdir_abs.dirEntries(SpanMode.depth)) {
                 if (path.isFile() && (path.endsWith(".o") || path.endsWith(".obj"))) {
                     path.removeE();
@@ -347,7 +347,7 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
             cmd = "cat " ~ win_path(FILE_RSP) ~ " | xargs " ~ PROG_DMD;
         }
         writeln(cmd);
-        if (0 != system(cmd)) {
+        if (0 != .wait(.spawnShell(cmd))) {
             throw new Exception("compile error");
         }
     }
