@@ -103,7 +103,7 @@ static if (isWindows) {
                                   "Xext", "Xrender", "Xinerama", "Xi", "Xrandr", "Xcursor",
                                   "Xcomposite", "Xdamage", "X11", "Xfixes", "pango-1.0",
                                   "gobject-2.0", "gmodule-2.0", "dl", "glib-2.0", "cairo",
-                                  "gnomeui-2" ];
+                                  "gnomeui-2", "gnomevfs-2" ];
     immutable LIBNAMES_BASIC  = [ "dwt-base" ];
 }
 
@@ -324,7 +324,7 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
         rsp ~= "-L-L" ~ win_path(DIR_LIB);
         foreach_reverse (libname; libnames) {
             auto absname = .buildPath( DIR_LIB, libname ~ LIBEXT );
-            rsp ~= absname;
+            rsp ~= "-L" ~ absname;
         }
         foreach_reverse (soname; SONAMES_BASIC) {
             rsp ~= "-L-l" ~ soname;
