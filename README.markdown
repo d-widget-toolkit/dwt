@@ -48,6 +48,15 @@ available in the system package manager.
 * libgtk2.0-dev
 * libgnomeui-dev
 
+If you are using a 64-bit OS, please add `:i386` after the name of the package.
+And need the `gcc-multilib` package.
+
+For example:
+
+		$ sudo apt-get install libcairo2-dev:i386
+		    :
+		$ sudo apt-get install gcc-multilib
+
 #### For D1
 
 * [Tango](http://dsource.org/projects/tango)
