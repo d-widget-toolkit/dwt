@@ -210,7 +210,11 @@ void buildTree( string basedir, string srcdir, string resdir, string[] dcargs=nu
     }
     rsp ~= "-c";
     rsp ~= "-op";
-    rsp ~= "-m32";
+    version (linux) {
+        // DWT2-GTK is 64 bit supported.
+    } else {
+        rsp ~= "-m32";
+    }
     if (isDebug) {
         rsp ~= "-debug";
         rsp ~= "-g";
@@ -295,7 +299,11 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
     rsp ~= "-I" ~ win_path(DIR_IMP);
     rsp ~= "-J" ~ win_path(resdir_abs);
     rsp ~= "-J" ~ win_path(DIR_RES);
-    rsp ~= "-m32";
+    version (linux) {
+        // DWT2-GTK is 64 bit supported.
+    } else {
+        rsp ~= "-m32";
+    }
     if (isDebug) {
         rsp ~= "-debug";
         rsp ~= "-g";
