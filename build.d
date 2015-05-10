@@ -79,7 +79,7 @@ static if (isWindows) {
     immutable OBJEXT   = ".obj";
     immutable EXEEXT   = ".exe";
     immutable MAPEXT   = ".map";
-    immutable PROG_LIB = "lib.exe";
+    immutable PROG_LIB = "dmd.exe";
     immutable DIR_WINLIBS = .absolutePath(.buildPath(BASEDIR_SWT,"lib"));
 } else {
     immutable BASEDIR_SWT = "org.eclipse.swt.gtk.linux.x86";
@@ -93,7 +93,7 @@ immutable PROG_DMD = "dmd" ~ EXEEXT;
 static if (isWindows) {
     //LIBNAMES_BASIC  = [ "dwt-base" ]
     immutable LIBNAMES_BASIC  = [ "advapi32", "comctl32", "comdlg32", "gdi32", "kernel32",
-                                  "shell32", "ole32", "oleaut32", "olepro32", "oleacc",
+                                  "shell32", "ole32", "oleaut32", "oleacc",
                                   "user32", "usp10", "msimg32", "opengl32", "shlwapi",
                                   "dwt-base" ];
 
@@ -145,9 +145,8 @@ void createLib( in string[] libobjs, string name ) {
     .removeE(file_lib);
     string[] rsp;
     static if (isWindows) {
-        rsp ~= "-p512";
-        rsp ~= "-n";
-        rsp ~= "-c " ~ win_path(file_lib);
+        rsp ~= "-lib";
+        rsp ~= "-of" ~ win_path(file_lib);
         foreach (obj; libobjs) {
             rsp ~= win_path(obj);
         }
@@ -158,9 +157,9 @@ void createLib( in string[] libobjs, string name ) {
             rsp ~= win_path(obj);
         }
     }
-    
+
     rsp ~= extraOptions;
-    
+
     std.file.write(FILE_RSP, rsp.join(.newline));
 
     static if (isWindows)
@@ -212,6 +211,8 @@ void buildTree( string basedir, string srcdir, string resdir, string[] dcargs=nu
     rsp ~= "-op";
     version (linux) {
         // DWT2-GTK is 64 bit supported.
+    } else version (Windows) {
+        // DWT2-Windows is 64 bit supported.
     } else {
         rsp ~= "-m32";
     }
@@ -225,9 +226,9 @@ void buildTree( string basedir, string srcdir, string resdir, string[] dcargs=nu
         if (-1 != std.string.indexOf(path, "mozilla")) continue;
         rsp ~= win_path(path)[ srcdir_abs.length+1 .. $ ];
     }
-    
+
     rsp ~= extraOptions;
-    
+
     std.file.write(FILE_RSP, rsp.join(.newline));
 
     {
@@ -301,6 +302,8 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
     rsp ~= "-J" ~ win_path(DIR_RES);
     version (linux) {
         // DWT2-GTK is 64 bit supported.
+    } else version (Windows) {
+        // DWT2-Windows is 64 bit supported.
     } else {
         rsp ~= "-m32";
     }
@@ -321,13 +324,26 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
     }
 
     static if (isWindows) {
-        rsp ~= "-L/NOM";
-        rsp ~= "-L/SUBSYSTEM:CONSOLE:4.0";
-        rsp ~= win_path(.absolutePath("win-res\\resource.res"));
-        foreach (libname; libnames) {
-            rsp ~= "-L+" ~ libname ~ LIBEXT;
+        if (extraOptions.canFind("-m64") || extraOptions.canFind("-m32mscoff")) {
+            // 64-bit
+            // Microsoft Incremental Linker
+            rsp ~= "-L/SUBSYSTEM:CONSOLE";
+            rsp ~= win_path(.absolutePath("win-res\\resource.res"));
+            foreach (libname; libnames) {
+                rsp ~= "-L" ~ libname ~ LIBEXT;
+            }
+            rsp ~= "-L/LIBPATH:" ~ win_path(DIR_LIB);
+        } else {
+            // 32-bit
+            // OPTLINK
+            rsp ~= "-L/NOM";
+            rsp ~= "-L/SUBSYSTEM:CONSOLE:4.0";
+            rsp ~= win_path(.absolutePath("win-res\\resource.res"));
+            foreach (libname; libnames) {
+                rsp ~= "-L+" ~ libname ~ LIBEXT;
+            }
+            rsp ~= "-L+" ~ win_path(DIR_LIB) ~ "\\";
         }
-        rsp ~= "-L+" ~ win_path(DIR_LIB) ~ "\\";
     } else {
         rsp ~= "-L-L" ~ win_path(DIR_LIB);
         foreach_reverse (libname; libnames) {
@@ -340,7 +356,7 @@ void buildApp( string basedir, string srcdir, string resdir, in string[] dflags,
     }
 
     rsp ~= extraOptions;
-    
+
     std.file.write(FILE_RSP, rsp.join(.newline));
 
     {
@@ -395,9 +411,21 @@ desc["swt"] = "Build SWT";
 task["swt"] = {
     buildTree( BASEDIR_SWT, "src", "res" );
     static if (isWindows) {
-        foreach (string file; .dirEntries(DIR_WINLIBS, SpanMode.shallow)) {
-            if (file.extension() == LIBEXT) {
-                .copy(file, DIR_LIB.buildPath(file.baseName()));
+        if (extraOptions.canFind("-m64") || extraOptions.canFind("-m32mscoff")) {
+            // Uses Windows SDK.
+            foreach (string file; .dirEntries(DIR_WINLIBS, SpanMode.shallow)) {
+                if (file.extension() == LIBEXT) {
+                    auto lib = DIR_LIB.buildPath(file.baseName());
+                    if (lib.exists()) {
+                        .remove(lib);
+                    }
+                }
+            }
+        } else {
+            foreach (string file; .dirEntries(DIR_WINLIBS, SpanMode.shallow)) {
+                if (file.extension() == LIBEXT) {
+                    .copy(file, DIR_LIB.buildPath(file.baseName()));
+                }
             }
         }
     }

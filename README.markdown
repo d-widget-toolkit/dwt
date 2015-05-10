@@ -19,6 +19,14 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
 		$ rdmd build base swt
 
+  If need 64-bit libraries, please add `-m64` flag to options:
+
+		$ rdmd build base swt -m64
+
+  If need 32-bit COFF libraries, please add `-m32mscoff` flag:
+
+		$ rdmd build base swt -m32mscoff
+
 If you use D1 with Tango, please replace `rdmd build` to `rake`.
 For example:
 	`$ rdmd build base swt` -> `$ rake base swt`
@@ -83,9 +91,20 @@ available in the system package manager.
 For Windows:
 
   ```
-  $ dmd main.d -I<dwt>\imp -J<dwt>\org.eclipse.swt.win32.win32.x86\res -L+<dwt>\lib\ ^
-    -L+org.eclipse.swt.win32.win32.x86.lib -L+dwt-base.lib -L/SUBSYSTEM:WINDOWS:4.0
+  $ dmd main.d -I<dwt>\imp -J<dwt>\res -L+<dwt>\lib\ ^
+    "-L+org.eclipse.swt.win32.win32.x86.lib" "-L+dwt-base.lib" ^
+    -L/SUBSYSTEM:WINDOWS:4.0
   ```
+
+  If you use Microsoft linker:
+
+  ```
+  $ dmd main.d -I<dwt>\imp -J<dwt>\res -L/LIBPATH:<dwt>\lib ^
+    "-Lorg.eclipse.swt.win32.win32.x86.lib" "-Ldwt-base.lib" ^
+    -L/SUBSYSTEM:Windows -L/ENTRY:mainCRTStartup -m64
+  ```
+
+  If use 32-bit COFF, replace `-m64` to `-m32mscoff`.
 
   For Linux:
 
