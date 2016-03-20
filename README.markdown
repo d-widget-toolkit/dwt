@@ -19,6 +19,8 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
 		$ rdmd build base swt
 
+  ##### For Windows:
+
   If need 64-bit libraries, please add `-m64` flag to options:
 
 		$ rdmd build base swt -m64
