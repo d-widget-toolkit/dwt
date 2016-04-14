@@ -117,7 +117,7 @@ For Windows:
     -L-lgthread-2.0 -L-lpangocairo-1.0 -L-lfontconfig -L-lXtst -L-lXext -L-lXrender \
     -L-lXinerama -L-lXi -L-lXrandr -L-lXcursor -L-lXcomposite -L-lXdamage -L-lX11 \
     -L-lXfixes -L-lpango-1.0 -L-lgobject-2.0 -L-lgmodule-2.0 -L-ldl -L-lglib-2.0 \
-    -L-lcairo -L-lgnomeui-2
+    -L-lcairo -L-lgnomeui-2 -L-lgnomevfs-2
   ```
 
   Where `<dwt>` is the path to where DWT was cloned.
