@@ -653,7 +653,8 @@ bool printHelp = false;
 if (printTasks) {
     // Prints target list.
     size_t len = 0;
-    auto tasks = (task.keys ~ taskEx.keys).sort;
+    auto tasks = (task.keys ~ taskEx.keys);
+    .sort(tasks);
     auto names = new string[tasks.length];
     foreach (i, name; tasks) {
         auto pArg = name in taskAg;
