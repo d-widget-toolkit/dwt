@@ -17,7 +17,7 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
 3. Compile the base and SWT library by running:
 
-		$ rdmd build base swt
+		$ ./build base swt
 
   ##### For Windows:
 
@@ -27,11 +27,11 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
   If need 32-bit COFF libraries, please add `-m32mscoff` flag:
 
-		$ rdmd build base swt -m32mscoff
+		$ rdmd base swt -m32mscoff
 
-If you use D1 with Tango, please replace `rdmd build` to `rake`.
+If you use D1 with Tango, please replace `./build` to `rake`.
 For example:
-	`$ rdmd build base swt` -> `$ rake base swt`
+	`$ ./build base swt` -> `$ rake base swt`
 
 ### <a id="requirements"></a>Requirements
 
@@ -130,18 +130,18 @@ For Windows:
 ### Debugging
 To enable debug build (symbols for debugging):
 
-	$ rdmd build DEBUG=1 base swt
+	$ ./build DEBUG=1 base swt
 
 Alternatively you can set the environment variable DEBUG to '1'.
 
 ### Build the Snippets
 
-	$ rdmd build swtsnippets
+	$ ./build swtsnippets
 
 To build a single snippet run:
 
-	$ rdmd build swtsnippets[Snippet107]
+	$ ./build swtsnippets[Snippet107]
 
 ### Show Available Rake Tasks
 
-	$ rdmd build -T
+	$ ./build -T

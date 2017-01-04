@@ -1,4 +1,4 @@
-#!/usr/bin/rdmd
+#!/usr/bin/env dmd -run
 //////////////////////////////////////////////////////////////////////////
 // DWT2
 //
@@ -666,7 +666,7 @@ if (printTasks) {
     }
     writeln("(in " ~ getcwd() ~ ")");
     foreach (i, name; tasks) {
-        writefln("rdmd build %-" ~ .text(len) ~ "s  # %s", names[i], desc[name]);
+        writefln("./build %-" ~ .text(len) ~ "s  # %s", names[i], desc[name]);
     }
     return;
 }
@@ -675,7 +675,7 @@ if (printHelp || args.length == 1) {
     // Prints help.
     writeln("Build script for DWT2");
     writeln("Usage:");
-    writeln("  rdmd build [DEBUG=1] {options} targets...");
+    writeln("  ./build [DEBUG=1] {options} targets...");
     writeln();
     writeln("  -T, --tasks     Print all build tasks and descriptions.");
     writeln("  -h, -H, --help  Print usage of 'build.d'.");
