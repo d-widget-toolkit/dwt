@@ -1,0 +1,73 @@
+libs installed on Ubuntu 16.04 LTS 32-bit
+    -lpangocairo-1.0
+
+import libs required for DWT on Ubuntu (26 total):
+    -latk-1.0
+    -lcairo
+    -ldl
+    -lfontconfig
+    -lgdk_pixbuf-2.0
+    -lgdk-x11-2.0
+    -lgtk-x11-2.0
+    -lglib-2.0
+    -lgnomeui-2
+    -lgnomevfs-2
+    -lgobject-2.0
+    -lgmodule-2.0
+    -lgthread-2.0
+    -lpango-1.0
+    -lpangocairo-1.0
+    -lX11
+    -lXcomposite
+    -lXcursor
+    -lXdamage
+    -lXext
+    -lXfixes
+    -lXi
+    -lXinerama
+    -lXrandr
+    -lXrender
+    -lXtst
+
+The following are included in the list above, but are part of other packages.
+Therefore, these are excluded from get-libs.list.
+However, all of the libs should be in the import command line.
+
+    -ldl          (package: libglib2.0-dev)
+    -lgmodule-2.0 (package: libglib2.0-dev)
+    -lgobject-2.0 (package: libglib2.0-dev)
+    -lgthread-2.0 (package: libglib2.0-dev)
+    -lgdk-x11-2.0 (package: libgtk2.0-0)
+
+
+./get-libs-list.sh output:
+
+    libatk1.0-dev/xenial,now 2.18.0-1 i386 [installed]
+    libcairo2-dev/xenial,now 1.14.6-1 i386 [installed]
+
+    libfontconfig1-dev/xenial-updates,xenial-security,now 2.11.94-0ubuntu1.1 i386 [installed]
+    libfontconfig1-dev/xenial 2.11.94-0ubuntu1 i386
+
+    libgdk-pixbuf2.0-dev/xenial-updates,xenial-security,now 2.32.2-1ubuntu1.2 i386 [installed]
+    libgdk-pixbuf2.0-dev/xenial 2.32.2-1ubuntu1 i386
+
+    libglib2.0-dev/xenial-updates,now 2.48.2-0ubuntu1 i386 [installed]
+    libglib2.0-dev/xenial 2.48.0-1ubuntu4 i386
+
+    libgnomeui-dev/xenial,now 2.24.5-3.1 i386 [installed]
+    libgnomevfs2-dev/xenial,now 1:2.24.4-6.1ubuntu1 i386 [installed]
+    libgtk2.0-dev/xenial,now 2.24.30-1ubuntu1 i386 [installed]
+    libpango1.0-dev/xenial,now 1.38.1-1 i386 [installed]
+    libpangocairo-1.0-0/xenial,now 1.38.1-1 i386 [installed]
+    libx11-dev/xenial,now 2:1.6.3-1ubuntu2 i386 [installed]
+    libxcomposite-dev/xenial,now 1:0.4.4-1 i386 [installed]
+    libxcursor-dev/xenial,now 1:1.1.14-1 i386 [installed]
+    libxdamage-dev/xenial,now 1:1.1.4-2 i386 [installed]
+    libxext-dev/xenial,now 2:1.3.3-1 i386 [installed]
+    libxfixes-dev/xenial,now 1:5.0.1-2 i386 [installed]
+    libxi-dev/xenial,now 2:1.7.6-1 i386 [installed]
+    libxinerama-dev/xenial,now 2:1.1.3-1 i386 [installed]
+    libxrandr-dev/xenial,now 2:1.5.0-1 i386 [installed]
+    libxrender-dev/xenial,now 1:0.9.9-0ubuntu1 i386 [installed]
+    libxtst-dev/xenial,now 2:1.2.2-1 i386 [installed]
+

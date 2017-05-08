@@ -1,0 +1,37 @@
+Command line
+    dir ~/  == dir /home/jim
+
+
+Bash Scripts
+    Add execute permission to script
+        chmod +x ./get-libs.sh
+
+APT
+
+Run the following command to ensure that your server is up to date:
+
+    sudo apt-get update
+    sudo apt-get dist-upgrade
+
+How to search for debian packages with command line?
+
+    List all packages that have name in the package name or description:
+        apt-cache search name
+
+    Show details:
+        apt-cache show package_name*
+
+How to install debian packages with comand line?
+    apt-get install package_name
+
+    apt-get remove package_name
+
+How to list installed packages
+
+    List the installed packages with the name foo*:
+        apt list --installed foo*
+
+    List all the packages that have string foo within their name:
+        apt list -a --installed foo
+
+

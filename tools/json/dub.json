@@ -1,0 +1,19 @@
+{
+	"comment": "Compiles your custom resource file (icon, XP theme, version)",
+	
+    "name": "hello_dwt",
+
+    "description": "Hello world example for DWT",
+    
+    "targetType": "executable",
+
+	"sourceFiles": ["res\\resource.res"],
+
+    "dflags": ["-Id:\\dev\\libs\\dwt\\imp\\", 
+	    "-Jd:\\dev\\libs\\dwt\\res\\"],
+
+    "lflags": ["-L+d:\\dev\\libs\\dwt\\lib\\",
+	    " -L+d:\\dev\\libs\\dwt\\lib\\org.eclipse.swt.win32.win32.x86.lib",
+	    " -L+d:\\dev\\libs\\dwt\\lib\\dwt-base.lib",
+	    "  /SUBSYSTEM:WINDOWS:4.0"]
+}

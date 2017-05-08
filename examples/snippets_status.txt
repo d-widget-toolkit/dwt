@@ -1,0 +1,17 @@
+
+Snippets modified: 
+
+	45 - added the missing description
+
+	Renamed SnippetDwtBitmapV4 to Snippet1DwtBitmapV4 so it will index
+
+Windows:
+
+	All sinppets enabled by default work
+
+Linux:
+
+94 - Segmentation fault when using the paste button
+132 - Segmentation fault on lanuch
+213 - tango.core.Exception.SwitchException@org.eclipse.swt.graphics.TextLayout(1748): No appropriate switch clause found
+215 - Capturing image doesn't work, black image
