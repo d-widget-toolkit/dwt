@@ -1,0 +1,537 @@
+##########################################################################
+# DWT2
+#
+require 'find'
+require 'fileutils'
+
+##########################################################################
+# Helpers
+#
+def win_path(path)
+    if isWindows
+        return path.gsub( '/', '\\' );
+    else
+        return path
+    end
+end
+
+def isWindows
+    Config::CONFIG['host_os'] =~ /mswin/ || Config::CONFIG['host_os'] =~ /mingw/
+end
+
+##########################################################################
+# Constants
+#
+DIR_OBJ     = File.expand_path("obj")
+DIR_IMP     = File.expand_path("imp")
+DIR_RES     = File.expand_path("res")
+DIR_LIB     = File.expand_path("lib")
+DIR_BIN     = File.expand_path("bin")
+FILE_RSP    = File.expand_path("rsp")
+
+LOG_STDOUT  = File.expand_path("olog.txt")
+LOG_STDERR  = File.expand_path("elog.txt")
+
+
+if isWindows
+    BASEDIR_SWT = "org.eclipse.swt.win32.win32.x86"
+    LIBEXT   = ".lib"
+    OBJEXT   = ".obj"
+    EXEEXT   = ".exe"
+    MAPEXT   = ".map"
+    PROG_LIB = "lib.exe"
+    DIR_WINLIBS = File.expand_path(File.join(BASEDIR_SWT,"lib"))
+else
+    BASEDIR_SWT = "org.eclipse.swt.gtk.linux.x86"
+    LIBEXT   = ".a"
+    OBJEXT   = ".o"
+    EXEEXT   = ""
+    PROG_LIB = "ar"
+end
+PROG_DMD = "dmd#{EXEEXT}"
+
+if isWindows
+    #LIBNAMES_BASIC  = [ "dwt-base" ]
+    LIBNAMES_BASIC  = [ "advapi32", "comctl32", "comdlg32", "gdi32", "kernel32",
+                        "shell32", "ole32", "oleaut32", "olepro32", "oleacc",
+                        "user32", "usp10", "msimg32", "opengl32", "shlwapi",
+                        "dwt-base" ]
+
+else
+    SONAMES_BASIC   = [ "gtk-x11-2.0", "gdk-x11-2.0", "atk-1.0", "gdk_pixbuf-2.0",
+                        "gthread-2.0", "pangocairo-1.0", "fontconfig", "Xtst",
+                        "Xext", "Xrender", "Xinerama", "Xi", "Xrandr", "Xcursor",
+                        "Xcomposite", "Xdamage", "X11", "Xfixes", "pango-1.0",
+                        "gobject-2.0", "gmodule-2.0", "dl", "glib-2.0", "cairo",
+                        "gnomeui-2" ]
+    LIBNAMES_BASIC  = [ "dwt-base" ]
+
+end
+LIBNAMES_SWT        = [ BASEDIR_SWT ]
+LIBNAMES_ICU        = [ "com.ibm.icu" ]
+LIBNAMES_EQUINOX    = [ "org.eclipse.osgi.osgi",
+                        "org.eclipse.osgi.supplement",
+                        "org.eclipse.equinox.common" ]
+
+LIBNAMES_CORE       = [ "org.eclipse.core.runtime",
+                        "org.eclipse.core.commands",
+                        "org.eclipse.core.databinding",
+                        "org.eclipse.core.databinding.beans",
+                        "org.eclipse.core.jobs" ]
+
+LIBNAMES_JFACE      = [ "org.eclipse.jface" ]
+
+LIBNAMES_JFACEBIND  = [ "org.eclipse.jface.databinding" ]
+
+LIBNAMES_JFACETEXT  = [ "org.eclipse.text",
+                        "org.eclipse.jface.text.projection",
+                        "org.eclipse.jface.text", ]
+
+LIBNAMES_UIFORMS    = [ "org.eclipse.ui.forms" ]
+
+LIBNAMES_DRAW2D     = [ "org.eclipse.draw2d" ]
+
+
+##########################################################################
+# Routines
+#
+def isDebug
+    if ENV['DEBUG']
+        ENV['DEBUG'] == "1"
+    else
+        false
+    end
+end
+def buildTree( basedir, srcdir, resdir, dcargs=nil, libname=nil )
+    if libname == nil
+        libname = basedir
+    end
+    dbg_str = "";
+    if isDebug
+        dbg_str = "Debug "
+    end
+
+    resdir_abs = File.expand_path( File.join( basedir, resdir ))
+    srcdir_abs = File.expand_path( File.join( basedir, srcdir ))
+
+    STDERR.puts "#{dbg_str}Building #{libname}"
+    STDERR.puts "workdir=>#{win_path(srcdir_abs)}"
+
+    FileUtils.mkdir_p DIR_IMP
+    FileUtils.mkdir_p DIR_OBJ
+    FileUtils.mkdir_p DIR_RES
+    FileUtils.cp FileList[ File.join(resdir_abs, "*" )], DIR_RES
+
+    rsp = File.new( FILE_RSP, "w+" )
+    rsp.puts "-H"
+    #rsp.puts "-Hd#{win_path(DIR_IMP)}"
+    rsp.puts "-I#{win_path(srcdir_abs)}"
+    rsp.puts "-I#{win_path(DIR_IMP)}"
+    rsp.puts "-J#{win_path(DIR_RES)}"
+    if dcargs != nil
+        rsp.puts dcargs
+    end
+    rsp.puts "-c"
+    rsp.puts "-op"
+    rsp.puts "-m32"
+    if isDebug
+        rsp.puts "-debug"
+        rsp.puts "-g"
+    end
+    Find.find( srcdir_abs ) do |path|
+        if path =~ /\.d$/ && path !~ /browser|mozilla/ then
+            rsp.puts win_path(path)[ srcdir_abs.size+1 .. -1 ]
+        end
+    end
+    rsp.close
+
+    Dir.chdir(srcdir_abs) do
+        if isWindows
+            cmd = "#{PROG_DMD} @#{win_path(FILE_RSP)}"
+        else
+            cmd = "cat #{win_path(FILE_RSP)} | xargs #{PROG_DMD}"
+        end
+        sh cmd, :verbose => false do |ok, res|
+            if !ok then
+                Find.find( srcdir_abs ) do |path|
+                    if FileTest.file?(path) && path =~ /\.o(bj)?$/ then
+                        FileUtils.rm path
+                    end
+                    if FileTest.file?(path) && path =~ /\.di$/ then
+                        FileUtils.rm path
+                    end
+                end
+
+                raise "compile error"
+            end
+        end
+    end
+
+    Find.find( srcdir_abs ) do |path|
+        if FileTest.file?(path) && path =~ /\.di$/ then
+            trgfile = File.join( DIR_IMP, path[ srcdir_abs.length+1 .. -1 ])
+            FileUtils.mkdir_p File.dirname(trgfile)
+            FileUtils.mv path, trgfile
+        end
+    end
+
+    libobjs = FileList.new
+    srcdirparts = split_all( srcdir_abs ).length
+    Find.find( srcdir_abs ) do |path|
+        if FileTest.file?(path) && path =~ /\.o(bj)?$/ then
+            trgfile = split_all( path )[ srcdirparts .. -1 ].join( "-" )
+            FileUtils.mv path, File.join( DIR_OBJ, trgfile )
+            libobjs << File.join( DIR_OBJ, trgfile )
+        end
+    end
+
+    createLib( libobjs, libname )
+end
+
+def createLib( libobjs, name )
+    FileUtils.mkdir_p win_path(DIR_LIB)
+    file_lib = File.join(DIR_LIB, name + LIBEXT)
+    FileUtils.rm_f file_lib
+    rsp = File.new( FILE_RSP, "w+" )
+    if isWindows
+        rsp.puts "-p512"
+        rsp.puts "-n"
+        rsp.puts "-c #{win_path(file_lib)}"
+        libobjs.each do |obj|
+            rsp.puts win_path(obj)
+        end
+    else
+        rsp.puts "-r"
+        rsp.puts "-c #{win_path(file_lib)}"
+        libobjs.each do |obj|
+            rsp.puts win_path(obj)
+        end
+    end
+    rsp.close
+
+    if isWindows
+      cmd = "#{PROG_LIB} @#{FILE_RSP} > #{LOG_STDOUT}"
+    else
+      cmd = "cat #{FILE_RSP} | xargs ar > #{LOG_STDOUT}"
+    end
+
+    sh cmd, :verbose => false do |ok, res|
+        if !ok then
+            puts cmd
+            raise "librarian error"
+        end
+    end
+    FileUtils.rm libobjs
+
+end
+
+def buildApp( basedir, srcdir, resdir, dflags, appnameprefix, appname, filelist, libnames )
+    if filelist == nil
+        filelist = FileList[ "**/#{appname}.d" ]
+    end
+
+    srcdir_abs = File.expand_path( File.join( basedir, srcdir))
+    resdir_abs = File.expand_path( File.join( basedir, resdir))
+
+    rsp = File.new( FILE_RSP, "w+" )
+    rsp.puts "-I#{win_path(srcdir_abs)}"
+    rsp.puts "-I#{win_path(DIR_IMP)}"
+    rsp.puts "-J#{win_path(resdir_abs)}"
+    rsp.puts "-J#{win_path(DIR_RES)}"
+    rsp.puts "-m32"
+    if isDebug
+        rsp.puts "-debug"
+        rsp.puts "-g"
+    end
+    if dflags.size > 0 then
+        rsp.puts dflags
+    end
+
+    rsp.puts "-op"
+    rsp.puts "-od#{win_path(DIR_OBJ)}"
+    applfile = File.join(DIR_BIN ,appnameprefix+appname+EXEEXT)
+    rsp.puts "-of#{win_path(applfile)}"
+    filelist.each do |path|
+        rsp.puts win_path(File.expand_path(path))[ srcdir_abs.size+1 .. -1 ]
+    end
+
+    if isWindows
+        rsp.puts "-L/NOM"
+        rsp.puts "-L/SUBSYSTEM:CONSOLE:4.0"
+        rsp.puts win_path(File.expand_path("win-res\\resource.res"))
+        libnames.each do | libname |
+            rsp.puts "-L+#{libname}#{LIBEXT}"
+        end
+        rsp.puts "-L+#{win_path(DIR_LIB)}\\"
+    else
+        rsp.puts "-L-L#{win_path(DIR_LIB)}"
+        libnames.reverse.each do | libname |
+            absname = File.join( DIR_LIB, "#{libname}#{LIBEXT}" );
+            rsp.puts absname
+        end
+        SONAMES_BASIC.reverse.each do | soname |
+            rsp.puts "-L-l#{soname}"
+        end
+    end
+
+    rsp.close
+
+    Dir.chdir(srcdir_abs) do
+        if isWindows
+            cmd = "#{PROG_DMD} @#{win_path(FILE_RSP)}"
+        else
+            cmd = "cat #{win_path(FILE_RSP)} | xargs #{PROG_DMD}"
+        end
+        sh cmd, :verbose => false do |ok, res|
+            if !ok then
+                raise "compile error"
+            end
+        end
+    end
+    if isWindows
+        FileUtils.rm File.join(srcdir_abs,appname+MAPEXT), :force => true
+    end
+
+end
+##########################################################################
+# Targets
+#
+desc "Clean"
+task :clean do
+    puts "Cleaning"
+    FileUtils.rm_rf DIR_IMP
+    FileUtils.rm_rf DIR_OBJ
+    FileUtils.rm_rf DIR_LIB
+    FileUtils.rm_rf DIR_BIN
+    FileUtils.rm_rf DIR_RES
+    FileUtils.rm FILE_RSP, :force => true
+    FileUtils.rm LOG_STDOUT, :force => true
+    FileUtils.rm LOG_STDERR, :force => true
+end
+
+desc "Build Base (Java Environment and Helpers)"
+task :base do
+    buildTree( "base", "src", "res", "", "dwt-base" )
+end
+
+desc "Build SWT"
+task :swt do
+    buildTree( BASEDIR_SWT, "src", "res" )
+    if isWindows
+        FileUtils.cp FileList[ File.join(DIR_WINLIBS, "*#{LIBEXT}") ], DIR_LIB
+    end
+end
+
+desc "Build Equinox"
+task :default => :work
+
+desc "Build Equinox"
+task "equinox" do
+    buildTree( "org.eclipse.osgi", "osgi/src"      , "res", nil, "org.eclipse.osgi.osgi" )
+    buildTree( "org.eclipse.osgi", "supplement/src", "res", nil, "org.eclipse.osgi.supplement")
+    buildTree( "org.eclipse.equinox.common", "src", "res" )
+
+    buildTree( "org.eclipse.osgi", "console/src", "res", nil, "org.eclipse.osgi.console")
+    buildTree( "org.eclipse.osgi", "core/adaptor", "res", nil, "org.eclipse.osgi.core.adaptor")
+    buildTree( "org.eclipse.osgi", "core/framework", "res", nil, "org.eclipse.osgi.core.framework")
+    buildTree( "org.eclipse.osgi", "defaultAdaptor/src", "res", nil, "org.eclipse.osgi.defaultadaptor")
+    buildTree( "org.eclipse.osgi", "eclipseAdaptor/src", "res", nil, "org.eclipse.osgi.eclipseadaptor")
+    buildTree( "org.eclipse.osgi", "jarverifier", "res", nil, "org.eclipse.osgi.jarverifier")
+    buildTree( "org.eclipse.osgi", "resolver/src", "res", nil, "org.eclipse.osgi.resolver")
+    buildTree( "org.eclipse.osgi", "security/src", "res", nil, "org.eclipse.osgi.security")
+    buildTree( "org.eclipse.osgi", "supplement/src", "res", nil, "org.eclipse.osgi.supplement")
+    buildTree( "org.eclipse.osgi.services", "src", "res" )
+    buildTree( "org.eclipse.equinox.app", "src", "res" )
+    buildTree( "org.eclipse.equinox.preferences", "src", "res" )
+    buildTree( "org.eclipse.equinox.registry", "src", "res" )
+    buildTree( "org.eclipse.equinox.security", "src", "res" )
+end
+
+desc "Build Current Working area"
+task :work do
+    searchdirs = ""
+    searchdirs << "-I../../supplement/src "
+    searchdirs << "-I../../osgi/src "
+    searchdirs << "-I../../core/framework "
+    searchdirs << "-I../../supplement/src "
+    searchdirs << "-I../../console/src "
+    searchdirs << "-I../../core/adaptor "
+    searchdirs << "-I../../defaultAdaptor/src "
+    searchdirs << "-I../../eclipseAdaptor/src "
+    searchdirs << "-I../../jarverifier "
+    searchdirs << "-I../../resolver/src "
+    searchdirs << "-I../../security/src "
+
+    buildTree( "org.eclipse.osgi", "supplement/src", "res", searchdirs, "org.eclipse.osgi.supplement")
+    buildTree( "org.eclipse.osgi", "osgi/src"      , "res", searchdirs, "org.eclipse.osgi.osgi" )
+    buildTree( "org.eclipse.osgi", "core/framework", "res", searchdirs, "org.eclipse.osgi.core.framework")
+    buildTree( "org.eclipse.osgi", "supplement/src", "res", nil, "org.eclipse.osgi.supplement")
+    buildTree( "org.eclipse.osgi", "console/src", "res", nil, "org.eclipse.osgi.console")
+    buildTree( "org.eclipse.osgi", "core/adaptor", "res", nil, "org.eclipse.osgi.core.adaptor")
+    buildTree( "org.eclipse.osgi", "defaultAdaptor/src", "res", nil, "org.eclipse.osgi.defaultadaptor")
+    buildTree( "org.eclipse.osgi", "eclipseAdaptor/src", "res", nil, "org.eclipse.osgi.eclipseadaptor")
+    buildTree( "org.eclipse.osgi", "jarverifier", "res", nil, "org.eclipse.osgi.jarverifier")
+    buildTree( "org.eclipse.osgi", "resolver/src", "res", nil, "org.eclipse.osgi.resolver")
+    buildTree( "org.eclipse.osgi", "security/src", "res", nil, "org.eclipse.osgi.security")
+    buildTree( "org.eclipse.osgi.services", "src", "res" )
+    buildTree( "org.eclipse.equinox.common", "src", "res" )
+    buildTree( "org.eclipse.equinox.app", "src", "res" )
+    buildTree( "org.eclipse.equinox.preferences", "src", "res" )
+    buildTree( "org.eclipse.equinox.registry", "src", "res" )
+    buildTree( "org.eclipse.equinox.security", "src", "res" )
+end
+
+desc "Build Eclipse Core"
+task :core do
+    buildTree( "com.ibm.icu", "src", "res" )
+    buildTree( "org.eclipse.core.runtime", "src", "res" )
+    buildTree( "org.eclipse.core.commands", "src", "res" )
+    buildTree( "org.eclipse.core.databinding", "src", "res" )
+    buildTree( "org.eclipse.core.databinding.beans", "src", "res" )
+    buildTree( "org.eclipse.core.jobs", "src", "res" )
+end
+
+desc "Build JFace"
+task :jface do
+    buildTree( "org.eclipse.jface", "src", "res" )
+    buildTree( "org.eclipse.jface.databinding", "src", "res" )
+end
+
+desc "Build Eclipse Tools"
+task :eclipsetools do
+    buildTree( "org.eclipse.tools", "Sleak", "res" )
+end
+
+desc "Build JFace.Text"
+task :jfacetext do
+    buildTree( "org.eclipse.text", "src", "res" )
+    buildTree( "org.eclipse.jface.text", "projection", "res", "-I../src", "org.eclipse.jface.text.projection" )
+    buildTree( "org.eclipse.jface.text", "src", "res" )
+end
+
+desc "Build UI Forms"
+task :uiforms do
+    buildTree( "org.eclipse.ui.forms", "src", "res" )
+end
+
+desc "Build Draw2D"
+task :draw2d do
+    buildTree( "org.eclipse.draw2d", "src", "res" )
+end
+
+desc "Build ALL"
+task :all => [ :base, :swt, :equinox, :core, :jface, :jfacetext, :uiforms,
+    :draw2d, :swtsnippets, :jfacesnippets ]
+
+desc "Build SWT Snippet Collection"
+task :swtsnippets, :explicit_snp do | t, args |
+
+    libnames = LIBNAMES_BASIC + LIBNAMES_SWT
+    snps_browser = [ "Snippet128", "Snippet136" ]
+    snps_opengl = [ "Snippet174", "Snippet195" ]
+    snps_ole = [ "Snippet81" ]
+
+    if isWindows
+        snps_exclude = snps_browser + snps_opengl + snps_ole
+    else
+        snps_exclude = snps_browser + snps_opengl + snps_ole
+    end
+
+    PREFIX = "Swt"
+    allsnippets = FileList[ File.join("org.eclipse.swt.snippets", "src", "**/Snippet*.d" )]
+    if args.explicit_snp != nil
+        snpname = args.explicit_snp
+        puts "Building swtsnippets[#{snpname}]"
+        buildApp( "org.eclipse.swt.snippets", "src", "res", "", PREFIX, snpname, nil, libnames )
+    else
+        allsnippets.each do | snp |
+            if snp =~ /.*(Snippet\w+)\.d$/
+                snpname = $1
+                puts "Building swtsnippets[#{snpname}]"
+                if !snps_exclude.include? snpname
+                    buildApp( "org.eclipse.swt.snippets", "src", "res", "", PREFIX, snpname, nil, libnames )
+                end
+            else
+                raise "Name does not match #{snp}"
+            end
+        end
+    end
+end
+
+desc "Build JFace Snippet Collection"
+task :jfacesnippets, :explicit_snp do | t, args |
+
+    PREFIX = "JFace"
+    SRCPATH = "EclipseJfaceSnippets"
+    BASEPATH = "org.eclipse.jface.snippets"
+    libnames = LIBNAMES_BASIC + LIBNAMES_SWT + LIBNAMES_EQUINOX +
+               LIBNAMES_CORE + LIBNAMES_JFACE + LIBNAMES_ICU
+    snps_exclude = []
+    allsnippets = FileList[ File.join(BASEPATH, SRCPATH, "**/*.d" )]
+    if args.explicit_snp != nil
+        snpname = args.explicit_snp
+        puts "Building jfacesnippets[#{snpname}]"
+        buildApp( BASEPATH, SRCPATH, "res", "", PREFIX, args.explicit_snp, nil, libnames )
+    else
+        allsnippets.each do | snp |
+            if snp =~ /.*[\\\/](\w+)\.d$/
+                snpname = $1
+                puts "Building jfacesnippets[#{snpname}]"
+                if !snps_exclude.include? snpname
+                    buildApp( BASEPATH, SRCPATH, "res", "", PREFIX, snpname, nil, libnames )
+                end
+            else
+                puts snp
+                raise "Name does not match #{snp}"
+            end
+        end
+    end
+end
+
+
+desc "Build JFace Databinding Snippet Collection"
+task :bindsnippets, :explicit_snp do | t, args |
+
+    PREFIX = "Bind"
+    SRCPATH = "src"
+    BASEPATH = "org.eclipse.jface.examples.databinding"
+    libnames = LIBNAMES_BASIC + LIBNAMES_SWT + LIBNAMES_EQUINOX +
+               LIBNAMES_CORE + LIBNAMES_JFACE + LIBNAMES_JFACEBIND +
+               LIBNAMES_ICU
+    snps_exclude = []
+    allsnippets = FileList[ File.join(BASEPATH, SRCPATH, "**/*.d" )]
+    rmlistadd = true
+    if args.explicit_snp != nil
+        rmlist = FileList.new
+        allsnippets.each do | snp |
+            until snp =~ /.*[\\\/](\w+)\.d$/
+                puts snp
+                raise "Name does not match #{snp}"
+            end
+            if $1 == args.explicit_snp
+                rmlistadd = false
+            end
+            if rmlistadd
+                rmlist << snp
+            end
+        end
+        rmlist.each do | snp |
+            allsnippets.exclude snp
+        end
+    end
+    allsnippets.each do | snp |
+        if snp =~ /.*[\\\/](\w+)\.d$/
+            snpname = $1
+            puts "Building bindsnippets[#{snpname}]"
+            if !snps_exclude.include? snpname
+                buildApp( BASEPATH, SRCPATH, "res", "", PREFIX, snpname, nil, libnames )
+            end
+        else
+            puts snp
+            raise "Name does not match #{snp}"
+        end
+    end
+end
+
+
+

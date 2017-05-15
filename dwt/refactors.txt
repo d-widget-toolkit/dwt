@@ -1,0 +1,21 @@
+set noignorecase
+bufdo retab
+bufdo set ff=unix
+bufdo %s:==:is:g
+bufdo %s:!=:!is:g
+
+bufdo %s:\<boolean\>:bool:g
+bufdo %s:^\(\s*\(public\|private\|protected\|\)\s*\)\([A-Z]\i*\)\(\s*(\):\1this\4:
+bufdo %s:\<implements\>:,:gc
+bufdo %s:\<implements\>:\::gc
+bufdo %s:\<extends\>:\::gc
+bufdo %s:\<new\s\+\([A-Z]\i*\)\s*\(([^)]*)\)\s*{:new class\2 \1 {:
+bufdo %s:\<[A-Z]\i*\.this\>:this.outer:g
+ gg/packagecemoduleo%kbkb;bhvlkJf;bhvF;xi.oimport java.lang.all;       
+bufdo %s:(\s*\(byte\|short\|int\|long\|float\|double\|[A-Z]\i*\(\.[A-Z]\i*\)\?\)\s*\(\[\s*]\s*\)\?):cast\0:g
+
+bufdo %s:\([(,|&=]\)\_s*\(\i\+\)\_s\+instanceof\_s\+\([A-Z]\i*\(\.[A-Z]\i*\)\?\s*\(\[\s*]\s*\)\?\)\(\_s*[),|&?]\):\1 null !is cast(\3)\2 \6:g
+bufdo %s:\<bool\>\(\s*\)\<equals\>\(\s*(\):override equals_t\1opEquals\2:
+bufdo %s:\<int\>\(\s*\)\<hashCode\>\(\s*(\):override hash_t\1toHash\2:
+bufdo %s:\()\_s*\)throws\_s\+[A-Z]\i*\_s*\(,\_s*[A-Z]\i*\_s*\)*{:\1{:
+
