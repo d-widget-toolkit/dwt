@@ -1,0 +1,32 @@
+language: d
+script: ./travis.sh
+
+addons:
+  apt:
+    packages:
+      - libcairo2-dev
+      - libglib2.0-dev
+      - libgnomeui-dev
+      - libgtk2.0-dev
+      - libpango1.0-dev
+      - libxcomposite-dev
+      - libxcursor-dev
+      - libxdamage-dev
+      - libxfixes-dev
+      - libxi-dev
+      - libxinerama-dev
+      - libxrandr-dev
+      - libxtst-dev
+
+d:
+  - dmd
+  - dmd-2.073.0
+  - dmd-2.072.2
+  - dmd-2.071.2
+  - dmd-2.070.0
+  - dmd-2.069.2
+  - dmd-2.068.2
+  - dmd-2.067.0
+  - dmd-2.066.1
+  - dmd-2.065.0
+
