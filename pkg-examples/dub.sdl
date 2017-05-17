@@ -1,0 +1,22 @@
+name "example"
+
+description "DWT example"
+   
+targetType "executable"
+
+targetPath "bin"
+
+buildType "debug" {
+	buildOptions "releaseMode" "optimize" "inline" "noBoundsCheck"
+}
+
+stringImportPaths "res"
+
+sourceFiles "res\\resource.res" platform="windows"
+
+dependency "dwt" version="==0.0.0"
+
+//dependency "dwt" version=">=1.0.0"
+
+//dependency "dwt" path="../"
+
