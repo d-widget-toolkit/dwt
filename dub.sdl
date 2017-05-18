@@ -1,0 +1,58 @@
+name "dwt"
+description "A library for creating cross-platform GUI applications."
+authors "Frank Benoit" "Jacob Carlborg" "kntroh" "JJR"
+homepage "https://github.com/d-widget-toolkit/dwt"
+license "EPL-1.0"
+copyright "Copyright (c) 2000, 2008 IBM Corporation and others"
+
+targetType "library"
+buildRequirements "silenceWarnings"
+
+subPackage {
+  name "base"
+  targetType "library"
+  sourcePaths "base/src"
+  importPaths "base/src"
+}
+
+configuration "linux-gtk" {
+  platforms "linux"
+  sourcePaths "org.eclipse.swt.gtk.linux.x86/src"
+  importPaths "org.eclipse.swt.gtk.linux.x86/src"
+  stringImportPaths "org.eclipse.swt.gtk.linux.x86/res"
+
+  excludedSourceFiles \
+    "org.eclipse.swt.gtk.linux.x86/src/org/eclipse/swt/browser/*" \
+    "org.eclipse.swt.gtk.linux.x86/src/org/eclipse/swt/internal/mozilla/*"
+
+  dependency ":base" version="*"
+}
+
+configuration "windows-win32" {
+  platforms "windows"
+  sourcePaths "org.eclipse.swt.win32.win32.x86/src"
+  importPaths "org.eclipse.swt.win32.win32.x86/src"
+  stringImportPaths "org.eclipse.swt.win32.win32.x86/res"
+
+  excludedSourceFiles \
+    "org.eclipse.swt.win32.win32.x86/src/org/eclipse/swt/internal/mozilla/*"
+
+  libs \
+    "advapi32" \
+    "comctl32" \
+    "comdlg32" \
+    "gdi32" \
+    "kernel32" \
+    "msimg32" \
+    "ole32" \
+    "oleacc" \
+    "oleaut32" \
+    "olepro32" \
+    "opengl32" \
+    "shell32" \
+    "shlwapi" \
+    "user32" \
+    "usp10"
+
+  dependency ":base" version="*"
+}

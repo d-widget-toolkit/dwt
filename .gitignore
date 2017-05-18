@@ -9,3 +9,7 @@
 /trash
 /olog.txt
 /elog.txt
+/*.a
+/*.lib
+/dub.selections.json
+/.dub
