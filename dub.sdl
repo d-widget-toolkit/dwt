@@ -7,9 +7,9 @@ license "EPL-1.0"
 
 targetType "sourceLibrary"
 
-importPaths "pkg\\src"
+importPaths "pkg/src"
 
-stringImportPaths "pkg\\views"
+stringImportPaths "pkg/views"
 
 configuration "posix" {
 
