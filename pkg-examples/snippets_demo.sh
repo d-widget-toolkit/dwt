@@ -1,8 +1,8 @@
 #!/bin/sh
 
-rdmd rdub snippets/Snippet223.d -y --force
+rdmd rdub snippets/Snippet223.d --force
 
-# rdmd rdub snippets/Snippet251.d -y --force
+# rdmd rdub snippets/Snippet251.d --force
 
 echo End of snippet demo.
 
