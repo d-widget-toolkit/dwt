@@ -55,14 +55,16 @@ public String getName( in TypeInfo ti ){
 /// If the given type represents a typedef, return the actual type.
 ConstTypeInfo realType (in TypeInfo type)
 {
-    // TypeInfo_Typedef.next() doesn't return the actual type.
-    // I think it returns TypeInfo_Typedef.base.next().
-    // So, a slightly different method.
-    auto def = cast(TypeInfo_Typedef) type;
-    if (def !is null)
-    {
-        return def.base;
-    }
+    // The current D Programming Language does not have typedef.
+    //
+    // // TypeInfo_Typedef.next() doesn't return the actual type.
+    // // I think it returns TypeInfo_Typedef.base.next().
+    // // So, a slightly different method.
+    // auto def = cast(TypeInfo_Typedef) type;
+    // if (def !is null)
+    // {
+    //     return def.base;
+    // }
     return type;
 }
 
