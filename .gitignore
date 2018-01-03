@@ -12,4 +12,7 @@
 /*.a
 /*.lib
 /dub.selections.json
-/.dub
+.dub
+/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet*
+!org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet*.d
+

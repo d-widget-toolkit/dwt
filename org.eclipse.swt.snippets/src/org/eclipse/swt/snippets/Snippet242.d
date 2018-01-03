@@ -1,3 +1,38 @@
+#!/usr/bin/env dub
+/+
+dub.sdl:
+    name "snippet242"
+    dependency "dwt" path="../../../../../../"
+    libs \
+      "atk-1.0" \
+      "cairo" \
+      "dl" \
+      "fontconfig" \
+      "gdk-x11-2.0" \
+      "gdk_pixbuf-2.0" \
+      "glib-2.0" \
+      "gmodule-2.0" \
+      "gnomeui-2" \
+      "gnomevfs-2" \
+      "gobject-2.0" \
+      "gthread-2.0" \
+      "gtk-x11-2.0" \
+      "pango-1.0" \
+      "pangocairo-1.0" \
+      "X11" \
+      "Xcomposite" \
+      "Xcursor" \
+      "Xdamage" \
+      "Xext" \
+      "Xfixes" \
+      "Xi" \
+      "Xinerama" \
+      "Xrandr" \
+      "Xrender" \
+      "Xtst" \
+      platform="linux"
++/
+
 /*******************************************************************************
  * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
