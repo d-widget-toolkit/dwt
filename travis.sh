@@ -2,4 +2,5 @@
 
 set -e
 
-rdmd build base swt swtsnippets
+dub build
+./tools/build_snippets.d
