@@ -11,10 +11,7 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 ### <a id="building"></a>Building
 
 1. Install all the [requirements](#requirements)
-2. Clone the repository by running:
-
-		$ git clone --recursive git://github.com/d-widget-toolkit/dwt.git
-
+2. Clone the repository
 3. Compile the base and SWT library by running:
 
 		$ ./build base swt
@@ -27,7 +24,7 @@ DWT is compatible with D2 using the standard library (Phobos) and D1 using
 
   If need 32-bit COFF libraries, please add `-m32mscoff` flag:
 
-		$ rdmd base swt -m32mscoff
+		$ rdmd build base swt -m32mscoff
 
 If you use D1 with Tango, please replace `./build` to `rake`.
 For example:
