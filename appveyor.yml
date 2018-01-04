@@ -1,0 +1,20 @@
+platform:
+  - x64
+  - x86
+
+environment:
+  DubVersion: 1.7.0
+  DC: dmd
+  matrix:
+    - DVersion: 2.073.0
+    - DVersion: 2.072.2
+    - DVersion: 2.071.2
+    - DVersion: 2.070.0
+    - DVersion: 2.069.2
+    - DVersion: 2.068.2
+    - DVersion: 2.067.0
+    - DVersion: 2.066.1
+    - DVersion: 2.065.0
+
+build_script:
+  - powershell -NoProfile -File appveyor.ps1 < NUL

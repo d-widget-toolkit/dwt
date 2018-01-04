@@ -1,5 +1,5 @@
 language: d
-script: ./travis.sh
+script: dub build && ./tools/build_snippets.d
 
 addons:
   apt:
