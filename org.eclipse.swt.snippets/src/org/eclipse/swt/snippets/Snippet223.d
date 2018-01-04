@@ -3,6 +3,7 @@
 dub.sdl:
     name "snippet223"
     dependency "dwt" path="../../../../../../"
+    stringImportPaths "../../../../../res"
     libs \
       "atk-1.0" \
       "cairo" \
@@ -46,12 +47,12 @@ dub.sdl:
  *     Jesse Phillips <Jesse.K.Phillips+D> gmail.com
  *******************************************************************************/
 module org.eclipse.swt.snippets.Snippet223;
-/* 
+/*
  * example snippet: ExpandBar example
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 
@@ -78,8 +79,8 @@ void main () {
     shell.setLayout(new FillLayout());
     shell.setText("ExpandBar Example");
     auto bar = new ExpandBar (shell, SWT.V_SCROLL);
-    auto image = new Image(display, new ImageData(new ByteArrayInputStream( cast(byte[]) import("eclipse.png")))); 
-    
+    auto image = new Image(display, new ImageData(new ByteArrayInputStream( cast(byte[]) import("eclipse.png"))));
+
     // First item
     Composite composite = new Composite (bar, SWT.NONE);
     GridLayout layout = new GridLayout ();
@@ -99,13 +100,13 @@ void main () {
     item0.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
     item0.setControl(composite);
     item0.setImage(image);
-    
+
     // Second item
     composite = new Composite (bar, SWT.NONE);
     layout = new GridLayout (2, false);
     layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
     layout.verticalSpacing = 10;
-    composite.setLayout(layout);    
+    composite.setLayout(layout);
     Label label = new Label (composite, SWT.NONE);
     label.setImage(display.getSystemImage(SWT.ICON_ERROR));
     label = new Label (composite, SWT.NONE);
@@ -127,7 +128,7 @@ void main () {
     item1.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
     item1.setControl(composite);
     item1.setImage(image);
-    
+
     // Third item
     composite = new Composite (bar, SWT.NONE);
     layout = new GridLayout (2, true);
@@ -135,20 +136,20 @@ void main () {
     layout.verticalSpacing = 10;
     composite.setLayout(layout);
     label = new Label (composite, SWT.NONE);
-    label.setText("Scale"); 
+    label.setText("Scale");
     new Scale (composite, SWT.NONE);
     label = new Label (composite, SWT.NONE);
-    label.setText("Spinner");   
+    label.setText("Spinner");
     new Spinner (composite, SWT.BORDER);
     label = new Label (composite, SWT.NONE);
-    label.setText("Slider");    
+    label.setText("Slider");
     new Slider (composite, SWT.NONE);
     ExpandItem item2 = new ExpandItem (bar, SWT.NONE, 2);
     item2.setText("What is your favorite range widget");
     item2.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
     item2.setControl(composite);
     item2.setImage(image);
-    
+
     item1.setExpanded(true);
     bar.setSpacing(8);
     shell.setSize(400, 350);

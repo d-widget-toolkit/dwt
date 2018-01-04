@@ -3,6 +3,7 @@
 dub.sdl:
     name "snippet_dwt_bitmap_v4"
     dependency "dwt" path="../../../../../../"
+    stringImportPaths "../../../../../res"
     libs \
       "atk-1.0" \
       "cairo" \
