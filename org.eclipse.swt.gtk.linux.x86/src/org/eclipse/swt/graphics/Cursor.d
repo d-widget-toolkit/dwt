@@ -244,7 +244,7 @@ public this(Device device, ImageData source, ImageData mask, int hotspotX, int h
             ((s & 0x04) << 3) |
             ((s & 0x02) << 5) |
             ((s & 0x01) << 7));
-        sourceData[i] = cast(byte) ~sourceData[i];
+        sourceData[i] = cast(byte) ~cast(int)sourceData[i];
     }
     sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
     data = mask.data;
@@ -258,7 +258,7 @@ public this(Device device, ImageData source, ImageData mask, int hotspotX, int h
             ((s & 0x04) << 3) |
             ((s & 0x02) << 5) |
             ((s & 0x01) << 7));
-        maskData[i] = cast(byte) ~maskData[i];
+        maskData[i] = cast(byte) ~cast(int)maskData[i];
     }
     maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
     handle = createCursor(maskData, sourceData, source.width, source.height, hotspotX, hotspotY, true);

@@ -101,7 +101,7 @@ int decodePackBits(byte[] src, byte[] dest, int offsetDest) {
         } else if (-127 <= n && n <= -1) {
             /* Copy next byte -n+1 times */
             byte value = src[++srcIndex];
-            for (int j = 0; j < -n + 1; j++) {
+            for (int j = 0; j < -cast(int)n + 1; j++) {
                 dest[destIndex++] = value;
             }
             srcIndex++;
