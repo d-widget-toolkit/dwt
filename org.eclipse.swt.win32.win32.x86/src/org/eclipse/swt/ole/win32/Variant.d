@@ -1045,7 +1045,7 @@ public String toString () {
         default:
      }
     if ((type & COM.VT_BYREF) !is 0) {
-        return Format("VT_BYREF|{}{{{}}",(type & ~COM.VT_BYREF), byRefPtr );
+        return Format("VT_BYREF|{}{{{}}",(type & ~cast(int)COM.VT_BYREF), byRefPtr );
     }
     return "Unsupported Type "~String_valueOf(type);
 }
