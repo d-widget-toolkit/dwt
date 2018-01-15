@@ -21,54 +21,6 @@ import org.eclipse.swt.SWTException;
 
 import java.lang.all;
 
-version(build){
-    pragma(link, "advapi32");
-    pragma(link, "comctl32");
-    pragma(link, "comdlg32");
-    pragma(link, "gdi32");
-    pragma(link, "kernel32");
-    pragma(link, "shell32");
-    pragma(link, "ole32");
-    pragma(link, "oleaut32");
-    version (Win32) {
-        // The olepro32.dll is not existed in 64-bit system.
-        // It has been merged into the oleaut32.dll.
-        pragma(link, "olepro32");
-    }
-    pragma(link, "oleacc");
-    pragma(link, "user32");
-    pragma(link, "usp10");
-    pragma(link, "msimg32");
-    pragma(link, "opengl32");
-    pragma(link, "shlwapi");
-    //pragma(link, "org.eclipse.swt.win32.win32.x86");
-    //pragma(link, "gdiplus"); // load dynamic
-    //pragma(link, "uxtheme"); // load dynamic
-}
-
-pragma(lib, "advapi32.lib");
-pragma(lib, "comctl32.lib");
-pragma(lib, "comdlg32.lib");
-pragma(lib, "gdi32.lib");
-pragma(lib, "kernel32.lib");
-pragma(lib, "shell32.lib");
-pragma(lib, "ole32.lib");
-pragma(lib, "oleaut32.lib");
-version (Win32) {
-    // The olepro32.dll is not existed in 64-bit system.
-    // It has been merged into the oleaut32.dll.
-    pragma(lib, "olepro32.lib");
-}
-pragma(lib, "oleacc.lib");
-pragma(lib, "user32.lib");
-pragma(lib, "usp10.lib");
-pragma(lib, "msimg32.lib");
-pragma(lib, "opengl32.lib");
-pragma(lib, "shlwapi.lib");
-//pragma(lib, "org.eclipse.swt.win32.win32.x86.lib");
-//pragma(link, "gdiplus"); // load dynamic
-//pragma(link, "uxtheme"); // load dynamic
-
 /**
  * This class provides access to a small number of SWT system-wide
  * methods, and in addition defines the public constants provided

@@ -25,32 +25,6 @@ version(Tango){
 } else { // Phobos
 }
 
-version( build ){
-pragma(link, "gtk-x11-2.0" );
-pragma(link, "gdk-x11-2.0" );
-pragma(link, "atk-1.0" );
-pragma(link, "gdk_pixbuf-2.0" );
-pragma(link, "gthread-2.0" );
-pragma(link, "pangocairo-1.0" );
-pragma(link, "fontconfig" );
-pragma(link, "Xtst" );
-pragma(link, "Xext" );
-pragma(link, "Xrender" );
-pragma(link, "Xinerama" );
-pragma(link, "Xi" );
-pragma(link, "Xrandr" );
-pragma(link, "Xcursor" );
-pragma(link, "Xcomposite" );
-pragma(link, "Xdamage" );
-pragma(link, "X11" );
-pragma(link, "Xfixes" );
-pragma(link, "pango-1.0" );
-pragma(link, "gobject-2.0" );
-pragma(link, "gmodule-2.0" );
-pragma(link, "dl" );
-pragma(link, "glib-2.0" );
-pragma(link, "cairo" );
-}
 //version=CARBON;
 
 

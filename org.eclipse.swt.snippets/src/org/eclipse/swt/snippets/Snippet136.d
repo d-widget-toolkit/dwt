@@ -52,7 +52,7 @@ module Snippet136;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
 import org.eclipse.swt.SWT;
@@ -70,14 +70,6 @@ version(Tango){
     import tango.io.Console;
 } else { // Phobos
     import std.stdio;
-}
-
-version(linux) {
-    version(build)
-    {
-    pragma(link, "stdc++");
-    pragma(link, "xpcomglue");
-    }
 }
 
 void main() {

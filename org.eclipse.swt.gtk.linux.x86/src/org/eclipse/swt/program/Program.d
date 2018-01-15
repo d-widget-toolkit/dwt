@@ -34,10 +34,6 @@ version(Tango){
     static import std.algorithm;
 }
 
-version( build ){
-    pragma(link, "gnomeui-2" );
-}
-
 private extern(C) {
     alias int GnomeIconLookupResultFlags;
     alias int GnomeIconLookupFlags;

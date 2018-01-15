@@ -52,18 +52,9 @@ module Snippet128;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.0
  */
-
-version(linux) 
-{
-    version(build) 
-    {
-    pragma(link,"stdc++");
-    pragma(link,"xpcomglue");
-    }
-}
 
 import java.lang.all;
 
@@ -109,14 +100,14 @@ void main() {
     itemRefresh.setText("Refresh");
     ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
     itemGo.setText("Go");
-    
+
     GridData data = new GridData();
     data.horizontalSpan = 3;
     toolbar.setLayoutData(data);
 
     Label labelAddress = new Label(shell, SWT.NONE);
     labelAddress.setText("Address");
-        
+
     Text location = new Text(shell, SWT.BORDER);
     data = new GridData();
     data.horizontalAlignment = GridData.FILL;
@@ -154,7 +145,7 @@ void main() {
         public void handleEvent(Event event) {
             ToolItem item = cast(ToolItem)event.widget;
             String string = item.getText();
-            if (string.equals("Back")) browser.back(); 
+            if (string.equals("Back")) browser.back();
             else if (string.equals("Forward")) browser.forward();
             else if (string.equals("Stop")) browser.stop();
             else if (string.equals("Refresh")) browser.refresh();
@@ -163,7 +154,7 @@ void main() {
     };
     browser.addProgressListener(new class ProgressListener {
         public void changed(ProgressEvent event) {
-                if (event.total == 0) return;                            
+                if (event.total == 0) return;
                 int ratio = event.current * 100 / event.total;
                 progressBar.setSelection(ratio);
         }
@@ -173,7 +164,7 @@ void main() {
     });
     browser.addStatusTextListener(new class StatusTextListener {
         public void changed(StatusTextEvent event) {
-            status.setText(event.text); 
+            status.setText(event.text);
         }
     });
     browser.addLocationListener(new class LocationListener {
@@ -193,10 +184,10 @@ void main() {
             browser.setUrl(location.getText());
         }
     });
-        
+
     shell.open();
     browser.setUrl("http://eclipse.org");
-        
+
     while (!shell.isDisposed()) {
         if (!display.readAndDispatch())
             display.sleep();
