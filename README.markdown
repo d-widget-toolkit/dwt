@@ -5,10 +5,35 @@ It's a port of the [SWT](http://www.eclipse.org/swt) Java library from Eclipse.
 DWT is compatible with D2 using the standard library (Phobos) and D1 using
 [Tango](http://dsource.org/projects/tango).
 
-## Building
+## Building as a dub package
 
+Note: Building the dub package will also build as a cloned [GitHub repository](#building)
 
-### <a id="building"></a>Building
+1. Fetch the dub package
+
+		$ dub fetch dwt
+
+2. Build the dub package
+
+		$ cd $PACKAGE_DIR/dwt
+		$ build_dub_package.bat or $ bash ./build_dub_package.sh
+
+3. Test the dub package
+
+		$ cd pkg-examples
+		$ example_console.bat or $ bash ./example_console.sh
+		$ example_gui.bat     or $ bash ./example_gui.sh
+		$ snippets_demo.bat   or $ bash ./snippets_demo.sh
+		
+4. Add the dub package dependency to your project dub.json or dub.sdl
+
+		dependency "dwt" version=">=1.0.0"
+		
+5. Avoid using the following import folder names in the dwt package directory.  These are defaults used by DUB that will conflict with the dub package. If you get errors compiling your project, be sure none of the folders exist in the package directory.
+
+		dwt/src, dwt/source, dwt/views
+		
+### <a id="building"></a>Building as a Cloned GitHub Repository
 
 1. Install all the [requirements](#requirements)
 2. Clone the repository

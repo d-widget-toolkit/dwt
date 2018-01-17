@@ -1,0 +1,118 @@
+Item # Description
+==== = =============================================================================================
+  1   1 This program snippet is the test of displaying RLE4 bitmap and V4 Header bitmap.
+  2   7 example snippet: create a table (lazy)
+  3   8 Tree example snippet: create a tree (lazy)
+  4   9 Composite example snippet: scroll a child control automatically
+  5  10 Draw using transformations, paths and alpha blending
+  6  14 Control example snippet: detect mouse enter, exit and hover events
+  7  15 Tree example snippet: create a tree
+  8  16 Display example snippet: create one repeating timer (every 500 ms)
+  9  20 CoolBar example snippet: create a cool bar
+ 10  21 Canvas example snippet: implement tab traversal (behave like a tab group)
+ 11  24 example snippet: detect CR in a text or combo control (default selection)
+ 12  25 Control example snippet: print key state, code and character
+ 13  26 Combo example snippet: create a combo box (non-editable)
+ 14  29 Menu example snippet: create a bar and pull down menu (accelerators, mnemonics)
+ 15  32 Program example snippet: find the icon of the program that edits .bmp files
+ 16  33 DirectoryDialog example snippet: prompt for a directory
+ 17  38 Table example snippet: create a table (columns, headers, lines)
+ 18  39 CCombo example snippet: create a CCombo
+ 19  41 Tool Tips example snippet: create tool tips for a tab item, tool item, and shell
+ 20  42 Display example snippet: get the bounds and client area of a display
+ 21  43 Caret example snippet: create a caret (using an image)
+ 22  44 Cursor example snippet: set the hand cursor into a control
+ 23  45 Scale example snippet: create a scale
+ 24  46 Composite example snippet: intercept mouse events (drag a button with the mouse)
+ 25  47 ToolBar example snippet: create tool bar (normal, hot and disabled images)
+ 26  48 Canvas example snippet: scroll an image (flicker free, no double buffering)
+ 27  49 ToolBar example snippet: create tool bar (wrap on resize)
+ 28  58 ToolBar example snippet: place a combo box in a tool bar
+ 29  60 Display example snippet: create two one shot timers (5000 ms, 2000 ms)
+ 30  62Control example snippet: print mouse state and button (down, move, up)
+ 31  66 GC example snippet: implement a simple scribble program
+ 32  67 ToolBar example snippet: place a drop down menu in a tool bar
+ 33  68 Display example snippet: stop a repeating timer when a button is pressed
+ 34  72 FileDialog example snippet: prompt for a file name (to save)
+ 35  74 Caret example snippet: create a caret
+ 36  75 Composite example snippet: set the tab traversal order of children
+ 37  76 TabFolder example snippet: create a tab folder (six pages)
+ 38  81 OLE and ActiveX example snippet: browse the typelibinfo for a program id (win32 only)
+ 39  82 CTabFolder example snippet: prevent an item from closing
+ 40  92 Cursor example snippet: create a cursor from a source and a mask
+ 41  94 Clipboard example snippet: copy and paste data with the clipboard
+ 42  96 TableCursor example snippet: navigate a table cells with arrow keys.
+ 43  97 Menu example snippet: fill a menu dynamically (when menu shown)
+ 44  98 Composite example snippet: create and dispose children of a composite
+ 45 107 Sash example snippet: implement a simple splitter (with a 20 pixel limit)
+ 46 108 Button example snippet: set the default button
+ 47 109 SashForm example snippet: create a sash form with three children
+ 48 111 TreeEditor example snippet: edit the text of a tree item (in place, fancy)
+ 49 115 Composite example snippet: force radio behavior on two different composites
+ 50 118 Cursor example snippet: create a color cursor from an image file
+ 51 119 Cursor example snippet: create a color cursor from a source and a mask
+ 52 122 Clipboard example snippet: enable/disable menu depending on clipboard content availability
+ 53 127 Control example snippet: prevent Tab from traversing out of a control
+ 54 128 Browser example snippet: bring up a browser
+ 55 130 BusyIndicator example snippet: display busy cursor during long running task
+ 56 130 BusyIndicator example snippet: display busy cursor during long running task
+ 57 132 Printing example snippet: print "Hello World!" in black, outlined in red, to default printer
+ 58 133 Printing example snippet: print text to printer, with word wrap and pagination
+ 59 134 Shell example snippet: create a non-rectangular window
+ 60 136 Browser example snippet: render HTML from memory
+ 61 138 example snippet: set icons with different resolutions
+ 62 140 CoolBar example snippet: drop-down a chevron menu containing hidden tool items
+ 63 142 UI Automation (for testing tools) snippet: post mouse events
+ 64 143 Tray example snippet: place an icon with a popup menu on the system tray
+ 65 144 Virtual Table example snippet: create a table with 1,000,000 items (lazy)
+ 66 146 UI Automation (for testing tools) snippet: post key events
+ 67 147 Combo example snippet: stop CR from going to the default button
+ 68 150 CoolBar example snippet: create a coolbar (relayout when resized)
+ 69 152 Control example snippet: update a status line when an item is armed
+ 70 153 ToolBar example snippet: update a status line when the pointer enters a ToolItem
+ 71 162 Adding an accessible listener to provide state information
+ 72 163 Setting the font style, foreground and background colors of StyledText
+ 73 165 Create a CTabFolder with min and max buttons, as well as close button and 
+ 74 169 Make a toggle button have radio behavior
+ 75 170 Tree example snippet: Create a Tree with columns
+ 76 174 SWT OpenGL snippet: draw a square
+ 77 184 Spinner example snippet: create and initialize a spinner widget
+ 78 189 Text with underline and strike through
+ 79 190 Floating point values in Spinner
+ 80 193 Tree example snippet: allow user to reorder columns by dragging and programmatically.
+ 81 195 SWT OpenGL snippet: based on snippet195.java
+ 82 206 Button example snippet: a Button with text and image
+ 83 207 Use transformation matrices to reflect, rotate and shear images
+ 84 208 Change hue, saturation and brightness of a color
+ 85 211 SWT StyledText snippet: use rise and font with StyleRange.
+ 86 212 StyledText snippet: embed images
+ 87 213 SWT StyledText snippet: use indent, alignment and justify.
+ 88 214 Control example snippet: set a background image (a dynamic gradient)
+ 89 215 GC example snippet: take a screen shot with a GC
+ 90 217 StyledText snippet: embed controls
+ 91 218 SWT StyledText snippet: use gradient background.
+ 92 220 Tree example snippet: Images on the right side of the TreeItem
+ 93 222 example snippet: StyledText bulleted list example
+ 94 223 example snippet: ExpandBar example
+ 95 224 implement radio behavior for setSelection()
+ 96 226 Tree example snippet: Draw a custom gradient selection
+ 97 235 example snippet: detect a system settings change
+ 98 237 Composite Snippet: inherit a background color or image
+ 99 242 Cursor snippet: Hide the Cursor over a control.
+100 244 StyledText snippet: Draw a box around text.
+101 245 Canvas snippet: paint a circle in a canvas
+102 247 Control example snippet: allow a multi-line text to process the default button
+103 250 DateTime example snippet: create a DateTime calendar and a DateTime time.
+104 251 DateTime example snippet: create a DateTime calendar, date, and time in a dialog.
+105 258 Create a search text control
+106 268 UI Automation (for testing tools) snippet: post mouse wheel events to a styled text
+107 269 Combo example snippet: set the caret position within a Combo's text
+108 275 Canvas snippet: update a portion of a Canvas frequently
+109 276 Display snippet: map from control-relative to display-relative coordinates
+110 282 Copy/paste image to/from clipboard.
+111 286 use a menu item's armListener to update a status line.
+112 288 Create a ToolBar containing animated GIFs
+113 289 Combo example snippet: add an item to a combo box
+114 290 Canvas snippet: ignore 2nd mouse up event after double-click
+115 293 create a tri-state button.
+116 294 Region on a control: create a non-rectangular button

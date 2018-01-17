@@ -1,0 +1,12 @@
+
+DMD builds:
+	Optimize generated code. For fastest executables, compile with the
+	-release -O -inline -boundscheck=off
+
+DUB builds:
+	https://code.dlang.org/package-format?lang=json#build-options
+	release-noboundscheck = ["releaseMode", "optimize", "inline", "noBoundsCheck"].
+	(apparently a typo above: release-noboundscheck, should be release-nobounds)
+
+	works for Eclipse DDT plugin:
+	${DUB_TOOL_PATH} build -b=release-nobounds
