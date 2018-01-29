@@ -94,7 +94,7 @@ int main() {
     OleControlSite oOleSite = null;
     OleAutomation oOleAutoObj = null;
     try {
-        oOleSite = new OleControlSite(frame, SWT.NONE, progID); 
+        oOleSite = new OleControlSite(frame, SWT.NONE, progID);
     }
     catch (Exception oExc) {
         version(Tango){
@@ -138,7 +138,7 @@ void printTypeInfo(OleAutomation oOleAutoObj, FormatOutput!(char) oOut)
             for (int iIdx = 0; iIdx < pTypeAttr.cFuncs; ++iIdx) {
                 OleFunctionDescription oData = oOleAutoObj.getFunctionDescription(iIdx);
                 String sArgList = "";
-                int iFirstOptionalArgIndex = oData.args.length - oData.optionalArgCount;
+                int iFirstOptionalArgIndex = cast(int) oData.args.length - oData.optionalArgCount;
                 for (int iArg = 0; iArg < oData.args.length; ++iArg) {
                     sArgList ~= "[";
                     if (iArg >= iFirstOptionalArgIndex){
@@ -248,7 +248,7 @@ String getDirection(int bDirection) {
         bComma = true;
     }
     if ((bDirection & OLE.IDLFLAG_FRETVAL) != 0) {
-        if (bComma) sDirString ~= ", "; 
+        if (bComma) sDirString ~= ", ";
         sDirString ~= "retval";
     }
     return sDirString;

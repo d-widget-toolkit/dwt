@@ -1,5 +1,5 @@
 language: d
-script: dub build && ./tools/build_snippets.d
+script: dub build && ./tools/build_snippets.d --fail-fast
 
 addons:
   apt:

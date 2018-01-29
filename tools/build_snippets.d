@@ -53,7 +53,7 @@ bool shouldBuildSnippet(string path)
 
 Snippet build(string path)
 {
-    const command = ["dub", "build", "--single"] ~ options.extraArgs ~ path;
+    auto command = ["dub", "build", "--single"] ~ options.extraArgs ~ path;
     immutable exitCode = spawnProcess(command).wait();
 
     if (options.failFast)
