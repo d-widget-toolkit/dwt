@@ -41,9 +41,11 @@ function Invoke-CmdScript {
 
 Invoke-CmdScript $env:compilersetup $env:compilersetupargs;
 
-echo "Building...";
+echo "Building library...";
 dub build $env:archswitch;
-dub $env:archswitch --single tools/build_snippets.d -- --fail-fast $env:archswitch;
+
+echo "Compiling snippets...";
+dub $env:archswitch --single tools/test_snippets.d -- $env:archswitch;
 
 if ($LastExitCode -ne 0) {
   $host.SetShouldExit(-1);

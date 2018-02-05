@@ -45,7 +45,7 @@ dub.sdl:
  * D Port:
  *     Thomas Demmer <t_demmer AT web DOT de>
  *******************************************************************************/
-module org.eclipse.swt.snippets.Snippet130;
+module org.eclipse.swt.snippets.Snippet130a;
 /*
  * BusyIndicator example snippet: display busy cursor during long running task
  *
