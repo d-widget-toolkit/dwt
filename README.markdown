@@ -2,143 +2,101 @@
 
 DWT is a library for creating cross-platform GUI applications.
 It's a port of the [SWT](http://www.eclipse.org/swt) Java library from Eclipse.
-DWT is compatible with D2 using the standard library (Phobos) and D1 using
-[Tango](http://dsource.org/projects/tango).
+Current supported platforms are Windows, using Win32 and Linux, using GTK.
 
-## Building
-
-
-### <a id="building"></a>Building
+## Usage
 
 1. Install all the [requirements](#requirements)
-2. Clone the repository
-3. Compile the base and SWT library by running:
+1. Enter the following code in a file called `main.d`:
 
-		$ ./build base swt
+    ```d
+    /+
+    dub.sdl:
+        name "main"
+        dependency "dwt" version="~> 1.0.0"
+        libs \
+          "atk-1.0" \
+          "cairo" \
+          "dl" \
+          "fontconfig" \
+          "gdk-x11-2.0" \
+          "gdk_pixbuf-2.0" \
+          "glib-2.0" \
+          "gmodule-2.0" \
+          "gnomeui-2" \
+          "gnomevfs-2" \
+          "gobject-2.0" \
+          "gthread-2.0" \
+          "gtk-x11-2.0" \
+          "pango-1.0" \
+          "pangocairo-1.0" \
+          "X11" \
+          "Xcomposite" \
+          "Xcursor" \
+          "Xdamage" \
+          "Xext" \
+          "Xfixes" \
+          "Xi" \
+          "Xinerama" \
+          "Xrandr" \
+          "Xrender" \
+          "Xtst" \
+          platform="linux"
+    +/
+    module main;
 
-  ##### For Windows:
+    import org.eclipse.swt.widgets.Display;
+    import org.eclipse.swt.widgets.Shell;
 
-  If need 64-bit libraries, please add `-m64` flag to options:
+    void main ()
+    {
+        auto display = new Display;
+        auto shell = new Shell;
+        shell.open();
 
-		$ rdmd build base swt -m64
+        while (!shell.isDisposed)
+            if (!display.readAndDispatch())
+                display.sleep();
 
-  If need 32-bit COFF libraries, please add `-m32mscoff` flag:
+        display.dispose();
+    }
+    ```
 
-		$ rdmd build base swt -m32mscoff
+1. Build and run by running: `dub --single main.d`
 
-If you use D1 with Tango, please replace `./build` to `rake`.
-For example:
-	`$ ./build base swt` -> `$ rake base swt`
+## Build all the Snippets
 
-### <a id="requirements"></a>Requirements
+```
+$ dub --single tools/build_snippets.d
+```
 
-#### Windows
+## Documentation
+
+For documentation, see any existing documentation or examples for SWT. See also
+the [snippets](org.eclipse.swt.snippets/src/org/eclipse/swt/snippets) which
+contains a bunch of the official SWT snippets ported to D.
+
+## <a id="requirements"></a>Requirements
+
+### Windows
 
 All required files are included in the repository.
 
-#### Linux
+### Linux
 
-For Ubuntu, use the packages below. For other systems use the corresponding packages
-available in the system package manager.
+For Ubuntu, use the packages below. For other systems use the corresponding
+packages available in the system package manager.
 
 * libcairo2-dev
 * libglib2.0-dev
+* libgnomeui-dev
+* libgtk2.0-dev
 * libpango1.0-dev
-* libxfixes-dev
-* libxdamage-dev
 * libxcomposite-dev
 * libxcursor-dev
-* libxrandr-dev
+* libxdamage-dev
+* libxfixes-dev
 * libxi-dev
 * libxinerama-dev
+* libxrandr-dev
 * libxtst-dev
-* libgtk2.0-dev
-* libgnomeui-dev
-
-#### For D1
-
-* [Tango](http://dsource.org/projects/tango)
-* Ruby
-* Rake 0.8.x (included in Ruby 1.9)
-
-### Building Hello World
-
-1. Follow the [build instructions](#building) above
-2. Enter the following code in a file called `main.d`:
-
-	```d
-	module main;
-
-	import org.eclipse.swt.widgets.Display;
-	import org.eclipse.swt.widgets.Shell;
-
-	void main ()
-	{
-	    auto display = new Display;
-	    auto shell = new Shell;
-	    shell.open();
-
-	    while (!shell.isDisposed)
-	        if (!display.readAndDispatch())
-	            display.sleep();
-
-	    display.dispose();
-	}
-	```
-
-3. Compile by running:<br />
-For Windows:
-
-  ```
-  $ dmd main.d -I<dwt>\imp -J<dwt>\res -L+<dwt>\lib\ ^
-    "-L+org.eclipse.swt.win32.win32.x86.lib" "-L+dwt-base.lib" ^
-    -L/SUBSYSTEM:WINDOWS:4.0
-  ```
-
-  If you use Microsoft linker:
-
-  ```
-  $ dmd main.d -I<dwt>\imp -J<dwt>\res -L/LIBPATH:<dwt>\lib ^
-    "-Lorg.eclipse.swt.win32.win32.x86.lib" "-Ldwt-base.lib" ^
-    -L/SUBSYSTEM:Windows -L/ENTRY:mainCRTStartup -m64
-  ```
-
-  If use 32-bit COFF, replace `-m64` to `-m32mscoff`.
-
-  For Linux:
-
-  ```
-  $ dmd main.d -I<dwt>/imp -J<dwt>/org.eclipse.swt.gtk.linux.x86/res -L-L<dwt>/lib \
-    -L-l:org.eclipse.swt.gtk.linux.x86 \
-    -L-l:dwt-base -L-lgtk-x11-2.0 -L-lgdk-x11-2.0 -L-latk-1.0 -L-lgdk_pixbuf-2.0 \
-    -L-lgthread-2.0 -L-lpangocairo-1.0 -L-lfontconfig -L-lXtst -L-lXext -L-lXrender \
-    -L-lXinerama -L-lXi -L-lXrandr -L-lXcursor -L-lXcomposite -L-lXdamage -L-lX11 \
-    -L-lXfixes -L-lpango-1.0 -L-lgobject-2.0 -L-lgmodule-2.0 -L-ldl -L-lglib-2.0 \
-    -L-lcairo -L-lgnomeui-2 -L-lgnomevfs-2
-  ```
-
-  Where `<dwt>` is the path to where DWT was cloned.
-
-#### Updating the Repository
-
-	$ git pull
-	$ git submodule update --init --recursive
-
-### Debugging
-To enable debug build (symbols for debugging):
-
-	$ ./build DEBUG=1 base swt
-
-Alternatively you can set the environment variable DEBUG to '1'.
-
-### Build the Snippets
-
-	$ ./build swtsnippets
-
-To build a single snippet run:
-
-	$ ./build swtsnippets[Snippet107]
-
-### Show Available Rake Tasks
-
-	$ ./build -T
