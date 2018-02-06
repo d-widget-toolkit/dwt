@@ -2,15 +2,4 @@ language: d
 script: dub build && ./tools/test_snippets.d
 
 d:
-  # Disable 2.074.0 due to https://issues.dlang.org/show_bug.cgi?id=17371
-  # - dmd
-  # - dmd-2.074.0
-  - dmd-2.073.0
-  # - dmd-2.072.2
-  # - dmd-2.071.2
-  # - dmd-2.070.0
-  # - dmd-2.069.2
-  # - dmd-2.068.2
-  # - dmd-2.067.0
-  # - dmd-2.066.1
-  # - dmd-2.065.0
+  - dmd-2.078.1
