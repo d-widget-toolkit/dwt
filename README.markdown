@@ -13,7 +13,7 @@ Current supported platforms are Windows, using Win32 and Linux, using GTK.
     /+
     dub.sdl:
         name "main"
-        dependency "dwt" version="~> 1.0.0"
+        dependency "dwt" version="~>1.0.0"
         libs \
           "atk-1.0" \
           "cairo" \
