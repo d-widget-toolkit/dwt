@@ -405,16 +405,7 @@ public bool equals( in char[] src, in char[] other ){
 /// Extension to String
 public bool equalsIgnoreCase( in char[] src, in char[] other ){
     version(Tango) {
-        if(src.length != other.length)
-            return false;
-        String s1b = new char[ src.length * 2 ]; //*2, or Tango may reallocate buffers
-        String s2b = new char[ other.length * 2 ];
-        scope(exit) {
-            delete s1b;
-            delete s2b;
-        }
-        return tango.text.Unicode.toFold( src, s1b ) ==
-            tango.text.Unicode.toFold( other, s2b );
+        static assert(false, "Not implemented");
     } else { // Phobos
         return std.string.icmp(src, other) == 0;
     }
@@ -423,14 +414,7 @@ public bool equalsIgnoreCase( in char[] src, in char[] other ){
 /// Extension to String
 public int compareToIgnoreCase( in char[] src, in char[] other ){
     version(Tango){
-        String s1b = new char[ src.length * 2 ]; //*2, or Tango may reallocate buffers
-        String s2b = new char[ other.length * 2 ];
-        scope(exit) {
-            delete s1b;
-            delete s2b;
-        }
-        return compareTo( tango.text.Unicode.toFold(src, s1b),
-            tango.text.Unicode.toFold(other, s2b));
+        static assert(false, "Not implemented");
     } else { // Phobos
         return std.string.icmp(src, other);
     }
