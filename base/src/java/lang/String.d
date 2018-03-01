@@ -513,32 +513,32 @@ version(Tango){
     }
 } else { // Phobos
     static import core.stdc.string;
-    
+
     public char* toStringzValidPtr( in char[] s ) {
         auto copy = new char[s.length + 1];
         copy[0..s.length] = s;
         copy[s.length] = 0;
         return copy.ptr;
     }
-    
+
     public char* toStringz( in char[] s ) {
         return s is null ? null : toStringzValidPtr(s);
     }
-    
+
     public char[] fromStringz( in char* s ){
         return s ? s[0 .. core.stdc.string.strlen(s)].dup : cast(char[])null;
     }
     /*public string fromStringz( in char* s ){
         return std.conv.to!(string)(s);
     }*/
-    
+
     private size_t w_strlen(in wchar* s) {
         size_t res = 0;
         while(*(s+res))
             ++res;
         return res;
     }
-    
+
     public wchar* toString16z( in wchar[] s ){
         if(s is null)
             return null;
@@ -547,7 +547,7 @@ version(Tango){
         copy[s.length] = 0;
         return copy.ptr;
     }
-    
+
     //Copy of std.conv.toImpl(T, S)(S s) for C-style strings
     public wstring fromString16z( in wchar* s ){
         return s ? s[0 .. w_strlen(s)].idup : cast(wstring)null;
