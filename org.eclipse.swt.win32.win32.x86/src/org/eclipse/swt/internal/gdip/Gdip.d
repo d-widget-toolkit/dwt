@@ -475,7 +475,7 @@ public:
 
     static void BitmapData_delete (BitmapData* bitmapdata)
     {
-        delete bitmapdata;
+        destroy(bitmapdata);
     }
 
     /**************************************************************************
