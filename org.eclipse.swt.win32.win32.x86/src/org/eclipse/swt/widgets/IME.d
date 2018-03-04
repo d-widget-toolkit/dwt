@@ -503,7 +503,7 @@ LRESULT WM_IME_COMPOSITION (WPARAM wParam, LPARAM lParam) {
                                     default:
                                 }
                             }
-                            delete attr;
+                            destroy(attr);
                         }
                     }
                 }
