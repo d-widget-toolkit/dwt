@@ -558,15 +558,15 @@ private void g_signal_emit_by_name0( void* instance, in char* detailed_signal ){
     g_signal_emit_by_name( instance, detailed_signal );
 }
 
-private void g_signal_emit_by_name1( void* instance, in char* detailed_signal, int value ){
+private void g_signal_emit_by_name1( void* instance, in char* detailed_signal, long value ){
     g_signal_emit_by_name( instance, detailed_signal, value );
 }
 
-private void g_signal_emit_by_name2( void* instance, in char* detailed_signal, int value1, int value2 ){
+private void g_signal_emit_by_name2( void* instance, in char* detailed_signal, long value1, long value2 ){
     g_signal_emit_by_name( instance, detailed_signal, value1, value2 );
 }
 
-private void g_signal_emit_by_name3( void* instance, in char* detailed_signal, int value1, int value2, int value3 ){
+private void g_signal_emit_by_name3( void* instance, in char* detailed_signal, long value1, long value2, long value3 ){
     g_signal_emit_by_name( instance, detailed_signal, value1, value2, value3 );
 }
 
