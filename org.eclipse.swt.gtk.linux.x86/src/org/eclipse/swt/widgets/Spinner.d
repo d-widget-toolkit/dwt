@@ -54,7 +54,7 @@ version(Tango){
  * @see <a href="http://www.eclipse.org/swt/snippets/#spinner">Spinner snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public class Spinner : Composite {
@@ -74,7 +74,7 @@ public class Spinner : Composite {
     /**
      * the operating system limit for the number of characters
      * that the text field in an instance of this class can hold
-     * 
+     *
      * @since 3.4
      */
     public const static int LIMIT = 0x7FFFFFFF;
@@ -496,7 +496,7 @@ public int getSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public String getText () {
@@ -510,16 +510,16 @@ public String getText () {
  * text field is capable of holding. If this has not been changed
  * by <code>setTextLimit()</code>, it will be the constant
  * <code>Spinner.LIMIT</code>.
- * 
+ *
  * @return the text limit
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public int getTextLimit () {
@@ -615,9 +615,9 @@ int gtk_commit (GtkIMContext* imContext, char* text) {
     int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
     OS.g_signal_handlers_unblock_matched (imContext, mask, id, 0, null, null, cast(void*)handle);
     if (newChars is chars) {
-        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, cast(int)text);
+        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, cast(long)text);
     } else {
-        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, cast(int)toStringz(newChars));
+        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, cast(long)toStringz(newChars));
     }
     OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, null, null, udCOMMIT);
     OS.g_signal_handlers_block_matched (imContext, mask, id, 0, null, null, cast(void*)handle);
@@ -1002,9 +1002,9 @@ public void setSelection (int value) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @see #LIMIT
- * 
+ *
  * @since 3.4
  */
 public void setTextLimit (int limit) {
