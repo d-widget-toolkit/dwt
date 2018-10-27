@@ -967,7 +967,7 @@ override public Point getSize () {
 
 override public bool getVisible () {
     checkWidget();
-    return OS.GTK_WIDGET_VISIBLE (shellHandle);
+    return OS.gtk_widget_get_visible (shellHandle);
 }
 
 /**
