@@ -393,7 +393,7 @@ public static Shell gtk_new (Display display, GtkWidget* handle) {
     return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
-/**  
+/**
  * Invokes platform specific functionality to allocate a new shell
  * that is not embedded.
  * <p>
@@ -407,7 +407,7 @@ public static Shell gtk_new (Display display, GtkWidget* handle) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
- * 
+ *
  * @since 3.3
  */
 public static Shell internal_new (Display display, GtkWidget* handle) {
@@ -508,7 +508,7 @@ void adjustTrim () {
 }
 
 void bringToTop (bool force) {
-    if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return;
+    if (!OS.gtk_widget_get_visible (shellHandle)) return;
     Display display = this.display;
     Shell activeShell = display.activeShell;
     if (activeShell is this) return;
@@ -859,7 +859,7 @@ void forceResize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public int getAlpha () {
@@ -874,7 +874,7 @@ public int getAlpha () {
 
 /**
  * Returns <code>true</code> if the receiver is currently
- * in fullscreen state, and false otherwise. 
+ * in fullscreen state, and false otherwise.
  * <p>
  *
  * @return the fullscreen state
@@ -1309,7 +1309,7 @@ void setActiveControl (Control control) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void setAlpha (int alpha) {
@@ -1468,12 +1468,12 @@ public override void setEnabled (bool enabled) {
  * into full screen state, causes the receiver to switch back
  * to either the maximmized or normal states.
  * <p>
- * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
- * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
- * vary by platform. Typically, the behavior will match the platform user's 
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will
+ * vary by platform. Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
- * 
+ *
  * @param fullScreen the new fullscreen state
  *
  * @exception SWTException <ul>
