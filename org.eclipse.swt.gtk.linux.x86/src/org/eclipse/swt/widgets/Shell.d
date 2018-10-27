@@ -1715,13 +1715,13 @@ public override void setVisible (bool visible) {
          */
         if (oldWidth == 0 && oldHeight == 0) {
             int [] init_width = new int[1], init_height = new int[1];
-            GTK.gtk_window_get_size(shellHandle, init_width, init_height);
-            GTK.gtk_window_resize(shellHandle, 1, 1);
-            GTK.gtk_widget_show (shellHandle);
-            GTK.gtk_window_resize(shellHandle, init_width[0], init_height[0]);
+            OS.gtk_window_get_size(shellHandle, init_width, init_height);
+            OS.gtk_window_resize(shellHandle, 1, 1);
+            OS.gtk_widget_show (shellHandle);
+            OS.gtk_window_resize(shellHandle, init_width[0], init_height[0]);
             resizeBounds (init_width[0], init_height[0], false);
         } else {
-            GTK.gtk_widget_show (shellHandle);
+            OS.gtk_widget_show (shellHandle);
         }
         /**
          *  Feature in GTK: This handles grabbing the keyboard focus from a SWT.ON_TOP window
