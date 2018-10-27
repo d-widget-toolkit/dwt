@@ -1714,12 +1714,12 @@ public override void setVisible (bool visible) {
          * before gtk_widget_show.
          */
         if (oldWidth == 0 && oldHeight == 0) {
-            int [] init_width = new int[1], init_height = new int[1];
-            OS.gtk_window_get_size(shellHandle, init_width, init_height);
+            int init_width, init_height;
+            OS.gtk_window_get_size(shellHandle, &init_width, &init_height);
             OS.gtk_window_resize(shellHandle, 1, 1);
             OS.gtk_widget_show (shellHandle);
-            OS.gtk_window_resize(shellHandle, init_width[0], init_height[0]);
-            resizeBounds (init_width[0], init_height[0], false);
+            OS.gtk_window_resize(shellHandle, init_width, init_height);
+            resizeBounds (init_width, init_height, false);
         } else {
             OS.gtk_widget_show (shellHandle);
         }
