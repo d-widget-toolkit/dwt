@@ -1224,9 +1224,9 @@ override int gtk_commit (GtkIMContext* imContext, char* text) {
     int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
     OS.g_signal_handlers_unblock_matched (imContext, mask, id, 0, null, null, entryHandle);
     if (newChars is chars) {
-        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, cast(int)text);
+        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, text);
     } else {
-        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, cast(int)toStringz(newChars));
+        OS.g_signal_emit_by_name1 (imContext, OS.commit.ptr, toStringz(newChars));
     }
     OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, null, null, udCOMMIT);
     OS.g_signal_handlers_block_matched (imContext, mask, id, 0, null, null, entryHandle);

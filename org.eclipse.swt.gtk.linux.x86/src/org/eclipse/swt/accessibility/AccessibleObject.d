@@ -1323,14 +1323,14 @@ class AccessibleObject {
     }
 
     void textCaretMoved(int index) {
-        OS.g_signal_emit_by_name1 (handle, ATK.text_caret_moved.ptr, index);
+        OS.g_signal_emit_by_name1 (handle, ATK.text_caret_moved.ptr, cast(void*) index);
     }
 
     void textChanged(int type, int startIndex, int length) {
         if (type is ACC.TEXT_DELETE) {
-            OS.g_signal_emit_by_name2 (handle, ATK.text_changed_delete.ptr, startIndex, length);
+            OS.g_signal_emit_by_name2 (handle, ATK.text_changed_delete.ptr, cast(void*) startIndex, cast(void*) length);
         } else {
-            OS.g_signal_emit_by_name2 (handle, ATK.text_changed_insert.ptr, startIndex, length);
+            OS.g_signal_emit_by_name2 (handle, ATK.text_changed_insert.ptr, cast(void*) startIndex, cast(void*) length);
         }
     }
 
@@ -1376,7 +1376,7 @@ class AccessibleObject {
                     try {
                         object = (cast(Accessible)event.children [i]).accessibleObject;
                     } catch (ClassCastException e) {
-                        /* a non-Accessible value was given so nothing to do here */ 
+                        /* a non-Accessible value was given so nothing to do here */
                     }
                     if (object !is null) {
                         object.index = childIndex++;
