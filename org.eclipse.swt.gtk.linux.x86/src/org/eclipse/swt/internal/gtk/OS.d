@@ -2199,6 +2199,7 @@ public static const int PictOpOver = 3;
     mixin ForwardGtkOsCFunc!(.gtk_widget_set_has_window);
     mixin ForwardGtkOsCFunc!(.gtk_widget_set_can_focus);
     mixin ForwardGtkOsCFunc!(.gtk_widget_set_mapped);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_visible);
     mixin ForwardGtkOsCFunc!(.gtk_widget_get_has_window);
     mixin ForwardGtkOsCFunc!(.gtk_widget_get_visible);
     mixin ForwardGtkOsCFunc!(.gtk_widget_get_mapped);
