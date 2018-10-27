@@ -2101,21 +2101,21 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 }
 
 override int fixedMapProc (GtkWidget* widget) {
-    OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_MAPPED);
+    OS.gtk_widget_set_mapped (widget, true);
     auto widgetList = OS.gtk_container_get_children (cast(GtkContainer*)widget);
     if (widgetList !is null) {
         auto widgets = widgetList;
         while (widgets !is null) {
             auto child = cast(GtkWidget*)OS.g_list_data (widgets);
-            if (OS.GTK_WIDGET_VISIBLE (child) && OS.gtk_widget_get_child_visible (child) && !OS.GTK_WIDGET_MAPPED (child)) {
+            if (OS.gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !OS.GTK_WIDGET_MAPPED (child)) {
                 OS.gtk_widget_map (child);
             }
             widgets = cast(GList*)OS.g_list_next (widgets);
         }
         OS.g_list_free (widgetList);
     }
-    if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_NO_WINDOW) is 0) {
-        OS.gdk_window_show_unraised (OS.GTK_WIDGET_WINDOW (widget));
+    if (OS.gtk_widget_get_has_window (widget)) {
+        OS.gdk_window_show_unraised (OS.gtk_widget_get_window (widget));
     }
     return 0;
 }
