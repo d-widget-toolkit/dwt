@@ -2107,7 +2107,7 @@ override int fixedMapProc (GtkWidget* widget) {
         auto widgets = widgetList;
         while (widgets !is null) {
             auto child = cast(GtkWidget*)OS.g_list_data (widgets);
-            if (OS.gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !OS.GTK_WIDGET_MAPPED (child)) {
+            if (OS.gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !OS.gtk_widget_get_mapped (child)) {
                 OS.gtk_widget_map (child);
             }
             widgets = cast(GList*)OS.g_list_next (widgets);
