@@ -9249,6 +9249,7 @@ alias extern (C) void function(aGtkWidget *, aGtkWindow *)TGTKgtk_widget_set_too
 alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_has_window; extern(D) TGTKgtk_widget_set_has_window gtk_widget_set_has_window;
 alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_can_focus; extern(D) TGTKgtk_widget_set_can_focus gtk_widget_set_can_focus;
 alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_mapped; extern(D) TGTKgtk_widget_set_mapped gtk_widget_set_mapped;
+alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_visible; extern(D) TGTKgtk_widget_set_visible gtk_widget_set_visible;
 alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_has_window; extern(D) TGTKgtk_widget_get_has_window gtk_widget_get_has_window;
 alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_visible; extern(D) TGTKgtk_widget_get_visible gtk_widget_get_visible;
 alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_mapped; extern(D) TGTKgtk_widget_get_mapped gtk_widget_get_mapped;
@@ -10106,6 +10107,7 @@ static this () {
         Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
         Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
         Symbol( "gtk_widget_set_mapped",  cast(void**)& gtk_widget_set_mapped),
+        Symbol( "gtk_widget_set_visible",  cast(void**)& gtk_widget_set_visible),
         Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
         Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
@@ -12677,6 +12679,7 @@ static this () {
         Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
         Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
         Symbol( "gtk_widget_set_mapped",  cast(void**)& gtk_widget_set_mapped),
+        Symbol( "gtk_widget_set_visible",  cast(void**)& gtk_widget_set_visible),
         Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
         Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
@@ -13125,6 +13128,7 @@ static this () {
         Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
         Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
         Symbol( "gtk_widget_set_mapped",  cast(void**)& gtk_widget_set_mapped),
+        Symbol( "gtk_widget_set_visible",  cast(void**)& gtk_widget_set_visible),
         Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
         Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
@@ -13544,6 +13548,7 @@ extern (C) void gtk_widget_set_tooltip_window(GtkWidget *, GtkWindow *);
 extern (C) void gtk_widget_set_has_window(GtkWidget *, gint);
 extern (C) void gtk_widget_set_can_focus(GtkWidget *, gint);
 extern (C) void gtk_widget_set_mapped(GtkWidget *, gint);
+extern (C) void gtk_widget_set_visible(GtkWidget *, gint);
 extern (C) gint gtk_widget_get_has_window(GtkWidget *);
 extern (C) gint gtk_widget_get_visible(GtkWidget *);
 extern (C) gint gtk_widget_get_mapped(GtkWidget *);
@@ -16116,6 +16121,7 @@ extern (C) void gtk_widget_set_tooltip_window(aGtkWidget *, aGtkWindow *);
 extern (C) void gtk_widget_set_has_window(aGtkWidget *, gint);
 extern (C) void gtk_widget_set_can_focus(aGtkWidget *, gint);
 extern (C) void gtk_widget_set_mapped(aGtkWidget *, gint);
+extern (C) void gtk_widget_set_visible(aGtkWidget *, gint);
 extern (C) gint gtk_widget_get_has_window(aGtkWidget *);
 extern (C) gint gtk_widget_get_visible(aGtkWidget *);
 extern (C) gint gtk_widget_get_mapped(aGtkWidget *);
@@ -16564,6 +16570,7 @@ extern (C) void gtk_widget_set_tooltip_window(GtkWidget *, GtkWindow *);
 extern (C) void gtk_widget_set_has_window(GtkWidget *, gint);
 extern (C) void gtk_widget_set_can_focus(GtkWidget *, gint);
 extern (C) void gtk_widget_set_mapped(GtkWidget *, gint);
+extern (C) void gtk_widget_set_visible(GtkWidget *, gint);
 extern (C) gint gtk_widget_get_has_window(GtkWidget *);
 extern (C) gint gtk_widget_get_visible(GtkWidget *);
 extern (C) gint gtk_widget_get_mapped(GtkWidget *);

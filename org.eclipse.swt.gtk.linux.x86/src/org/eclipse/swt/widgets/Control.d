@@ -755,11 +755,11 @@ void moveHandle (int x, int y) {
     * NOTE: Because every widget in SWT has an X window, the new and
     * old bounds of the child are correctly redrawn.
     */
-    int flags = OS.GTK_WIDGET_FLAGS (parentHandle);
-    OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_VISIBLE);
+    auto wasVislbe = OS.gtk_widget_get_visible(parentHandle);
+    OS.gtk_widget_set_visible(parentHandle, false);
     OS.gtk_fixed_move (cast(GtkFixed*)parentHandle, topHandle_, x, y);
-    if ((flags & OS.GTK_VISIBLE) !is 0) {
-        OS.GTK_WIDGET_SET_FLAGS (parentHandle, OS.GTK_VISIBLE);
+    if (wasVislbe) {
+        OS.gtk_widget_set_visible(parentHandle, true);
     }
 }
 
