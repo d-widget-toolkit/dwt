@@ -1686,7 +1686,7 @@ public override void setVisible (bool visible) {
         updateModal ();
     }
     showWithParent = visible;
-    if ((OS.GTK_WIDGET_MAPPED (shellHandle) is visible)) return;
+    if (OS.gtk_widget_get_mapped (shellHandle) == visible) return;
     if (visible) {
         sendEvent (SWT.Show);
         if (isDisposed ()) return;
