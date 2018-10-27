@@ -4507,8 +4507,8 @@ public void update () {
 
 void update (bool all, bool flush) {
 //  checkWidget();
-    if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
-    if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) is 0) return;
+    if (!OS.gtk_widget_get_visible (topHandle ())) return;
+    if (OS.gtk_widget_get_realized (handle)) return;
     auto window = paintWindow ();
     if (flush) display.flushExposes (window, all);
     OS.gdk_window_process_updates (window, all);

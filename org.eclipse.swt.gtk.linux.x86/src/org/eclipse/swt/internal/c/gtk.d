@@ -9252,6 +9252,7 @@ alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_mapped; ext
 alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_has_window; extern(D) TGTKgtk_widget_get_has_window gtk_widget_get_has_window;
 alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_visible; extern(D) TGTKgtk_widget_get_visible gtk_widget_get_visible;
 alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_mapped; extern(D) TGTKgtk_widget_get_mapped gtk_widget_get_mapped;
+alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_realized; extern(D) TGTKgtk_widget_get_realized gtk_widget_get_realized;
 alias extern (C) void function(aGtkWidget *, aGtkWidget *)TGTKgtk_widget_remove_mnemonic_label; extern(D) TGTKgtk_widget_remove_mnemonic_label gtk_widget_remove_mnemonic_label;
 alias extern (C) void function(aGtkWidget *, aGtkWidget *)TGTKgtk_widget_add_mnemonic_label; extern(D) TGTKgtk_widget_add_mnemonic_label gtk_widget_add_mnemonic_label;
 alias extern (C) _GList * function(aGtkWidget *)TGTKgtk_widget_list_mnemonic_labels; extern(D) TGTKgtk_widget_list_mnemonic_labels gtk_widget_list_mnemonic_labels;
@@ -10108,6 +10109,7 @@ static this () {
         Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
         Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
+        Symbol( "gtk_widget_get_realized",  cast(void**)& gtk_widget_get_realized),
         Symbol( "gtk_scrolled_window_get_hscrollbar",  cast(void**)& gtk_scrolled_window_get_hscrollbar),
         Symbol( "gtk_scrolled_window_get_vadjustment",  cast(void**)& gtk_scrolled_window_get_vadjustment),
         Symbol( "gtk_scrolled_window_get_hadjustment",  cast(void**)& gtk_scrolled_window_get_hadjustment),
@@ -12678,6 +12680,7 @@ static this () {
         Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
         Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
+        Symbol( "gtk_widget_get_realized",  cast(void**)& gtk_widget_get_realized),
         Symbol( "gtk_widget_remove_mnemonic_label",  cast(void**)& gtk_widget_remove_mnemonic_label),
         Symbol( "gtk_widget_add_mnemonic_label",  cast(void**)& gtk_widget_add_mnemonic_label),
         Symbol( "gtk_widget_list_mnemonic_labels",  cast(void**)& gtk_widget_list_mnemonic_labels),
@@ -13125,6 +13128,7 @@ static this () {
         Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
         Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
+        Symbol( "gtk_widget_get_realized",  cast(void**)& gtk_widget_get_realized),
     ];
 }
 
@@ -13543,6 +13547,7 @@ extern (C) void gtk_widget_set_mapped(GtkWidget *, gint);
 extern (C) gint gtk_widget_get_has_window(GtkWidget *);
 extern (C) gint gtk_widget_get_visible(GtkWidget *);
 extern (C) gint gtk_widget_get_mapped(GtkWidget *);
+extern (C) gint gtk_widget_get_realized(GtkWidget *);
 extern (C) _GtkAdjustment * gtk_scrolled_window_get_vadjustment(aGtkScrolledWindow *);
 extern (C) _GtkAdjustment * gtk_scrolled_window_get_hadjustment(aGtkScrolledWindow *);
 extern (C) void gtk_scrolled_window_set_vadjustment(aGtkScrolledWindow *, aGtkAdjustment *);
@@ -16114,6 +16119,7 @@ extern (C) void gtk_widget_set_mapped(aGtkWidget *, gint);
 extern (C) gint gtk_widget_get_has_window(aGtkWidget *);
 extern (C) gint gtk_widget_get_visible(aGtkWidget *);
 extern (C) gint gtk_widget_get_mapped(aGtkWidget *);
+extern (C) gint gtk_widget_get_realized(aGtkWidget *);
 extern (C) void gtk_widget_remove_mnemonic_label(aGtkWidget *, aGtkWidget *);
 extern (C) void gtk_widget_add_mnemonic_label(aGtkWidget *, aGtkWidget *);
 extern (C) _GList * gtk_widget_list_mnemonic_labels(aGtkWidget *);
@@ -16561,5 +16567,6 @@ extern (C) void gtk_widget_set_mapped(GtkWidget *, gint);
 extern (C) gint gtk_widget_get_has_window(GtkWidget *);
 extern (C) gint gtk_widget_get_visible(GtkWidget *);
 extern (C) gint gtk_widget_get_mapped(GtkWidget *);
+extern (C) gint gtk_widget_get_realized(GtkWidget *);
 } // version(DYNLINK)
 

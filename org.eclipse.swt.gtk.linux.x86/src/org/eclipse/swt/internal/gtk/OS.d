@@ -2202,6 +2202,7 @@ public static const int PictOpOver = 3;
     mixin ForwardGtkOsCFunc!(.gtk_widget_get_has_window);
     mixin ForwardGtkOsCFunc!(.gtk_widget_get_visible);
     mixin ForwardGtkOsCFunc!(.gtk_widget_get_mapped);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_realized);
     mixin ForwardGtkOsCFunc!(.pango_attr_background_new );
     mixin ForwardGtkOsCFunc!(.pango_attr_font_desc_new);
     mixin ForwardGtkOsCFunc!(.pango_attr_foreground_new );
