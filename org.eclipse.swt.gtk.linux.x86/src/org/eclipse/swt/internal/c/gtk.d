@@ -37,7 +37,7 @@ version(DYNLINK){
 }
 
 void loadLib(){
-    version(DYNLINK){        
+    version(DYNLINK){
         SharedLib.loadLibSymbols(symbols, "libgtk-x11-2.0.so");
     }
 }
@@ -9246,6 +9246,9 @@ alias extern (C) void function(aGtkWidget *, in char *)TGTKgtk_widget_set_toolti
 alias extern (C) void function(aGtkWidget *)TGTKgtk_widget_trigger_tooltip_query; extern(D) TGTKgtk_widget_trigger_tooltip_query gtk_widget_trigger_tooltip_query;
 alias extern (C) _GtkWindow * function(aGtkWidget *)TGTKgtk_widget_get_tooltip_window; extern(D) TGTKgtk_widget_get_tooltip_window gtk_widget_get_tooltip_window;
 alias extern (C) void function(aGtkWidget *, aGtkWindow *)TGTKgtk_widget_set_tooltip_window; extern(D) TGTKgtk_widget_set_tooltip_window gtk_widget_set_tooltip_window;
+alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_has_window; extern(D) TGTKgtk_widget_set_has_window gtk_widget_set_has_window;
+alias extern (C) void function(aGtkWidget *, gint)TGTKgtk_widget_set_can_focus; extern(D) TGTKgtk_widget_set_can_focus gtk_widget_set_can_focus;
+alias extern (C) gint function(aGtkWidget *)TGTKgtk_widget_get_has_window; extern(D) TGTKgtk_widget_get_has_window gtk_widget_get_has_window;
 alias extern (C) void function(aGtkWidget *, aGtkWidget *)TGTKgtk_widget_remove_mnemonic_label; extern(D) TGTKgtk_widget_remove_mnemonic_label gtk_widget_remove_mnemonic_label;
 alias extern (C) void function(aGtkWidget *, aGtkWidget *)TGTKgtk_widget_add_mnemonic_label; extern(D) TGTKgtk_widget_add_mnemonic_label gtk_widget_add_mnemonic_label;
 alias extern (C) _GList * function(aGtkWidget *)TGTKgtk_widget_list_mnemonic_labels; extern(D) TGTKgtk_widget_list_mnemonic_labels gtk_widget_list_mnemonic_labels;
@@ -10096,6 +10099,9 @@ static this () {
         Symbol( "gtk_scrolled_window_set_policy",  cast(void**)& gtk_scrolled_window_set_policy),
         Symbol( "gtk_scrolled_window_get_vscrollbar",  cast(void**)& gtk_scrolled_window_get_vscrollbar),
         Symbol( "gtk_widget_set_tooltip_window",  cast(void**)& gtk_widget_set_tooltip_window),
+        Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
+        Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
+        Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_scrolled_window_get_hscrollbar",  cast(void**)& gtk_scrolled_window_get_hscrollbar),
         Symbol( "gtk_scrolled_window_get_vadjustment",  cast(void**)& gtk_scrolled_window_get_vadjustment),
         Symbol( "gtk_scrolled_window_get_hadjustment",  cast(void**)& gtk_scrolled_window_get_hadjustment),
@@ -12660,6 +12666,9 @@ static this () {
         Symbol( "gtk_widget_trigger_tooltip_query",  cast(void**)& gtk_widget_trigger_tooltip_query),
         Symbol( "gtk_widget_get_tooltip_window",  cast(void**)& gtk_widget_get_tooltip_window),
         Symbol( "gtk_widget_set_tooltip_window",  cast(void**)& gtk_widget_set_tooltip_window),
+        Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
+        Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
+        Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
         Symbol( "gtk_widget_remove_mnemonic_label",  cast(void**)& gtk_widget_remove_mnemonic_label),
         Symbol( "gtk_widget_add_mnemonic_label",  cast(void**)& gtk_widget_add_mnemonic_label),
         Symbol( "gtk_widget_list_mnemonic_labels",  cast(void**)& gtk_widget_list_mnemonic_labels),
@@ -13100,7 +13109,10 @@ static this () {
         Symbol( "gtk_widget_set_allocation",  cast(void**)& gtk_widget_set_allocation),
         Symbol( "gtk_scrolled_window_get_hscrollbar",  cast(void**)& gtk_scrolled_window_get_hscrollbar),
         Symbol( "gtk_scrolled_window_get_vscrollbar",  cast(void**)& gtk_scrolled_window_get_vscrollbar),
-        Symbol( "gtk_widget_set_tooltip_window",  cast(void**)& gtk_widget_set_tooltip_window)
+        Symbol( "gtk_widget_set_tooltip_window",  cast(void**)& gtk_widget_set_tooltip_window),
+        Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
+        Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
+        Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
     ];
 }
 
@@ -13513,6 +13525,9 @@ extern (C) void gtk_scrolled_window_set_policy(aGtkScrolledWindow *, gint, gint)
 extern (C) _GtkWidget * gtk_scrolled_window_get_vscrollbar(aGtkScrolledWindow *);
 extern (C) _GtkWidget * gtk_scrolled_window_get_hscrollbar(aGtkScrolledWindow *);
 extern (C) void gtk_widget_set_tooltip_window(GtkWidget *, GtkWindow *);
+extern (C) void gtk_widget_set_has_window(GtkWidget *, gint);
+extern (C) void gtk_widget_set_can_focus(GtkWidget *, gint);
+extern (C) gint gtk_widget_get_has_window(GtkWidget *);
 extern (C) _GtkAdjustment * gtk_scrolled_window_get_vadjustment(aGtkScrolledWindow *);
 extern (C) _GtkAdjustment * gtk_scrolled_window_get_hadjustment(aGtkScrolledWindow *);
 extern (C) void gtk_scrolled_window_set_vadjustment(aGtkScrolledWindow *, aGtkAdjustment *);
@@ -16078,6 +16093,9 @@ extern (C) void gtk_widget_set_tooltip_text(aGtkWidget *, char *);
 extern (C) void gtk_widget_trigger_tooltip_query(aGtkWidget *);
 extern (C) _GtkWindow * gtk_widget_get_tooltip_window(aGtkWidget *);
 extern (C) void gtk_widget_set_tooltip_window(aGtkWidget *, aGtkWindow *);
+extern (C) void gtk_widget_set_has_window(aGtkWidget *, gint);
+extern (C) void gtk_widget_set_can_focus(aGtkWidget *, gint);
+extern (C) gint gtk_widget_get_has_window(aGtkWidget *);
 extern (C) void gtk_widget_remove_mnemonic_label(aGtkWidget *, aGtkWidget *);
 extern (C) void gtk_widget_add_mnemonic_label(aGtkWidget *, aGtkWidget *);
 extern (C) _GList * gtk_widget_list_mnemonic_labels(aGtkWidget *);
@@ -16519,5 +16537,8 @@ extern (C) void gtk_widget_set_allocation(GtkWidget *, const GtkAllocation *);
 extern (C) GtkWidget * gtk_scrolled_window_get_hscrollbar(GtkScrolledWindow *);
 extern (C) GtkWidget * gtk_scrolled_window_get_vscrollbar(GtkScrolledWindow *);
 extern (C) void gtk_widget_set_tooltip_window(GtkWidget *, GtkWindow *);
+extern (C) void gtk_widget_set_has_window(GtkWidget *, gint);
+extern (C) void gtk_widget_set_can_focus(GtkWidget *, gint);
+extern (C) gint gtk_widget_get_has_window(GtkWidget *);
 } // version(DYNLINK)
 

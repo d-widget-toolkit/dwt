@@ -321,7 +321,7 @@ GtkWidget* paintHandle () {
     auto topHandle_ = topHandle ();
     auto paintHandle = handle;
     while (paintHandle !is topHandle_) {
-        if ((OS.GTK_WIDGET_FLAGS (paintHandle) & OS.GTK_NO_WINDOW) is 0) break;
+        if (OS.gtk_widget_get_has_window (paintHandle)) break;
         paintHandle = OS.gtk_widget_get_parent (paintHandle);
     }
     return paintHandle;
@@ -2935,6 +2935,28 @@ override int gtk_visibility_notify_event (GtkWidget* widget, GdkEventVisibility*
         }
     }
     return 0;
+}
+
+// This method is available in later versions of SWT
+void gtk_widget_set_has_window (GtkWidget* fixedHandle, bool value) {
+    if (OS.GTK_VERSION >= OS.buildVERSION (2, 18, 0)) {
+        OS.gtk_widget_set_has_window (fixedHandle, value);
+    } else {
+        OS.gtk_fixed_set_has_window (fixedHandle, value);
+    }
+}
+
+// This method is available in later versions of SWT
+void gtk_widget_set_can_focus (GtkWidget* widget, bool can_focus) {
+    if (OS.GTK_VERSION >= OS.buildVERSION (2, 18, 0)) {
+        OS.gtk_widget_set_can_focus (widget, can_focus);
+    } else {
+        if (can_focus) {
+            OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_CAN_FOCUS);
+        } else {
+            OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_CAN_FOCUS);
+        }
+    }
 }
 
 /*no override*/ void gtk_widget_size_request (GtkWidget* widget, GtkRequisition* requisition) {

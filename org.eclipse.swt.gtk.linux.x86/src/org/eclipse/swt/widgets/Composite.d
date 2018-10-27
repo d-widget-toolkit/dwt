@@ -300,8 +300,8 @@ void createHandle (int index, bool fixed, bool scrolled) {
     }
     handle = cast(GtkWidget*)OS.g_object_new (display.gtk_fixed_get_type (), null);
     if (handle is null) SWT.error (SWT.ERROR_NO_HANDLES);
-    OS.gtk_fixed_set_has_window (cast(GtkFixed*)handle, true);
-    OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
+    gtk_widget_set_has_window(handle, true);
+    gtk_widget_set_can_focus(handle, true);
     if ((style & SWT.EMBEDDED) is 0) {
         if ((state & CANVAS) !is 0) {
             /* Prevent an input method context from being created for the Browser widget */
