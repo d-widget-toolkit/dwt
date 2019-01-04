@@ -77,7 +77,7 @@ version(Tango){
     import tango.util.Convert;
 } else {
     import std.stdio;
-    import std.datetime;
+    import std.datetime.stopwatch;
     import std.conv;
 }
 
@@ -109,7 +109,7 @@ void main() {
                 auto t = elapsed.stop() * 1_000;
             } else { // Phobos
                 elapsed.stop();
-                auto t = elapsed.peek.msecs;
+                auto t = elapsed.peek().total!"msecs"();
             }
             label.setText ("Items: " ~ to!(String)(COUNT) ~
                            ", Time: " ~ to!(String)(t) ~ " (msec)");
