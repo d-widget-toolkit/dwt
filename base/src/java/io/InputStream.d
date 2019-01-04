@@ -15,10 +15,10 @@ public abstract class InputStream {
     public abstract int read();
 
     public int read( byte[] b ){
-        foreach( uint idx, ref byte val; b ){
+        foreach( size_t idx, ref byte val; b ){
             int c = read();
             if( c == -1 ){
-                return ( idx == 0 ) ? -1 : idx;
+                return ( idx == 0 ) ? -1 : cast(int)idx;
             }
             b[ idx] = cast(byte)( c & 0xFF );
         }

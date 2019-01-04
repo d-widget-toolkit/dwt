@@ -193,7 +193,7 @@ void printTypeInfo(OleAutomation oOleAutoObj, FormatOutput!(char) oOut)
 }
 
 String getTypeName(int iType) {
-    int iBase = iType & ~OLE.VT_BYREF;
+    int iBase = iType & ~cast(int)(OLE.VT_BYREF);
     String sDsc = null;
     switch (iBase) {
         case OLE.VT_BOOL :          sDsc = "boolean"; break;
