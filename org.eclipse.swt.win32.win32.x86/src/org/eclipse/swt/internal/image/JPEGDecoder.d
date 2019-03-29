@@ -6048,7 +6048,11 @@ static void jpeg_make_d_derived_tbl (jpeg_decompress_struct cinfo, bool isDC, in
 
     p = 0;
     for (l = 1; l <= 16; l++) {
-        if ((htbl.bits[l] & 0xFF) !is 0) {
+        // BUG: This variable is needed to avoid the following problem:
+        //      https://issues.dlang.org/show_bug.cgi?id=19758
+        auto htbl_bits_l = htbl.bits[l];
+        //if ((htbl.bits[l] & 0xFF) !is 0) {
+        if ((htbl_bits_l & 0xFF) !is 0) {
             /* valoffset[l] = huffval[] index of 1st symbol of code length l,
              * minus the minimum code of length l
              */
