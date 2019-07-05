@@ -465,7 +465,7 @@ protected void addObjectReferences() {
         objIOleLink.Release();
     }
 }
-protected int AddRef() {
+package int AddRef() {
     refCount++;
     return refCount;
 }
