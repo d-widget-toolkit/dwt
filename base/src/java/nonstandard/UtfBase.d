@@ -33,29 +33,29 @@ static if(UTFTypeCheck) {
             return t;
         }
         
-        void opAddAssign(in UTF16shift di) {
+        void opOpAssign(string op)(in UTF16shift di) if (op == "+") {
             val += di;
         }
         
-        void opSubAssign(in UTF16shift di) {
+        void opOpAssign(string op)(in UTF16shift di) if (op == "-") {
             val -= di;
         }
         
 mixin(constFuncs!("
-        UTF16index opAdd(in UTF16shift di) {
+        UTF16index opBinary(string op)(in UTF16shift di) if (op == \"+\") {
             return UTF16index(val + di);
         }
         
-        UTF16index opSub(in UTF16shift di) {
+        UTF16index opBinary(string op)(in UTF16shift di) if (op == \"-\") {
             return UTF16index(val - di);
         }
         
         version(Windows) {
-            UTF16index opAdd(in ptrdiff_t di) {
+            UTF16index opBinary(string op)(in ptrdiff_t di) if (op == \"+\") {
                 return UTF16index(val + di);
             }
             
-            UTF16index opSub(in ptrdiff_t di) {
+            UTF16index opBinary(string op)(in ptrdiff_t di) if (op == \"-\") {
                 return UTF16index(val - di);
             }
         }
@@ -80,24 +80,24 @@ mixin(constFuncs!("
             return t;
         }
         
-        void opAddAssign(in UTF8shift di) {
+        void opOpAssign(string op)(in UTF8shift di) if (op == "+") {
             val += di.val;
         }
         
-        void opSubAssign(in UTF8shift di) {
+        void opOpAssign(string op)(in UTF8shift di) if (op == "-") {
             val -= di.val;
         }
         
 mixin(constFuncs!("
-        UTF8index opAdd(in UTF8shift di) {
+        UTF8index opBinary(string op)(in UTF8shift di) if (op == \"+\") {
             return UTF8index(val + di.val);
         }
         
-        UTF8index opSub(in UTF8shift di) {
+        UTF8index opBinary(string op)(in UTF8shift di) if (op == \"-\") {
             return UTF8index(val - di.val);
         }
         
-        UTF8shift opSub(in UTF8index di) {
+        UTF8shift opBinary(string op)(in UTF8index di) if (op == \"-\") {
             return UTF8shift(val - di.val);
         }
         
@@ -131,20 +131,20 @@ mixin(constFuncs!("
             return t;
         }
         
-        void opAddAssign(in UTF8shift di) {
+        void opOpAssign(string op)(in UTF8shift di) if (op == "+") {
             val += di.val;
         }
         
-        void opSubAssign(in UTF8shift di) {
+        void opOpAssign(string op)(in UTF8shift di) if (op == "-") {
             val -= di.val;
         }
         
 mixin(constFuncs!("
-        UTF8shift opAdd(in UTF8shift di) {
+        UTF8shift opBinary(string op)(in UTF8shift di) if (op == \"+\") {
             return UTF8shift(val + di.val);
         }
         
-        UTF8shift opSub(in UTF8shift di) {
+        UTF8shift opBinary(string op)(in UTF8shift di) if (op == \"-\") {
             return UTF8shift(val - di.val);
         }
         
