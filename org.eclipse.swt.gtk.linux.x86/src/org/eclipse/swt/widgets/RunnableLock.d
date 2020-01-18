@@ -36,10 +36,18 @@ class RunnableLock : Mutex {
     Exception throwable;
 
     Condition cond;
+    bool syncExec;
 
-this (Runnable runnable) {
+this (Runnable runnable, bool syncExec) {
     this.runnable = runnable;
     this.cond = new Condition(this);
+    this.syncExec = syncExec;
+}
+
+~this () {
+    // Release handle of Condition.
+    // If not released here, the handle will not be released until the next GC works.
+    destroy(this.cond);
 }
 
 bool done () {
