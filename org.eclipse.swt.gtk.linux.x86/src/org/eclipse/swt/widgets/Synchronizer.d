@@ -94,7 +94,7 @@ public void asyncExec (Runnable runnable) {
         display.wake ();
         return;
     }
-    addLast (new RunnableLock (runnable));
+    addLast (new RunnableLock (runnable, false));
 }
 
 int getMessageCount () {
@@ -145,6 +145,11 @@ bool runAsyncMessages (bool all) {
                 lock.notifyAll ();
             }
         }
+        if (!lock.syncExec) {
+            // Release handle of lock#cond.
+            // If not released here, the handle will not be released until the next GC works.
+            destroy(lock);
+        }
     } while (all);
     return run;
 }
@@ -172,7 +177,7 @@ public void syncExec (Runnable runnable) {
                 display.wake ();
                 return;
             }
-            lock = new RunnableLock (runnable);
+            lock = new RunnableLock (runnable, true);
             /*
              * Only remember the syncThread for syncExec.
              */
@@ -200,6 +205,9 @@ public void syncExec (Runnable runnable) {
             SWT.error (SWT.ERROR_FAILED_EXEC, lock.throwable);
         }
     }
+    // Release handle of lock#cond.
+    // If not released here, the handle will not be released until the next GC works.
+    destroy(lock);
 }
 
 }
