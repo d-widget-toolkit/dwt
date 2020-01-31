@@ -141,6 +141,13 @@ bool runAsyncMessages (bool all) {
         RunnableLock lock = removeFirst ();
         if (lock is null) return run;
         run = true;
+        scope (exit) {
+            if (!lock.syncExec) {
+                // Release handle of lock#cond.
+                // If not released here, the handle will not be released until the next GC works.
+                destroy(lock);
+            }
+        }
         synchronized (lock) {
             syncThread = lock.thread;
             try {
@@ -152,11 +159,6 @@ bool runAsyncMessages (bool all) {
                 syncThread = null;
                 lock.notifyAll ();
             }
-        }
-        if (!lock.syncExec) {
-            // Release handle of lock#cond.
-            // If not released here, the handle will not be released until the next GC works.
-            destroy(lock);
         }
     } while (all);
     return run;
@@ -197,6 +199,11 @@ public void syncExec (Runnable runnable) {
         if (runnable !is null) runnable.run ();
         return;
     }
+    scope (exit) {
+        // Release handle of lock#cond.
+        // If not released here, the handle will not be released until the next GC works.
+        destroy(lock);
+    }
     synchronized (lock) {
         bool interrupted = false;
         while (!lock.done ()) {
@@ -213,9 +220,6 @@ public void syncExec (Runnable runnable) {
             SWT.error (SWT.ERROR_FAILED_EXEC, lock.throwable);
         }
     }
-    // Release handle of lock#cond.
-    // If not released here, the handle will not be released until the next GC works.
-    destroy(lock);
 }
 
 }
