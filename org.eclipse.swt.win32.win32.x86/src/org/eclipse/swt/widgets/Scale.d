@@ -181,7 +181,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
     int border = getBorderWidth ();
     int width = border * 2, height = border * 2;
     RECT rect;
-    OS.SendMessage (handle, OS.TBM_GETTHUMBRECT, 0, &rect);
+    OS.SendMessage (handle, OS.TBM_GETTHUMBRECT, 0, cast(LPARAM)&rect);
     if ((style & SWT.HORIZONTAL) !is 0) {
         width += OS.GetSystemMetrics (OS.SM_CXHSCROLL) * 10;
         int scrollY = OS.GetSystemMetrics (OS.SM_CYHSCROLL);

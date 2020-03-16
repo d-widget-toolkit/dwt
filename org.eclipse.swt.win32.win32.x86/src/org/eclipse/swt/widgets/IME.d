@@ -573,7 +573,7 @@ LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                     offset = event.index + event.count - startOffset;
                     int trailing = event.count > 0 ? 1 : 2;
                     auto param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
-                    OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, hIMC);
+                    OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, cast(LPARAM)hIMC);
                 } else {
                     OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
                 }

@@ -185,7 +185,7 @@ void click (bool dropDown) {
     if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
     auto index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
     RECT rect;
-    OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, &rect);
+    OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, cast(LPARAM)&rect);
     auto hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
 
     /*
@@ -228,7 +228,7 @@ public Rectangle getBounds () {
     auto hwnd = parent.handle;
     auto index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
     RECT rect;
-    OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, &rect);
+    OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, cast(LPARAM)&rect);
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
     return new Rectangle (rect.left, rect.top, width, height);
@@ -383,7 +383,7 @@ public int getWidth () {
     auto hwnd = parent.handle;
     auto index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
     RECT rect;
-    OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, &rect);
+    OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, cast(LPARAM)&rect);
     return rect.right - rect.left;
 }
 
@@ -428,7 +428,7 @@ void releaseImages () {
     info.cbSize = TBBUTTONINFO.sizeof;
     info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
     auto hwnd = parent.handle;
-    OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, &info);
+    OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, cast(LPARAM)&info);
     /*
     * Feature in Windows.  For some reason, a tool item that has
     * the style BTNS_SEP does not return I_IMAGENONE when queried
@@ -547,7 +547,7 @@ public void setControl (Control control) {
         TBBUTTONINFO info;
         info.cbSize = TBBUTTONINFO.sizeof;
         info.dwMask = OS.TBIF_STYLE | OS.TBIF_STATE;
-        OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, &info);
+        OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, cast(LPARAM)&info);
         if (control is null) {
             if ((info.fsStyle & OS.BTNS_SEP) is 0) {
                 changed = true;
@@ -570,7 +570,7 @@ public void setControl (Control control) {
             }
         }
         if (changed) {
-            OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, &info);
+            OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, cast(LPARAM)&info);
             /*
             * Bug in Windows.  When TB_SETBUTTONINFO changes the
             * style of a tool item from BTNS_SEP to BTNS_BUTTON
@@ -790,7 +790,7 @@ override public void setText (String string) {
         OS.MoveMemory (pszText, buffer.ptr, byteCount);
         info.pszText = pszText;
     }
-    OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, &info);
+    OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, cast(LPARAM)&info);
     if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
 
     /*
@@ -843,7 +843,7 @@ public void setWidth (int width) {
     info.cbSize = TBBUTTONINFO.sizeof;
     info.dwMask = OS.TBIF_SIZE;
     info.cx = cast(short) width;
-    OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, &info);
+    OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, cast(LPARAM)&info);
     parent.layoutItems ();
 }
 
@@ -853,7 +853,7 @@ void updateImages (bool enabled) {
     TBBUTTONINFO info;
     info.cbSize = TBBUTTONINFO.sizeof;
     info.dwMask = OS.TBIF_IMAGE;
-    OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, &info);
+    OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, cast(LPARAM)&info);
     if (info.iImage is OS.I_IMAGENONE && image is null) return;
     ImageList imageList = parent.getImageList ();
     ImageList hotImageList = parent.getHotImageList ();
@@ -938,7 +938,7 @@ void updateImages (bool enabled) {
     */
     info.dwMask |= OS.TBIF_SIZE;
     info.cx = 0;
-    OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, &info);
+    OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, cast(LPARAM)&info);
 
     parent.layoutItems ();
 }

@@ -327,7 +327,7 @@ public int getWidth () {
     if (hwndHeader is null) return 0;
     HDITEM hdItem;
     hdItem.mask = OS.HDI_WIDTH;
-    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
     return hdItem.cxy;
 }
 
@@ -350,7 +350,7 @@ public void pack () {
     auto hwnd = parent.handle;
     auto hwndHeader = parent.hwndHeader;
     RECT headerRect;
-    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
     auto hDC = OS.GetDC (hwnd);
     HFONT oldFont, newFont = cast(HFONT) OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
     if (newFont !is null) oldFont = OS.SelectObject (hDC, newFont);
@@ -358,7 +358,7 @@ public void pack () {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
     tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
     while (tvItem.hItem !is null) {
-        OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         TreeItem item = tvItem.lParam !is -1 ? parent.items [tvItem.lParam] : null;
         if (item !is null) {
             int itemRight = 0;
@@ -375,7 +375,7 @@ public void pack () {
             }
             columnWidth = Math.max (columnWidth, itemRight - headerRect.left);
         }
-        tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, tvItem.hItem);
+        tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)tvItem.hItem);
     }
     RECT rect;
     int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
@@ -500,18 +500,18 @@ public void setAlignment (int alignment) {
     if (hwndHeader is null) return;
     HDITEM hdItem;
     hdItem.mask = OS.HDI_FORMAT;
-    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
     hdItem.fmt &= ~OS.HDF_JUSTIFYMASK;
     if ((style & SWT.LEFT) is SWT.LEFT) hdItem.fmt |= OS.HDF_LEFT;
     if ((style & SWT.CENTER) is SWT.CENTER) hdItem.fmt |= OS.HDF_CENTER;
     if ((style & SWT.RIGHT) is SWT.RIGHT) hdItem.fmt |= OS.HDF_RIGHT;
-    OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
     if (index !is 0) {
         auto hwnd = parent.handle;
         parent.forceResize ();
         RECT rect, headerRect;
         OS.GetClientRect (hwnd, &rect);
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
         rect.left = headerRect.left;
         rect.right = headerRect.right;
         OS.InvalidateRect (hwnd, &rect, true);
@@ -536,7 +536,7 @@ void setImage (Image image, bool sort, bool right) {
     if (hwndHeader is null) return;
     HDITEM hdItem;
     hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
-    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
     hdItem.fmt &= ~OS.HDF_BITMAP_ON_RIGHT;
     if (image !is null) {
         if (sort) {
@@ -555,7 +555,7 @@ void setImage (Image image, bool sort, bool right) {
         hdItem.mask &= ~(OS.HDI_IMAGE | OS.HDI_BITMAP);
         hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP);
     }
-    OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
 }
 
 /**
@@ -609,7 +609,7 @@ void setSortDirection (int direction) {
             if (index is -1) return;
             HDITEM hdItem;
             hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
             switch (direction) {
                 case SWT.UP:
                     hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
@@ -633,13 +633,13 @@ void setSortDirection (int direction) {
                     break;
                 default:
             }
-            OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
             if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
                 auto hwnd = parent.handle;
                 parent.forceResize ();
                 RECT rect, headerRect;
                 OS.GetClientRect (hwnd, &rect);
-                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
                 rect.left = headerRect.left;
                 rect.right = headerRect.right;
                 OS.InvalidateRect (hwnd, &rect, true);
@@ -685,7 +685,7 @@ override public void setText (String string) {
     HDITEM hdItem;
     hdItem.mask = OS.HDI_TEXT;
     hdItem.pszText = pszText;
-    auto result = OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+    auto result = OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
     if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
     if (result is 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 }
@@ -733,9 +733,9 @@ public void setWidth (int width) {
     HDITEM hdItem;
     hdItem.mask = OS.HDI_WIDTH;
     hdItem.cxy = width;
-    OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
     RECT headerRect;
-    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
     parent.forceResize ();
     auto hwnd = parent.handle;
     RECT rect;
@@ -750,7 +750,7 @@ void updateToolTip (int index) {
     if (hwndHeaderToolTip !is null) {
         auto hwndHeader = parent.hwndHeader;
         RECT rect;
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &rect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&rect) !is 0) {
             TOOLINFO lpti;
             lpti.cbSize = TOOLINFO.sizeof;
             lpti.hwnd = hwndHeader;
@@ -759,7 +759,7 @@ void updateToolTip (int index) {
             lpti.rect.top = rect.top;
             lpti.rect.right = rect.right;
             lpti.rect.bottom = rect.bottom;
-            OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, &lpti);
+            OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, cast(LPARAM)&lpti);
         }
     }
 }

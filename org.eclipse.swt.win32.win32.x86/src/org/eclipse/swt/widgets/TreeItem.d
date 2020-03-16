@@ -236,7 +236,7 @@ static HANDLE findPrevious (TreeItem parentItem, int index) {
     Tree parent = parentItem.parent;
     auto hwnd = parent.handle;
     auto hParent = parentItem.handle;
-    HANDLE hFirstItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+    HANDLE hFirstItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hParent);
     HANDLE hItem = parent.findItem (hFirstItem, index - 1);
     if (hItem is null) SWT.error (SWT.ERROR_INVALID_RANGE);
     return hItem;
@@ -258,7 +258,7 @@ void clear () {
         tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
         tvItem.state = 1 << 12;
         tvItem.hItem = cast(HTREEITEM)handle;
-        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     }
     background = foreground = -1;
     font = null;
@@ -293,7 +293,7 @@ void clear () {
 public void clear (int index, bool all) {
     checkWidget ();
     auto hwnd = parent.handle;
-    HANDLE hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    HANDLE hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     if (hItem is null) error (SWT.ERROR_INVALID_RANGE);
     hItem = parent.findItem (hItem, index);
     if (hItem is null) error (SWT.ERROR_INVALID_RANGE);
@@ -301,7 +301,7 @@ public void clear (int index, bool all) {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
     parent.clear (hItem, &tvItem);
     if (all) {
-        hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
         parent.clearAll (hItem, &tvItem, all);
     }
 }
@@ -328,7 +328,7 @@ public void clear (int index, bool all) {
 public void clearAll (bool all) {
     checkWidget ();
     auto hwnd = parent.handle;
-    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     if (hItem is null) return;
     TVITEM tvItem;
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -446,7 +446,7 @@ RECT* getBounds (int index, bool getText, bool getImage, bool fullText, bool ful
         tvItem.hItem = cast(HTREEITEM)handle;
         tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
         parent.ignoreCustomDraw = true;
-        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
         parent.ignoreCustomDraw = false;
     }
     bool firstColumn = index is 0;
@@ -475,7 +475,7 @@ RECT* getBounds (int index, bool getText, bool getImage, bool fullText, bool ful
             if (hwndHeader !is null) {
                 RECT* headerRect = new RECT();
                 if (columnCount !is 0) {
-                    if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) is 0) {
+                    if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)headerRect) is 0) {
                         return new RECT();
                     }
                 } else {
@@ -492,7 +492,7 @@ RECT* getBounds (int index, bool getText, bool getImage, bool fullText, bool ful
     } else {
         if (!(0 <= index && index < columnCount)) return new RECT();
         RECT* headerRect = new RECT();
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)headerRect) is 0) {
             return new RECT();
         }
         if (!OS.TreeView_GetItemRect (hwnd, cast(HTREEITEM)handle, rect, false)) {
@@ -580,7 +580,7 @@ public bool getChecked () {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
     tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
     tvItem.hItem = cast(HTREEITEM)handle;
-    auto result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+    auto result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
     return (result !is 0) && (((tvItem.state >> 12) & 1) is 0);
 }
 
@@ -613,7 +613,7 @@ public bool getExpanded () {
         * with TVIS_EXPANDED, the entire state is returned.  The fix is
         * to explicitly check for the TVIS_EXPANDED bit.
         */
-        state = OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
+        state = OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, cast(WPARAM)handle, OS.TVIS_EXPANDED);
     }
     return (state & OS.TVIS_EXPANDED) !is 0;
 }
@@ -724,7 +724,7 @@ public bool getGrayed () {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
     tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
     tvItem.hItem = cast(HTREEITEM)handle;
-    auto result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+    auto result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
     return (result !is 0) && ((tvItem.state >> 12) > 2);
 }
 
@@ -750,7 +750,7 @@ public TreeItem getItem (int index) {
     if (index < 0) error (SWT.ERROR_INVALID_RANGE);
     if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
     auto hwnd = parent.handle;
-    auto hFirstItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    auto hFirstItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     if (hFirstItem is null) error (SWT.ERROR_INVALID_RANGE);
     auto hItem = parent.findItem (hFirstItem, index);
     if (hItem is null) error (SWT.ERROR_INVALID_RANGE);
@@ -772,7 +772,7 @@ public int getItemCount () {
     checkWidget ();
     if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
     auto hwnd = parent.handle;
-    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     if (hItem is null) return 0;
     return parent.getItemCount (hItem);
 }
@@ -797,7 +797,7 @@ public TreeItem [] getItems () {
     checkWidget ();
     if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
     auto hwnd = parent.handle;
-    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     if (hItem is null) return null;
     return parent.getItems (hItem);
 }
@@ -885,7 +885,7 @@ public Tree getParent () {
 public TreeItem getParentItem () {
     checkWidget ();
     auto hwnd = parent.handle;
-    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, handle);
+    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)handle);
     return hItem !is null ? parent._getItem (hItem) : null;
 }
 
@@ -974,7 +974,7 @@ public int indexOf (TreeItem item) {
     if (item is null) error (SWT.ERROR_NULL_ARGUMENT);
     if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
     auto hwnd = parent.handle;
-    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     return hItem is null ? -1 : parent.findIndex (hItem, item.handle);
 }
 
@@ -1049,9 +1049,9 @@ public void removeAll () {
     auto hwnd = parent.handle;
     TVITEM tvItem;
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-    tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     while (tvItem.hItem !is null) {
-        OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         TreeItem item = tvItem.lParam !is -1 ? parent.items [tvItem.lParam] : null;
         if (item !is null && !item.isDisposed ()) {
             item.dispose ();
@@ -1059,7 +1059,7 @@ public void removeAll () {
             parent.releaseItem (tvItem.hItem, &tvItem, false);
             parent.destroyItem (null, tvItem.hItem);
         }
-        tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+        tvItem.hItem = cast(HTREEITEM) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     }
 }
 
@@ -1159,7 +1159,7 @@ public void setChecked (bool checked) {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
     tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
     tvItem.hItem = cast(HTREEITEM)handle;
-    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
     int state = tvItem.state >> 12;
     if (checked) {
         if ((state & 0x1) !is 0) state++;
@@ -1170,7 +1170,7 @@ public void setChecked (bool checked) {
     if (tvItem.state is state) return;
     if ((parent.style & SWT.VIRTUAL) !is 0) cached = true;
     tvItem.state = state;
-    OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+    OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     /*
     * Bug in Windows.  When TVM_SETITEM is used to set
     * the state image of an item inside TVN_GETDISPINFO,
@@ -1203,7 +1203,7 @@ public void setExpanded (bool expanded) {
 
     /* Do nothing when the item is a leaf or already expanded */
     auto hwnd = parent.handle;
-    if (OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle) is 0) {
+    if (OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle) is 0) {
         return;
     }
     .LRESULT state = 0;
@@ -1220,7 +1220,7 @@ public void setExpanded (bool expanded) {
         * with TVIS_EXPANDED, the entire state is returned.  The fix is
         * to explicitly check for the TVIS_EXPANDED bit.
         */
-        state = OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
+        state = OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, cast(WPARAM)handle, OS.TVIS_EXPANDED);
     }
     if (((state & OS.TVIS_EXPANDED) !is 0) is expanded) return;
 
@@ -1262,7 +1262,7 @@ public void setExpanded (bool expanded) {
                 if (OS.TreeView_GetItemRect (hwnd, cast(HTREEITEM)hItem, &rect, true)) {
                     rects [index++] = rect;
                 }
-                hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, &hItem);
+                hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)&hItem);
             }
             if (noAnimate || hItem !is handle) {
                 redraw = true;
@@ -1301,7 +1301,7 @@ public void setExpanded (bool expanded) {
 
     /* Expand or collapse the item */
     parent.ignoreExpand = true;
-    OS.SendMessage (hwnd, OS.TVM_EXPAND, expanded ? OS.TVE_EXPAND : OS.TVE_COLLAPSE, handle);
+    OS.SendMessage (hwnd, OS.TVM_EXPAND, expanded ? OS.TVE_EXPAND : OS.TVE_COLLAPSE, cast(LPARAM)handle);
     parent.ignoreExpand = false;
 
     /* Scroll back to the top item */
@@ -1310,13 +1310,13 @@ public void setExpanded (bool expanded) {
         if (!expanded) {
             RECT rect;
             while (hTopItem !is null && !OS.TreeView_GetItemRect (hwnd, cast(HTREEITEM)hTopItem, &rect, false)) {
-                hTopItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hTopItem);
+                hTopItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hTopItem);
                 collapsed = true;
             }
         }
         bool scrolled = true;
         if (hTopItem !is null) {
-            OS.SendMessage (hwnd, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTopItem);
+            OS.SendMessage (hwnd, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, cast(LPARAM)hTopItem);
             scrolled = hTopItem !is cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
         }
         if (!collapsed && !scrolled && oldInfo !is null ) {
@@ -1345,7 +1345,7 @@ public void setExpanded (bool expanded) {
                                 break;
                             }
                         }
-                        hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+                        hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hItem);
                         index++;
                     }
                     fixScroll = index is count && hItem is hBottomItem;
@@ -1440,7 +1440,7 @@ public void setFont (Font font){
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
     tvItem.hItem = cast(HTREEITEM)handle;
     tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-    OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+    OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
 }
 
 
@@ -1495,7 +1495,7 @@ public void setFont (int index, Font font) {
         tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
         tvItem.hItem = cast(HTREEITEM)handle;
         tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     } else {
         redraw (index, true, false);
     }
@@ -1599,7 +1599,7 @@ public void setGrayed (bool grayed) {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
     tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
     tvItem.hItem = cast(HTREEITEM)handle;
-    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
     int state = tvItem.state >> 12;
     if (grayed) {
         if (state <= 2) state +=2;
@@ -1610,7 +1610,7 @@ public void setGrayed (bool grayed) {
     if (tvItem.state is state) return;
     if ((parent.style & SWT.VIRTUAL) !is 0) cached = true;
     tvItem.state = state;
-    OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+    OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     /*
     * Bug in Windows.  When TVM_SETITEM is used to set
     * the state image of an item inside TVN_GETDISPINFO,
@@ -1716,7 +1716,7 @@ public void setImage (int index, Image image) {
         */
         tvItem.mask |= OS.TVIF_TEXT;
         tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     } else {
         bool drawText = (image is null && oldImage !is null) || (image !is null && oldImage is null);
         redraw (index, drawText, true);
@@ -1744,7 +1744,7 @@ public void setItemCount (int count) {
     checkWidget ();
     count = Math.max (0, count);
     auto hwnd = parent.handle;
-    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+    auto hItem = cast(HANDLE) OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)handle);
     parent.setItemCount (count, handle, hItem);
 }
 
@@ -1811,7 +1811,7 @@ public void setText (int index, String string) {
         tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
         tvItem.hItem = cast(HTREEITEM)handle;
         tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, &tvItem);
+        OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     } else {
         redraw (index, true, false);
     }

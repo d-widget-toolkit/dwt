@@ -4617,11 +4617,11 @@ ptrdiff_t windowProc(){
     */
     if (columnVisible !is null) {
         if (msg is OS.WM_NOTIFY && hwndParent is hwnd) {
-            OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+            OS.MoveMemory (hdr, cast(LPCVOID)lParam, NMHDR.sizeof);
             switch (hdr.code) {
                 case OS.LVN_GETDISPINFOA:
                 case OS.LVN_GETDISPINFOW: {
-                    OS.MoveMemory (plvfi, lParam, OS.NMLVDISPINFO_sizeof);
+                    OS.MoveMemory (plvfi, cast(LPCVOID)lParam, OS.NMLVDISPINFO_sizeof);
                     if (0 <= plvfi.item.iSubItem && plvfi.item.iSubItem < columnCount) {
                         if (!columnVisible [plvfi.item.iSubItem]) return 0;
                     }

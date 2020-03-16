@@ -369,7 +369,7 @@ public void append (String string) {
     * handler from WM_CHAR.
     */
     ignoreCharacter = true;
-    OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+    OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
     ignoreCharacter = false;
     OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
@@ -547,7 +547,7 @@ override int defaultBackground () {
 override bool dragDetect (HWND hwnd, int x, int y, bool filter, bool [] detect, bool [] consume) {
     if (filter) {
         int start, end;
-        OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+        OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
         if (start !is end ) {
             auto lParam = OS.MAKELPARAM (x, y);
             int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
@@ -682,7 +682,7 @@ public Point getCaretLocation () {
         if (position >= OS.GetWindowTextLength (handle)) {
             int cp = getCodePage ();
             int start, end;
-            OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             OS.SendMessage (handle, OS.EM_SETSEL, position, position);
             /*
             * Feature in Windows.  When an edit control with ES_MULTILINE
@@ -696,10 +696,10 @@ public Point getCaretLocation () {
             * handler from WM_CHAR.
             */
             ignoreCharacter = ignoreModify = true;
-            OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(void*)StrToTCHARz (cp, " "));
+            OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(LPARAM)StrToTCHARz (cp, " "));
             caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
             OS.SendMessage (handle, OS.EM_SETSEL, position, position + 1);
-            OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(void*)StrToTCHARz (cp, ""));
+            OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(LPARAM)StrToTCHARz (cp, ""));
             ignoreCharacter = ignoreModify = false;
             OS.SendMessage (handle, OS.EM_SETSEL, start , start );
             OS.SendMessage (handle, OS.EM_SETSEL, start , end );
@@ -724,7 +724,7 @@ public Point getCaretLocation () {
 public int getCaretPosition () {
     checkWidget ();
     int start, end;
-    OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     /*
     * In Windows, there is no API to get the position of the caret
     * when the selection is not an i-beam.  The best that can be done
@@ -993,7 +993,7 @@ public String getMessage () {
 public Point getSelection () {
     checkWidget ();
     int start, end;
-    OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     if (!OS.IsUnicode && OS.IsDBLocale) {
         start = mbcsToWcsPos (start);
         end = mbcsToWcsPos (end);
@@ -1032,7 +1032,7 @@ public String getSelectionText () {
     int length = OS.GetWindowTextLength (handle);
     if (length is 0) return "";
     int start, end;
-    OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     if (start is end ) return "";
     TCHAR[] buffer = NewTCHARs (getCodePage (), length + 1);
     OS.GetWindowText (handle, buffer.ptr, length + 1);
@@ -1199,7 +1199,7 @@ public int getTopPixel () {
     * of Rich Edit return zero.
     */
     int [2] buffer;
-    auto code = OS.SendMessage (handle, OS.EM_GETSCROLLPOS, 0, buffer.ptr);
+    auto code = OS.SendMessage (handle, OS.EM_GETSCROLLPOS, 0, cast(LPARAM)buffer.ptr);
     if (code is 1) return buffer [1];
     return getTopIndex () * getLineHeight ();
 }
@@ -1224,7 +1224,7 @@ public void insert (String string) {
     string = Display.withCrLf (string);
     if (hooks (SWT.Verify) || filters (SWT.Verify)) {
         int start, end;
-        OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+        OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
         string = verifyText (string, start, end, null);
         if (string is null) return;
     }
@@ -1241,7 +1241,7 @@ public void insert (String string) {
     * handler from WM_CHAR.
     */
     ignoreCharacter = true;
-    OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+    OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
     ignoreCharacter = false;
 }
 
@@ -1265,7 +1265,7 @@ int mbcsToWcsPos (int mbcsPos) {
             //ENDIAN
             buffer [0] = cast(char) (mbcsSize & 0xFF);
             buffer [1] = cast(char) (mbcsSize >> 8);
-            mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer.ptr);
+            mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, cast(LPARAM)buffer.ptr);
             wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer.ptr, cast(int)/*64bit*/mbcsSize, null, 0);
         }
         if (line - 1 !is count) {
@@ -1437,7 +1437,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
     /* Verify the character */
     String oldText = "";
     int start, end; //Windows' indices: UTF-16 or Windows 8-bit character set
-    OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     switch (key) {
         case 0x08:  /* Bs */
             if (start is end ) {
@@ -1450,7 +1450,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
                     if (!OS.IsUnicode && OS.IsDBLocale) {
                         int newStart, newEnd;
                         OS.SendMessage (handle, OS.EM_SETSEL, start, end);
-                        OS.SendMessage (handle, OS.EM_GETSEL, &newStart, &newEnd);
+                        OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                         if (start !is newStart) start = start - 1;
                     }
                 }
@@ -1470,7 +1470,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
                     if (!OS.IsUnicode && OS.IsDBLocale) {
                         int newStart, newEnd;
                         OS.SendMessage (handle, OS.EM_SETSEL, start, end);
-                        OS.SendMessage (handle, OS.EM_GETSEL, &newStart, &newEnd);
+                        OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                         if (end !is newEnd) end = end + 1;
                     }
                 }
@@ -1504,7 +1504,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
     * handler from WM_CHAR.
     */
     ignoreCharacter = true;
-    OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+    OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
     ignoreCharacter = false;
     return false;
 }
@@ -1532,7 +1532,7 @@ override void setBounds (int x, int y, int width, int height, int flags) {
         int marginWidth = OS.LOWORD (margins) + OS.HIWORD (margins);
         if (rect.right - rect.left <= marginWidth) {
             int start, end;
-            OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             if (start !is 0 || end !is 0) {
                 SetWindowPos (handle, null, x, y, width, height, flags);
                 OS.SendMessage (handle, OS.EM_SETSEL, 0, 0);
@@ -1674,7 +1674,7 @@ public void setMessage (String message) {
         if ((style & SWT.SEARCH) !is 0) {
             int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
             if ((bits & OS.ES_MULTILINE) is 0) {
-                OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, cast(void*)StrToTCHARz( 0, message ));
+                OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, cast(LPARAM)StrToTCHARz( 0, message ));
             }
         }
     }
@@ -1792,7 +1792,7 @@ override public void setRedraw (bool redraw) {
     */
     if (drawCount !is 0) return;
     int start, end;
-    OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     if (!redraw) {
         oldStart = start;  oldEnd = end;
     } else {
@@ -1866,7 +1866,7 @@ void setTabStops (int tabs) {
     * number of space widths, depending on the font.
     */
     int width = (getTabWidth (tabs) * 4) / OS.LOWORD (OS.GetDialogBaseUnits ());
-    OS.SendMessage (handle, OS.EM_SETTABSTOPS, 1, &width);
+    OS.SendMessage (handle, OS.EM_SETTABSTOPS, 1, cast(LPARAM)&width);
 }
 
 /**
@@ -2025,7 +2025,7 @@ int wcsToMbcsPos (int wcsPos) {
             //ENDIAN
             buffer [0] = cast(char) (mbcsSize & 0xFF);
             buffer [1] = cast(char) (mbcsSize >> 8);
-            mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer.ptr);
+            mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, cast(LPARAM)buffer.ptr);
             wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer.ptr, cast(int)/*64bit*/mbcsSize, null, 0);
         }
         if (line - 1 !is count) {
@@ -2281,7 +2281,7 @@ override LRESULT WM_LBUTTONDBLCLK (WPARAM wParam, LPARAM lParam) {
     * and avoid calling the window proc.
     */
     int start, end;
-    OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     if (start  is end ) {
         int length = OS.GetWindowTextLength (handle);
         if (length is start) {
@@ -2358,7 +2358,7 @@ LRESULT wmClipboard (int msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
         case OS.WM_CLEAR:
         case OS.WM_CUT:
-            OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             if (start !is end ) {
                 newText = "";
                 call = true;
@@ -2372,11 +2372,11 @@ LRESULT wmClipboard (int msg, WPARAM wParam, LPARAM lParam) {
         case OS.WM_UNDO:
             if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) !is 0) {
                 ignoreModify = ignoreCharacter = true;
-                OS.SendMessage (handle, OS.EM_GETSEL, &start, &end);
+                OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
                 callWindowProc (handle, msg, wParam, lParam);
                 int length = OS.GetWindowTextLength (handle);
                 int newStart, newEnd;
-                OS.SendMessage (handle, OS.EM_GETSEL, &newStart, &newEnd);
+                OS.SendMessage (handle, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                 if (length !is 0 && newStart !is newEnd) {
                     TCHAR[] buffer = NewTCHARs (getCodePage (), length + 1);
                     OS.GetWindowText (handle, buffer.ptr, length + 1);
@@ -2412,7 +2412,7 @@ LRESULT wmClipboard (int msg, WPARAM wParam, LPARAM lParam) {
             * handler from WM_CHAR.
             */
             ignoreCharacter = true;
-            OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+            OS.SendMessage (handle, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
             ignoreCharacter = false;
             return LRESULT.ZERO;
         }

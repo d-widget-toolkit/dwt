@@ -698,7 +698,7 @@ HRESULT SetData(FORMATETC* pFormatetc, STGMEDIUM* pmedium, int fRelease) {
         int[1] ptrEffect;
         OS.MoveMemory(ptrEffect.ptr, stgmedium.unionField,4);
         int[1] effect;
-        OS.MoveMemory(effect.ptr, ptrEffect[0],4);
+        OS.MoveMemory(effect.ptr, cast(LPCVOID)ptrEffect[0],4);
         dataEffect = osToOp(effect[0]);
     }
     if (fRelease is 1) {

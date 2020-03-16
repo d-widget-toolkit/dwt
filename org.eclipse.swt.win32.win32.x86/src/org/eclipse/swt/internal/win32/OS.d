@@ -3593,7 +3593,7 @@ public static WPARAM MAKEWPARAM(int l, int h){
 	return cast(WPARAM)MAKELONG( l, h );
 }
 public static LPARAM MAKELPARAM(int l, int h){
-	return cast(LPARAM)MAKELONG( l, h );
+    return cast(LPARAM)MAKELONG( l, h );
 }
 public static LRESULT MAKELRESULT(int l, int h){
 	return cast(LRESULT)MAKELONG( l, h );
@@ -3612,7 +3612,7 @@ public static int GET_Y_LPARAM(LPARAM lp){
 
 static bool TreeView_GetItemRect( HWND hwnd, HTREEITEM hitem, RECT* prc, bool code) {
     *cast(HTREEITEM *)prc = hitem;
-    return cast(bool) SendMessage( hwnd, TVM_GETITEMRECT, code, prc );
+    return cast(bool) SendMessage( hwnd, TVM_GETITEMRECT, code, cast(LPARAM)prc );
 }
 static size_t strlen( PCHAR ptr ){
     version(Tango){

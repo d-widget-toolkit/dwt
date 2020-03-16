@@ -428,7 +428,7 @@ public bool getEnabled () {
         TBBUTTONINFO info;
         info.cbSize = TBBUTTONINFO.sizeof;
         info.dwMask = OS.TBIF_STATE;
-        OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, &info);
+        OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, cast(LPARAM)&info);
         return (info.fsState & OS.TBSTATE_ENABLED) !is 0;
     }
     /*
@@ -697,10 +697,10 @@ public void setEnabled (bool enabled) {
         TBBUTTONINFO info;
         info.cbSize = TBBUTTONINFO.sizeof;
         info.dwMask = OS.TBIF_STATE;
-        OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, &info);
+        OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, cast(LPARAM)&info);
         info.fsState &= ~OS.TBSTATE_ENABLED;
         if (enabled) info.fsState |= OS.TBSTATE_ENABLED;
-        OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, &info);
+        OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, cast(LPARAM)&info);
     } else {
         /*
         * Feature in Windows.  For some reason, when the menu item
@@ -861,7 +861,7 @@ void setMenu (Menu menu, bool dispose) {
         if (OS.IsPPC) {
             HWND hwndCB = parent.hwndCB;
             HMENU hMenu = menu is null ? null : menu.handle;
-            OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, id, hMenu);
+            OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, id, cast(LPARAM)hMenu);
         }
         if (OS.IsSP) error (SWT.ERROR_CANNOT_SET_MENU);
     } else {
@@ -1078,7 +1078,7 @@ override public void setText (String string) {
         info2.cbSize = TBBUTTONINFO.sizeof;
         info2.dwMask = OS.TBIF_TEXT;
         info2.pszText = pszText;
-        success = OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, &info2) !is 0;
+        success = OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, cast(LPARAM)&info2) !is 0;
     } else {
         MENUITEMINFO info;
         info.cbSize = OS.MENUITEMINFO_sizeof;

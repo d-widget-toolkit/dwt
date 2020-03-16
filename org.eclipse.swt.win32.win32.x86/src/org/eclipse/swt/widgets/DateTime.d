@@ -202,7 +202,7 @@ public this (Composite parent, int style) {
     if ((this.style & SWT.SHORT) !is 0) {
         String buffer = ((this.style & SWT.DATE) !is 0) ? getCustomShortDateFormat() : getCustomShortTimeFormat();
         StringT lpszFormat = StrToTCHARs (0, buffer, true);
-        OS.SendMessage (handle, OS.DTM_SETFORMAT, 0, cast(void*)lpszFormat.ptr);
+        OS.SendMessage (handle, OS.DTM_SETFORMAT, 0, cast(LPARAM)lpszFormat.ptr);
     }
 }
 
@@ -266,7 +266,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
     if (wHint is SWT.DEFAULT || hHint is SWT.DEFAULT) {
         if ((style & SWT.CALENDAR) !is 0) {
             RECT rect;
-            OS.SendMessage(handle, OS.MCM_GETMINREQRECT, 0, &rect);
+            OS.SendMessage(handle, OS.MCM_GETMINREQRECT, 0, cast(LPARAM)&rect);
             width = rect.right;
             height = rect.bottom;
         } else {
@@ -565,7 +565,7 @@ public int getDay () {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     return systime.wDay;
 }
 
@@ -587,7 +587,7 @@ public int getHours () {
     if ((style & SWT.CALENDAR) !is 0) return time.wHour;
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     return systime.wHour;
 }
 
@@ -609,7 +609,7 @@ public int getMinutes () {
     if ((style & SWT.CALENDAR) !is 0) return time.wMinute;
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     return systime.wMinute;
 }
 
@@ -630,7 +630,7 @@ public int getMonth () {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     return systime.wMonth - 1;
 }
 
@@ -657,7 +657,7 @@ public int getSeconds () {
     if ((style & SWT.CALENDAR) !is 0) return time.wSecond;
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     return systime.wSecond;
 }
 
@@ -678,7 +678,7 @@ public int getYear () {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     return systime.wYear;
 }
 
@@ -735,12 +735,12 @@ public void setDate (int year, int month, int day) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wYear = cast(short)year;
     systime.wMonth = cast(short)(month + 1);
     systime.wDay = cast(short)day;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     lastSystemTime = null;
 }
 
@@ -761,10 +761,10 @@ public void setDay (int day) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wDay = cast(short)day;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     lastSystemTime = null;
 }
 
@@ -785,10 +785,10 @@ public void setHours (int hours) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wHour = cast(short)hours;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     if ((style & SWT.CALENDAR) !is 0 && hours >= 0 && hours <= 23) time.wHour = cast(short)hours;
 }
 
@@ -809,10 +809,10 @@ public void setMinutes (int minutes) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wMinute = cast(short)minutes;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     if ((style & SWT.CALENDAR) !is 0 && minutes >= 0 && minutes <= 59) time.wMinute = cast(short)minutes;
 }
 
@@ -833,10 +833,10 @@ public void setMonth (int month) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wMonth = cast(short)(month + 1);
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     lastSystemTime = null;
 }
 
@@ -857,10 +857,10 @@ public void setSeconds (int seconds) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wSecond = cast(short)seconds;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     if ((style & SWT.CALENDAR) !is 0 && seconds >= 0 && seconds <= 59) time.wSecond = cast(short)seconds;
 }
 
@@ -882,12 +882,12 @@ public void setTime (int hours, int minutes, int seconds) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wHour = cast(short)hours;
     systime.wMinute = cast(short)minutes;
     systime.wSecond = cast(short)seconds;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     if ((style & SWT.CALENDAR) !is 0
             && hours >= 0 && hours <= 23
             && minutes >= 0 && minutes <= 59
@@ -915,10 +915,10 @@ public void setYear (int year) {
     checkWidget ();
     SYSTEMTIME systime;
     int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
     systime.wYear = cast(short)year;
-    OS.SendMessage (handle, msg, 0, &systime);
+    OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
     lastSystemTime = null;
 }
 
@@ -951,7 +951,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
             if (ignoreSelection) break;
             SYSTEMTIME systime;
             int msg = (style & SWT.CALENDAR) !is 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-            OS.SendMessage (handle, msg, 0, &systime);
+            OS.SendMessage (handle, msg, 0, cast(LPARAM)&systime);
             if (lastSystemTime is null || systime.wDay !is lastSystemTime.wDay || systime.wMonth !is lastSystemTime.wMonth || systime.wYear !is lastSystemTime.wYear) {
                 postEvent (SWT.Selection);
                 if ((style & SWT.TIME) is 0) {

@@ -195,7 +195,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
         int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
         SetWindowPos (handle, null, 0, 0, newWidth, newHeight, flags);
         RECT rect;
-        OS.SendMessage (handle, OS.RB_GETRECT, count - 1, &rect);
+        OS.SendMessage (handle, OS.RB_GETRECT, count - 1, cast(LPARAM)&rect);
         height = Math.max (height, rect.bottom);
         SetWindowPos (handle, null, 0, 0, oldWidth, oldHeight, flags);
         REBARBANDINFO rbBand;
@@ -203,7 +203,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
         rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
         int rowWidth = 0;
         for (int i = 0; i < count; i++) {
-            OS.SendMessage(handle, OS.RB_GETBANDINFO, i, &rbBand);
+            OS.SendMessage(handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
             if ((rbBand.fStyle & OS.RBBS_BREAK) !is 0) {
                 width = Math.max(width, rowWidth);
                 rowWidth = 0;
@@ -251,7 +251,7 @@ override void createHandle () {
     * create.
     */
     auto hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-    OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+    OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
 }
 
 void createItem (CoolItem item, int index) {
@@ -303,7 +303,7 @@ void createItem (CoolItem item, int index) {
     }
 
     /* Insert the item */
-    if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, &rbBand) is 0) {
+    if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, cast(LPARAM)&rbBand) is 0) {
         error (SWT.ERROR_ITEM_NOT_ADDED);
     }
 
@@ -409,7 +409,7 @@ override void drawThemeBackground (HDC hDC, HWND hwnd, RECT* rect) {
     OS.MapWindowPoints (handle, hwnd, cast(POINT*) &rect2, 2);
     POINT lpPoint;
     OS.SetWindowOrgEx (hDC, -rect2.left, -rect2.top, &lpPoint);
-    OS.SendMessage (handle, OS.WM_PRINT, hDC, OS.PRF_CLIENT | OS.PRF_ERASEBKGND);
+    OS.SendMessage (handle, OS.WM_PRINT, cast(WPARAM)hDC, OS.PRF_CLIENT | OS.PRF_ERASEBKGND);
     OS.SetWindowOrgEx (hDC, lpPoint.x, lpPoint.y, null);
 }
 
@@ -422,11 +422,11 @@ int getMargin (int index) {
     int margin = 0;
     if (OS.COMCTL32_MAJOR >= 6) {
         MARGINS margins;
-        OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, &margins);
+        OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, cast(LPARAM)&margins);
         margin += margins.cxLeftWidth + margins.cxRightWidth;
     }
     RECT rect;
-    OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, &rect);
+    OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, cast(LPARAM)&rect);
     if ((style & SWT.FLAT) !is 0) {
         /*
         * Bug in Windows.  When the style bit  RBS_BANDBORDERS is not set
@@ -476,7 +476,7 @@ public CoolItem getItem (int index) {
     REBARBANDINFO rbBand;
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_ID;
-    OS.SendMessage (handle, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (handle, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
     return items [rbBand.wID];
 }
 
@@ -524,7 +524,7 @@ public int [] getItemOrder () {
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_ID;
     for (int i=0; i<count; i++) {
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
         CoolItem item = items [rbBand.wID];
         int index = 0;
         while (index<originalItems.length) {
@@ -561,7 +561,7 @@ public CoolItem [] getItems () {
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_ID;
     for (int i=0; i<count; i++) {
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
         result [i] = items [rbBand.wID];
     }
     return result;
@@ -590,10 +590,10 @@ public Point [] getItemSizes () {
     MARGINS margins;
     for (int i=0; i<count; i++) {
         RECT rect;
-        OS.SendMessage (handle, OS.RB_GETRECT, i, &rect);
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETRECT, i, cast(LPARAM)&rect);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
         if (OS.COMCTL32_MAJOR >= 6) {
-            OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, &margins);
+            OS.SendMessage (handle, OS.RB_GETBANDMARGINS, 0, cast(LPARAM)&margins);
             rect.left -= margins.cxLeftWidth;
             rect.right += margins.cxRightWidth;
         }
@@ -614,7 +614,7 @@ ptrdiff_t getLastIndexOfRow (ptrdiff_t index) {
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_STYLE;
     for (auto i=index + 1; i<count; i++) {
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
         if ((rbBand.fStyle & OS.RBBS_BREAK) !is 0) {
             return i - 1;
         }
@@ -628,7 +628,7 @@ bool isLastItemOfRow (int index) {
     REBARBANDINFO rbBand;
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_STYLE;
-    OS.SendMessage (handle, OS.RB_GETBANDINFO, index + 1, &rbBand);
+    OS.SendMessage (handle, OS.RB_GETBANDINFO, index + 1, cast(LPARAM)&rbBand);
     return (rbBand.fStyle & OS.RBBS_BREAK) !is 0;
 }
 
@@ -712,13 +712,13 @@ void resizeToPreferredWidth (ptrdiff_t index) {
         REBARBANDINFO rbBand;
         rbBand.cbSize = REBARBANDINFO.sizeof;
         rbBand.fMask = OS.RBBIM_IDEALSIZE;
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, index, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
         RECT rect;
-        OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, &rect);
+        OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, cast(LPARAM)&rect);
         rbBand.cx = rbBand.cxIdeal + rect.left;
         if ((style & SWT.FLAT) is 0) rbBand.cx += rect.right;
         rbBand.fMask = OS.RBBIM_SIZE;
-        OS.SendMessage (handle, OS.RB_SETBANDINFO, index, &rbBand);
+        OS.SendMessage (handle, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
     }
 }
 
@@ -727,7 +727,7 @@ void resizeToMaximumWidth (ptrdiff_t index) {
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_SIZE;
     rbBand.cx = MAX_WIDTH;
-    OS.SendMessage (handle, OS.RB_SETBANDINFO, index, &rbBand);
+    OS.SendMessage (handle, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
 }
 
 override void releaseChildren (bool destroy) {
@@ -786,7 +786,7 @@ void setItemColors (int foreColor, int backColor) {
     rbBand.clrFore = foreColor;
     rbBand.clrBack = backColor;
     for (int i=0; i<count; i++) {
-        OS.SendMessage (handle, OS.RB_SETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_SETBANDINFO, i, cast(LPARAM)&rbBand);
     }
 }
 
@@ -916,7 +916,7 @@ void setItemSizes (Point [] sizes) {
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_ID;
     for (int i=0; i<count; i++) {
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
         items [rbBand.wID].setSize (sizes [i].x, sizes [i].y);
     }
 }
@@ -942,13 +942,13 @@ public void setLocked (bool locked) {
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_STYLE;
     for (int i=0; i<count; i++) {
-        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_GETBANDINFO, i, cast(LPARAM)&rbBand);
         if (locked) {
             rbBand.fStyle |= OS.RBBS_NOGRIPPER;
         } else {
             rbBand.fStyle &= ~OS.RBBS_NOGRIPPER;
         }
-        OS.SendMessage (handle, OS.RB_SETBANDINFO, i, &rbBand);
+        OS.SendMessage (handle, OS.RB_SETBANDINFO, i, cast(LPARAM)&rbBand);
     }
 }
 

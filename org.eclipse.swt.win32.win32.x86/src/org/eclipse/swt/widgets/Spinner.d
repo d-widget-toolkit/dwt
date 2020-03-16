@@ -327,7 +327,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
         height = tm.tmHeight;
         RECT rect;
         int max;
-        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, &max);
+        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, 0, cast(LPARAM)&max);
         String string = String_valueOf( max );
         if (digits > 0) {
             StringBuffer buffer = new StringBuffer ();
@@ -486,7 +486,7 @@ String getDecimalSeparator () {
 public int getIncrement () {
     checkWidget ();
     UDACCEL udaccel;
-    OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, &udaccel);
+    OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, cast(LPARAM)&udaccel);
     return udaccel.nInc;
 }
 
@@ -503,7 +503,7 @@ public int getIncrement () {
 public int getMaximum () {
     checkWidget ();
     int max;
-    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, &max);
+    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, 0, cast(LPARAM)&max);
     return max;
 }
 
@@ -520,7 +520,7 @@ public int getMaximum () {
 public int getMinimum () {
     checkWidget ();
     int min;
-    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, null);
+    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, 0);
     return min;
 }
 
@@ -594,7 +594,7 @@ int getSelectionText (bool [] parseFail) {
             value = Integer.parseInt (string);
         }
         int max, min;
-        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, &max);
+        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, cast(LPARAM)&max);
         if (min <= value && value <= max) return value;
     } catch (NumberFormatException e) {
     }
@@ -799,7 +799,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
     /* Verify the character */
     String oldText = "";
     int start, end;
-    OS.SendMessage (hwndText, OS.EM_GETSEL, &start, &end);
+    OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     switch (key) {
         case 0x08:  /* Bs */
             if (start is end) {
@@ -808,7 +808,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
                 if (!OS.IsUnicode && OS.IsDBLocale) {
                     int newStart, newEnd;
                     OS.SendMessage (hwndText, OS.EM_SETSEL, start, end);
-                    OS.SendMessage (hwndText, OS.EM_GETSEL, &newStart, &newEnd);
+                    OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                     if (start !is newStart) start = start - 1;
                 }
                 start = Math.max (start, 0);
@@ -822,7 +822,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
                 if (!OS.IsUnicode && OS.IsDBLocale) {
                     int newStart, newEnd;
                     OS.SendMessage (hwndText, OS.EM_SETSEL, start, end);
-                    OS.SendMessage (hwndText, OS.EM_GETSEL, &newStart, &newEnd);
+                    OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                     if (end !is newEnd) end = end + 1;
                 }
                 end = Math.min (end, length_);
@@ -840,7 +840,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
     if (newText is oldText) return true;
     LPCTSTR buffer = StrToTCHARz (getCodePage (), newText);
     OS.SendMessage (hwndText, OS.EM_SETSEL, start, end);
-    OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+    OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
     return false;
 }
 
@@ -909,9 +909,9 @@ public void setIncrement (int value) {
     checkWidget ();
     if (value < 1) return;
     auto hHeap = OS.GetProcessHeap ();
-    auto count = OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 0, cast(UDACCEL*)null);
+    auto count = OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 0, 0);
     auto udaccels = cast(UDACCEL*) OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, UDACCEL.sizeof * count);
-    OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, count, udaccels);
+    OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, count, cast(LPARAM)udaccels);
     int first = -1;
     UDACCEL udaccel;
     for (int i = 0; i < count; i++) {
@@ -921,7 +921,7 @@ public void setIncrement (int value) {
         udaccel.nInc  =  udaccel.nInc * value / first;
         OS.MoveMemory (offset, &udaccel, UDACCEL.sizeof);
     }
-    OS.SendMessage (hwndUpDown, OS.UDM_SETACCEL, count, udaccels);
+    OS.SendMessage (hwndUpDown, OS.UDM_SETACCEL, count, cast(LPARAM)udaccels);
     OS.HeapFree (hHeap, 0, udaccels);
 }
 
@@ -941,7 +941,7 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
     checkWidget ();
     int min;
-    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, null);
+    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, 0);
     if (value <= min) return;
     .LRESULT pos;
     static if (OS.IsWinCE) {
@@ -969,7 +969,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
     checkWidget ();
     int max;
-    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, &max);
+    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, 0, cast(LPARAM)&max);
     if (value >= max) return;
     .LRESULT pos;
     static if (OS.IsWinCE) {
@@ -1015,7 +1015,7 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
     checkWidget ();
     int max, min;
-    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, &max);
+    OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, cast(LPARAM)&max);
     value = Math.min (Math.max (min, value), max );
     setSelection (value, true, true, false);
 }
@@ -1165,7 +1165,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
     }
     if (string.length > 0) {
         int min;
-        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, null);
+        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, 0);
         if (min < 0 && string.charAt (0) is '-') index++;
     }
     while (index < string.length ) {
@@ -1313,25 +1313,25 @@ LRESULT wmClipboard (HWND hwndText, int msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
         case OS.WM_CLEAR:
         case OS.WM_CUT:
-            OS.SendMessage (hwndText, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             if (start !is end) {
                 newText = "";
                 call = true;
             }
             break;
         case OS.WM_PASTE:
-            OS.SendMessage (hwndText, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             newText = getClipboardText ();
             break;
         case OS.EM_UNDO:
         case OS.WM_UNDO:
             if (OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0) !is 0) {
                 ignoreModify = true;
-                OS.SendMessage (hwndText, OS.EM_GETSEL, &start, &end);
+                OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
                 OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
                 int length_ = OS.GetWindowTextLength (hwndText);
                 int newStart, newEnd;
-                OS.SendMessage (hwndText, OS.EM_GETSEL, &newStart, &newEnd);
+                OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                 if (length_ !is 0 && newStart !is newEnd ) {
                     TCHAR[] buffer = NewTCHARs (getCodePage (), length_ + 1);
                     OS.GetWindowText (hwndText, buffer.ptr, length_ + 1);
@@ -1363,7 +1363,7 @@ LRESULT wmClipboard (HWND hwndText, int msg, WPARAM wParam, LPARAM lParam) {
                 OS.HeapFree (hHeap, 0, pszText);
                 return new LRESULT (code);
             } else {
-                OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(void*)buffer.ptr);
+                OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer.ptr);
                 return LRESULT.ZERO;
             }
         }
@@ -1401,7 +1401,7 @@ override LRESULT wmKeyDown (HWND hwnd, WPARAM wParam, LPARAM lParam) {
 
     /* Increment the value */
     UDACCEL udaccel;
-    OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, &udaccel);
+    OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, cast(LPARAM)&udaccel);
     int delta = 0;
     switch (wParam) {
         case OS.VK_UP: delta = udaccel.nInc; break;
@@ -1422,7 +1422,7 @@ override LRESULT wmKeyDown (HWND hwnd, WPARAM wParam, LPARAM lParam) {
         }
         auto newValue = value + delta;
         int max, min;
-        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, &max);
+        OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, cast(LPARAM)&max);
         if ((style & SWT.WRAP) !is 0) {
             if (newValue < min ) newValue = max;
             if (newValue > max ) newValue = min;
@@ -1462,7 +1462,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
             //OS.MoveMemory (lpnmud, lParam, NMUPDOWN.sizeof);
             int value = lpnmud.iPos + lpnmud.iDelta;
             int max, min;
-            OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, &min, &max);
+            OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, cast(WPARAM)&min, cast(LPARAM)&max);
             if ((style & SWT.WRAP) !is 0) {
                 if (value < min ) value = max ;
                 if (value > max ) value = min ;

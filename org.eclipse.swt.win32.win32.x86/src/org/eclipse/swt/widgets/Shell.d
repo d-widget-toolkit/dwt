@@ -653,7 +653,7 @@ void createToolTip (ToolTip toolTip) {
     lpti.uId = toolTip.id;
     lpti.uFlags = OS.TTF_TRACK;
     lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-    OS.SendMessage (toolTip.hwndToolTip (), OS.TTM_ADDTOOL, 0, &lpti);
+    OS.SendMessage (toolTip.hwndToolTip (), OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
 }
 
 void createToolTipHandle () {
@@ -698,7 +698,7 @@ void destroyToolTip (ToolTip toolTip) {
         lpti.cbSize = OS.TOOLINFO_sizeof;
         lpti.uId = toolTip.id;
         lpti.hwnd = handle;
-        OS.SendMessage (balloonTipHandle_, OS.TTM_DELTOOL, 0, &lpti);
+        OS.SendMessage (balloonTipHandle_, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
     }
     toolTip.id = -1;
 }
@@ -846,10 +846,10 @@ void fixToolTip () {
         if (toolTipHandle_ is null) return;
         TOOLINFO lpti;
         lpti.cbSize = OS.TOOLINFO_sizeof;
-        if (OS.SendMessage (toolTipHandle_, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+        if (OS.SendMessage (toolTipHandle_, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
             if ((lpti.uFlags & OS.TTF_IDISHWND) !is 0) {
-                OS.SendMessage (toolTipHandle_, OS.TTM_DELTOOL, 0, &lpti);
-                OS.SendMessage (toolTipHandle_, OS.TTM_ADDTOOL, 0, &lpti);
+                OS.SendMessage (toolTipHandle_, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
+                OS.SendMessage (toolTipHandle_, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
             }
         }
     }
@@ -939,7 +939,7 @@ ToolTip getCurrentToolTip (HWND hwndToolTip) {
     if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) !is 0) {
         TOOLINFO lpti;
         lpti.cbSize = OS.TOOLINFO_sizeof;
-        if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+        if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
             if ((lpti.uFlags & OS.TTF_IDISHWND) is 0) return findToolTip (lpti.uId);
         }
     }
@@ -1684,14 +1684,14 @@ void setToolTipText (HWND hwnd, String text) {
     lpti.uId = cast(ptrdiff_t)hwnd;
     auto hwndToolTip = toolTipHandle ();
     if (text is null) {
-        OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, &lpti);
+        OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
     } else {
-        if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, &lpti) !is 0) {
+        if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, cast(LPARAM)&lpti) !is 0) {
             OS.SendMessage (hwndToolTip, OS.TTM_UPDATE, 0, 0);
         } else {
             lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
             lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-            OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, &lpti);
+            OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
         }
     }
 }
@@ -1770,7 +1770,7 @@ void setToolTipTitle (HWND hwndToolTip, String text, HICON icon) {
         else {
             LPCTSTR pszTitle = StrToTCHARz( text, getCodePage ());
         }
-        OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, cast(LPARAM)pszTitle);
+        OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, cast(WPARAM)icon, cast(LPARAM)pszTitle);
     } else {
         OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
     }

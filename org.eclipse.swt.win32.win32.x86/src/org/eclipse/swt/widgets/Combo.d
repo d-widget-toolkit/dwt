@@ -189,7 +189,7 @@ public void add (String string) {
     // SWT extension: allow null string
     //if (string is null) error (SWT.ERROR_NULL_ARGUMENT);
     auto buffer = StrToTCHARs( getCodePage(), string, true );
-    auto result = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, cast(void*)buffer.ptr );
+    auto result = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, cast(LPARAM)buffer.ptr );
     if (result is OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
     if (result is OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
     if ((style & SWT.H_SCROLL) !is 0) setScrollWidth (buffer, true);
@@ -226,7 +226,7 @@ public void add (String string, int index) {
         error (SWT.ERROR_INVALID_RANGE);
     }
     auto buffer = StrToTCHARs( getCodePage(), string, true );
-    auto result = OS.SendMessage (handle, OS.CB_INSERTSTRING, index, cast(void*)buffer.ptr);
+    auto result = OS.SendMessage (handle, OS.CB_INSERTSTRING, index, cast(LPARAM)buffer.ptr);
     if (result is OS.CB_ERRSPACE || result is OS.CB_ERR) {
         error (SWT.ERROR_ITEM_NOT_ADDED);
     }
@@ -446,7 +446,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
                 length_ = cast(int)/*64bit*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
                 if (length_ !is OS.CB_ERR) {
                     if (length_ + 1 > buffer.length ) buffer = new TCHAR[ length_ + 1 ], buffer[] =0;
-                    auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer.ptr);
+                    auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, cast(LPARAM)buffer.ptr);
                     if (result !is OS.CB_ERR) {
                         OS.DrawText (hDC, buffer.ptr, length_, &rect, flags);
                         width = Math.max (width, rect.right - rect.left);
@@ -647,7 +647,7 @@ override bool dragDetect (HWND hwnd, int x, int y, bool filter, bool [] detect, 
         auto hwndText = OS.GetDlgItem (handle, CBID_EDIT);
         if (hwndText !is null) {
             int start, end;
-            OS.SendMessage (handle, OS.CB_GETEDITSEL, &start, &end);
+            OS.SendMessage (handle, OS.CB_GETEDITSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             if (start !is end ) {
                 auto lParam = OS.MAKELPARAM (x, y);
                 int position = OS.LOWORD (OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam));
@@ -685,7 +685,7 @@ public String getItem (int index) {
     auto length_ = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
     if (length_ !is OS.CB_ERR) {
         TCHAR[] buffer = new TCHAR[ length_ + 1];
-        auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer.ptr);
+        auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, cast(LPARAM)buffer.ptr);
         if (result !is OS.CB_ERR) return TCHARzToStr( buffer.ptr );
     }
     auto count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
@@ -849,7 +849,7 @@ public Point getSelection () {
         return new Point (0, OS.GetWindowTextLength (handle));
     }
     int start, end;
-    OS.SendMessage (handle, OS.CB_GETEDITSEL, &start, &end);
+    OS.SendMessage (handle, OS.CB_GETEDITSEL, cast(WPARAM)&start, cast(LPARAM)&end);
     if (!OS.IsUnicode && OS.IsDBLocale) {
         start = mbcsToWcsPos (start);
         end = mbcsToWcsPos (end);
@@ -1031,7 +1031,7 @@ public int indexOf (String string, int start) {
     int index = start - 1, last = 0;
     LPCTSTR buffer = StrToTCHARz( string );
     do {
-        index = cast(int)/*64bit*/OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, cast(void*)buffer);
+        index = cast(int)/*64bit*/OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, cast(LPARAM)buffer);
         if (index is OS.CB_ERR || index <= last) return -1;
     } while (string!=/*eq*/getItem (index));
     return index;
@@ -1108,7 +1108,7 @@ void remove (int index, bool notify) {
             error (SWT.ERROR_INVALID_RANGE);
         }
         buffer = new TCHAR[ length_ + 1];
-        auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer.ptr);
+        auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, cast(LPARAM)buffer.ptr);
         if (result is OS.CB_ERR) {
             auto count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
             if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -1182,7 +1182,7 @@ public void remove (int start, int end) {
             auto length_ = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, start, 0);
             if (length_ is OS.CB_ERR) break;
             buffer = new TCHAR[ length_ + 1];
-            auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, start, buffer.ptr);
+            auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, start, cast(LPARAM)buffer.ptr);
             if (result is OS.CB_ERR) break;
         }
         auto result = OS.SendMessage (handle, OS.CB_DELETESTRING, start, 0);
@@ -1412,7 +1412,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
     if (newText is oldText) return true;
     LPCTSTR buffer = StrToTCHARz( newText );
     OS.SendMessage (hwndText, OS.EM_SETSEL, start, end);
-    OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+    OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
     return false;
 }
 
@@ -1493,7 +1493,7 @@ override void setBounds (int x, int y, int width, int height, int flags) {
         RECT rect;
         OS.GetWindowRect (handle, &rect);
         if (rect.right - rect.left !is 0) {
-            if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, &rect) !is 0) {
+            if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, cast(LPARAM)&rect) !is 0) {
                 int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
                 if (oldWidth is width && oldHeight is height) flags |= OS.SWP_NOSIZE;
             }
@@ -1580,7 +1580,7 @@ public void setItems (String [] items) {
     for (int i=0; i<items.length; i++) {
         String string = items [i];
         LPCTSTR buffer = StrToTCHARz( string );
-        auto code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, cast(void*)buffer);
+        auto code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, cast(LPARAM)buffer);
         if (code is OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
         if (code is OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
         if ((style & SWT.H_SCROLL) !is 0) {
@@ -1692,7 +1692,7 @@ void setScrollWidth () {
         auto length_ = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
         if (length_ !is OS.CB_ERR) {
             TCHAR[] buffer = new TCHAR [ length_ + 1];
-            auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer.ptr);
+            auto result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, cast(LPARAM)buffer.ptr);
             if (result !is OS.CB_ERR) {
                 OS.DrawText (hDC, buffer.ptr, -1, &rect, flags);
                 newWidth = Math.max (newWidth, rect.right - rect.left);
@@ -2221,7 +2221,7 @@ override LRESULT WM_SIZE (WPARAM wParam, LPARAM lParam) {
             if (length_ !is 0) {
                 buffer = new TCHAR[ length_ + 1];
                 OS.GetWindowText (handle, buffer.ptr, length_ + 1);
-                OS.SendMessage (handle, OS.CB_GETEDITSEL, &start, &end);
+                OS.SendMessage (handle, OS.CB_GETEDITSEL, cast(WPARAM)&start, cast(LPARAM)&end);
                 redraw = drawCount is 0 && OS.IsWindowVisible (handle);
                 if (redraw) setRedraw (false);
             }
@@ -2344,14 +2344,14 @@ LRESULT wmClipboard (HWND hwndText, int msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
         case OS.WM_CLEAR:
         case OS.WM_CUT:
-            OS.SendMessage (hwndText, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             if (start  !is end ) {
                 newText = "";
                 call = true;
             }
             break;
         case OS.WM_PASTE:
-            OS.SendMessage (hwndText, OS.EM_GETSEL, &start, &end);
+            OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&start, cast(LPARAM)&end);
             newText = getClipboardText ();
             break;
         case OS.EM_UNDO:
@@ -2362,7 +2362,7 @@ LRESULT wmClipboard (HWND hwndText, int msg, WPARAM wParam, LPARAM lParam) {
                 OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
                 int length_ = OS.GetWindowTextLength (hwndText);
                 int newStart, newEnd;
-                OS.SendMessage (hwndText, OS.EM_GETSEL, &newStart, &newEnd);
+                OS.SendMessage (hwndText, OS.EM_GETSEL, cast(WPARAM)&newStart, cast(LPARAM)&newEnd);
                 if (length_ !is 0 && newStart  !is newEnd ) {
                     TCHAR[] buffer = new TCHAR [ length_ + 1];
                     OS.GetWindowText (hwndText, buffer.ptr, length_ + 1);
@@ -2404,7 +2404,7 @@ LRESULT wmClipboard (HWND hwndText, int msg, WPARAM wParam, LPARAM lParam) {
                 return new LRESULT (code);
             } else {
                 LPCTSTR buffer = StrToTCHARz( newText );
-                OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(void*)buffer);
+                OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, cast(LPARAM)buffer);
                 return LRESULT.ZERO;
             }
         }

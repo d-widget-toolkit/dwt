@@ -344,7 +344,7 @@ public void pack () {
     auto hwnd = parent.handle;
     auto oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
     LPCTSTR buffer = StrToTCHARz (parent.getCodePage (), text);
-    auto headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, cast(void*)buffer) + Table.HEADER_MARGIN;
+    auto headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, cast(LPARAM)buffer) + Table.HEADER_MARGIN;
     if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
     bool hasHeaderImage = false;
     if (image !is null || parent.sortColumn is this) {
@@ -384,7 +384,7 @@ public void pack () {
     if ((index is 0 && !parent.firstColumnImage) || parent.hooks (SWT.MeasureItem)) {
         RECT headerRect;
         auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
         OS.MapWindowPoints (hwndHeader, hwnd, cast(POINT*) &headerRect, 2);
         auto hDC = OS.GetDC (hwnd);
         HFONT oldFont, newFont = cast(HFONT) OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
@@ -570,14 +570,14 @@ public void setAlignment (int alignment) {
     auto hwnd = parent.handle;
     LVCOLUMN lvColumn;
     lvColumn.mask = OS.LVCF_FMT;
-    OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, &lvColumn);
+    OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, cast(LPARAM)&lvColumn);
     lvColumn.fmt &= ~OS.LVCFMT_JUSTIFYMASK;
     int fmt = 0;
     if ((style & SWT.LEFT) is SWT.LEFT) fmt = OS.LVCFMT_LEFT;
     if ((style & SWT.CENTER) is SWT.CENTER) fmt = OS.LVCFMT_CENTER;
     if ((style & SWT.RIGHT) is SWT.RIGHT) fmt = OS.LVCFMT_RIGHT;
     lvColumn.fmt |= fmt;
-    OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, &lvColumn);
+    OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, cast(LPARAM)&lvColumn);
     /*
     * Bug in Windows.  When LVM_SETCOLUMN is used to change
     * the alignment of a column, the column is not redrawn
@@ -589,7 +589,7 @@ public void setAlignment (int alignment) {
         RECT rect, headerRect;
         OS.GetClientRect (hwnd, &rect);
         auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
         OS.MapWindowPoints (hwndHeader, hwnd, cast(POINT*) &headerRect, 2);
         rect.left = headerRect.left;
         rect.right = headerRect.right;
@@ -616,7 +616,7 @@ void setImage (Image image, bool sort, bool right) {
         auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
         HDITEM hdItem;
         hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
         hdItem.fmt &= ~OS.HDF_BITMAP_ON_RIGHT;
         if (image !is null) {
             if (sort) {
@@ -634,11 +634,11 @@ void setImage (Image image, bool sort, bool right) {
         } else {
             hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP);
         }
-        OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+        OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
     } else {
         LVCOLUMN lvColumn;
         lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
-        OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, &lvColumn);
+        OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, cast(LPARAM)&lvColumn);
         if (image !is null) {
             lvColumn.fmt |= OS.LVCFMT_IMAGE;
             lvColumn.iImage = parent.imageIndexHeader (image);
@@ -647,7 +647,7 @@ void setImage (Image image, bool sort, bool right) {
             lvColumn.mask &= ~OS.LVCF_IMAGE;
             lvColumn.fmt &= ~(OS.LVCFMT_IMAGE | OS.LVCFMT_BITMAP_ON_RIGHT);
         }
-        OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, &lvColumn);
+        OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, cast(LPARAM)&lvColumn);
     }
 }
 
@@ -705,7 +705,7 @@ void setSortDirection (int direction) {
         auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
         HDITEM hdItem;
         hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
         switch (direction) {
             case SWT.UP:
                 hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
@@ -729,7 +729,7 @@ void setSortDirection (int direction) {
                 break;
             default:
         }
-        OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+        OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
         /*
         * Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
         * specify a selected column, Windows does not redraw either
@@ -752,7 +752,7 @@ void setSortDirection (int direction) {
             OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
             RECT headerRect;
             if (oldColumn !is -1) {
-                if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, &headerRect) !is 0) {
+                if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, cast(LPARAM)&headerRect) !is 0) {
                     OS.MapWindowPoints (hwndHeader, hwnd, cast(POINT*) &headerRect, 2);
                     rect.left = headerRect.left;
                     rect.right = headerRect.right;
@@ -761,7 +761,7 @@ void setSortDirection (int direction) {
             }
         }
         RECT headerRect;
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect) !is 0) {
             OS.MapWindowPoints (hwndHeader, hwnd, cast(POINT*)  &headerRect, 2);
             rect.left = headerRect.left;
             rect.right = headerRect.right;
@@ -800,7 +800,7 @@ override public void setText (String string) {
     auto hwnd = parent.handle;
     LVCOLUMN lvColumn;
     lvColumn.mask = OS.LVCF_FMT;
-    OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, &lvColumn);
+    OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, cast(LPARAM)&lvColumn);
 
     /*
     * Bug in Windows.  When a column header contains a
@@ -817,7 +817,7 @@ override public void setText (String string) {
     OS.MoveMemory (pszText, buffer.ptr, byteCount);
     lvColumn.mask |= OS.LVCF_TEXT;
     lvColumn.pszText = pszText;
-    auto result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, &lvColumn);
+    auto result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, cast(LPARAM)&lvColumn);
     if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
     if (result is 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 }
@@ -870,7 +870,7 @@ void updateToolTip (int index) {
         auto hwnd = parent.handle;
         auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
         RECT rect;
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &rect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&rect) !is 0) {
             TOOLINFO lpti;
             lpti.cbSize = OS.TOOLINFO_sizeof;
             lpti.hwnd = hwndHeader;
@@ -879,7 +879,7 @@ void updateToolTip (int index) {
             lpti.rect.top = rect.top;
             lpti.rect.right = rect.right;
             lpti.rect.bottom = rect.bottom;
-            OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, &lpti);
+            OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, cast(LPARAM)&lpti);
         }
     }
 }

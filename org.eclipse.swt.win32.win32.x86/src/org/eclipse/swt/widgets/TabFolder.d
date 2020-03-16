@@ -221,16 +221,16 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
     checkWidget ();
     Point size = super.computeSize (wHint, hHint, changed);
     RECT insetRect, itemRect;
-    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, &insetRect);
+    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, cast(LPARAM)&insetRect);
     int width = insetRect.left - insetRect.right;
     auto count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
     if (count !is 0) {
-        OS.SendMessage (handle, OS.TCM_GETITEMRECT, count - 1, &itemRect);
+        OS.SendMessage (handle, OS.TCM_GETITEMRECT, count - 1, cast(LPARAM)&itemRect);
         width = Math.max (width, itemRect.right - insetRect.right);
     }
     RECT rect;
     OS.SetRect (&rect, 0, 0, width, size.y);
-    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 1, &rect);
+    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 1, cast(LPARAM)&rect);
     int border = getBorderWidth ();
     rect.left -= border;  rect.right += border;
     width = rect.right - rect.left;
@@ -242,7 +242,7 @@ override public Rectangle computeTrim (int x, int y, int width, int height) {
     checkWidget ();
     RECT rect;
     OS.SetRect (&rect, x, y, x + width, y + height);
-    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 1, &rect);
+    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 1, cast(LPARAM)&rect);
     int border = getBorderWidth ();
     rect.left -= border;  rect.right += border;
     rect.top -= border;  rect.bottom += border;
@@ -260,7 +260,7 @@ void createItem (TabItem item, int index) {
         items = newItems;
     }
     TCITEM tcItem;
-    if (OS.SendMessage (handle, OS.TCM_INSERTITEM, index, &tcItem) is -1) {
+    if (OS.SendMessage (handle, OS.TCM_INSERTITEM, index, cast(LPARAM)&tcItem) is -1) {
         error (SWT.ERROR_ITEM_NOT_ADDED);
     }
     System.arraycopy (items, index, items, index + 1, count - index);
@@ -351,7 +351,7 @@ override public Rectangle getClientArea () {
     forceResize ();
     RECT rect;
     OS.GetClientRect (handle, &rect);
-    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, &rect);
+    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, cast(LPARAM)&rect);
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
     return new Rectangle (rect.left, rect.top, width, height);
@@ -403,7 +403,7 @@ public TabItem getItem (Point point) {
     TCHITTESTINFO pinfo;
     pinfo.pt.x = point.x;
     pinfo.pt.y = point.y;
-    auto index = OS.SendMessage (handle, OS.TCM_HITTEST, 0, &pinfo);
+    auto index = OS.SendMessage (handle, OS.TCM_HITTEST, 0, cast(LPARAM)&pinfo);
     if (index is -1) return null;
     return items [index];
 }
@@ -493,7 +493,7 @@ int imageIndex (Image image) {
         imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
         int index = imageList.add (image);
         auto hImageList = imageList.getHandle ();
-        OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
+        OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, cast(LPARAM)hImageList);
         return index;
     }
     int index = imageList.indexOf (image);
@@ -853,10 +853,10 @@ override LRESULT WM_MOUSELEAVE (WPARAM wParam, LPARAM lParam) {
         TOOLINFO lpti;
         lpti.cbSize = OS.TOOLINFO_sizeof;
         auto hwndToolTip = cast(HWND) OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
-        if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+        if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
             if ((lpti.uFlags & OS.TTF_IDISHWND) is 0) {
-                OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, &lpti);
-                OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, &lpti);
+                OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
+                OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
             }
         }
     }
@@ -980,7 +980,7 @@ override LRESULT WM_WINDOWPOSCHANGING (WPARAM wParam, LPARAM lParam) {
     }
     RECT rect;
     OS.SetRect (&rect, 0, 0, lpwp.cx, lpwp.cy);
-    OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, &rect);
+    OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, cast(LPARAM)&rect);
     int newWidth = rect.right - rect.left;
     int newHeight = rect.bottom - rect.top;
     OS.GetClientRect (handle, &rect);
@@ -990,7 +990,7 @@ override LRESULT WM_WINDOWPOSCHANGING (WPARAM wParam, LPARAM lParam) {
         return result;
     }
     RECT inset;
-    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, &inset);
+    OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, cast(LPARAM)&inset);
     int marginX = -inset.right, marginY = -inset.bottom;
     if (newWidth !is oldWidth) {
         int left = oldWidth;

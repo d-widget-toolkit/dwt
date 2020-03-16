@@ -95,7 +95,7 @@ public class TableDragSourceEffect : DragSourceEffect {
         if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
             SHDRAGIMAGE shdi;
             int DI_GETDRAGIMAGE = OS.RegisterWindowMessage ( "ShellGetDragImage"w.ptr ); //$NON-NLS-1$
-            if (OS.SendMessage (control.handle, DI_GETDRAGIMAGE, 0, &shdi) !is 0) {
+            if (OS.SendMessage (control.handle, DI_GETDRAGIMAGE, 0, cast(LPARAM)&shdi) !is 0) {
                 if ((control.getStyle() & SWT.MIRRORED) !is 0) {
                     event.x += shdi.sizeDragImage.cx - shdi.ptOffset.x;
                 } else {
@@ -196,7 +196,7 @@ public class TableDragSourceEffect : DragSourceEffect {
                 TableItem selected = selection[i];
                 Rectangle cell = selected.getBounds(0);
                 POINT pt;
-                HANDLE imageList = cast(HANDLE) OS.SendMessage (table.handle, OS.LVM_CREATEDRAGIMAGE, table.indexOf(selected), &pt);
+                HANDLE imageList = cast(HANDLE) OS.SendMessage (table.handle, OS.LVM_CREATEDRAGIMAGE, table.indexOf(selected), cast(LPARAM)&pt);
                 OS.ImageList_Draw(imageList, 0, hDC1, cell.x - bounds.x, cell.y - bounds.y, OS.ILD_SELECTED);
                 OS.ImageList_Destroy(imageList);
             }

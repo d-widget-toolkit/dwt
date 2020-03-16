@@ -334,7 +334,7 @@ override void enableWidget (bool enabled) {
         item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
         item.stateMask = OS.LIS_ENABLED;
         item.state = enabled ? OS.LIS_ENABLED : 0;
-        while (OS.SendMessage (handle, OS.LM_SETITEM, 0, &item) !is 0) {
+        while (OS.SendMessage (handle, OS.LM_SETITEM, 0, cast(LPARAM)&item) !is 0) {
             item.iLink++;
         }
     } else {
@@ -805,7 +805,7 @@ override LRESULT WM_GETDLGCODE (WPARAM wParam, LPARAM lParam) {
         item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
         item.stateMask = OS.LIS_FOCUSED;
         index = 0;
-        while (OS.SendMessage (handle, OS.LM_GETITEM, 0, &item) !is 0) {
+        while (OS.SendMessage (handle, OS.LM_GETITEM, 0, cast(LPARAM)&item) !is 0) {
             if ((item.state & OS.LIS_FOCUSED) !is 0) {
                 index = item.iLink;
             }

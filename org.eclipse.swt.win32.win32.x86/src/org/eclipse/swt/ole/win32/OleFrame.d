@@ -216,7 +216,7 @@ static extern(Windows) .LRESULT getMsgProc(int code, WPARAM wParam, LPARAM lPara
         return OS.CallNextHookEx(hHook.value, code, wParam, lParam);
     }
     MSG* msg = cast(MSG*)(cast(ValueWrapperT!(MSG*))display.getData(HHOOKMSG)).value;
-    OS.MoveMemory(msg, lParam, MSG.sizeof);
+    OS.MoveMemory(msg, cast(LPCVOID)lParam, MSG.sizeof);
     int message = msg.message;
     if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
         if (display !is null) {
@@ -323,7 +323,7 @@ static extern(Windows) .LRESULT getMsgProc(int code, WPARAM wParam, LPARAM lPara
                         // by the application, zero out message, wParam and lParam
                         msg.message = OS.WM_NULL;
                         msg.wParam = msg.lParam = 0;
-                        OS.MoveMemory(lParam, msg, MSG.sizeof);
+                        OS.MoveMemory(cast(LPVOID)lParam, msg, MSG.sizeof);
                         return 0;
                     }
                 }

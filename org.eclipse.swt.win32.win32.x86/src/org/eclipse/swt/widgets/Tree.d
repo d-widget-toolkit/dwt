@@ -285,7 +285,7 @@ TreeItem _getItem (HANDLE hItem) {
     TVITEM tvItem;
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
     tvItem.hItem = cast(HTREEITEM)hItem;
-    if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem) !is 0) {
+    if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem) !is 0) {
         return _getItem (tvItem.hItem, tvItem.lParam);
     }
     return null;
@@ -456,7 +456,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
         OS.MapWindowPoints (hwndParent, handle, cast(POINT*) &clientRect, 2);
         if (columnCount !is 0) {
             order = new int [columnCount];
-            OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order.ptr);
+            OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)order.ptr);
         }
     }
     int sortIndex = -1, clrSortBk = -1;
@@ -475,7 +475,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
         if (columnCount > 0 && hwndHeader !is null) {
             HDITEM hdItem;
             hdItem.mask = OS.HDI_WIDTH;
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
             width = hdItem.cxy;
         }
         if (i is 0) {
@@ -495,7 +495,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
                             if (columnCount > 0 && hwndHeader !is null) {
                                 HDITEM hdItem;
                                 hdItem.mask = OS.HDI_WIDTH;
-                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
                                 pClipRect.right = Math.min (pClipRect.right, nmcd.nmcd.rc.left + hdItem.cxy);
                             }
                         }
@@ -506,7 +506,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
                             HDITEM hdItem;
                             hdItem.mask = OS.HDI_WIDTH;
                             for (int j=0; j<columnCount; j++) {
-                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, &hdItem);
+                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, cast(LPARAM)&hdItem);
                                 totalWidth += hdItem.cxy;
                             }
                             if (totalWidth > clientRect.right - clientRect.left) {
@@ -717,7 +717,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
                                             HDITEM hdItem;
                                             hdItem.mask = OS.HDI_WIDTH;
                                             for (int j=0; j<columnCount; j++) {
-                                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, &hdItem);
+                                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, cast(LPARAM)&hdItem);
                                                 totalWidth += hdItem.cxy;
                                             }
                                             if (totalWidth > clientRect.right - clientRect.left) {
@@ -908,7 +908,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
             if (columnCount !is 0) {
                 HDITEM hdItem;
                 hdItem.mask = OS.HDI_WIDTH;
-                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, &hdItem);
+                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, cast(LPARAM)&hdItem);
                 RECT rect;
                 OS.SetRect (&rect, nmcd.nmcd.rc.left + hdItem.cxy, nmcd.nmcd.rc.top, nmcd.nmcd.rc.right, nmcd.nmcd.rc.bottom);
                 OS.DrawEdge (hDC, &rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
@@ -985,7 +985,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
             clipRect = new RECT ();
             HDITEM hdItem;
             hdItem.mask = OS.HDI_WIDTH;
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
             OS.SetRect (clipRect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.left + hdItem.cxy, nmcd.nmcd.rc.bottom);
         }
     }
@@ -1179,7 +1179,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                     } else {
                         nmcd.clrText = newColor;
                     }
-                    OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+                    OS.MoveMemory (cast(LPVOID)lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
                 }
             }
             if (focused && !ignoreDrawFocus && (style & SWT.FULL_SELECTION) is 0) {
@@ -1188,12 +1188,12 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                     textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
                 }
                 nmcd.nmcd.uItemState &= ~OS.CDIS_FOCUS;
-                OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+                OS.MoveMemory (cast(LPVOID)lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
                 focusRect = textRect;
             }
             if (explorerTheme) {
                 if (selected || (hot && ignoreDrawHot)) nmcd.nmcd.uItemState &= ~OS.CDIS_HOT;
-                OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+                OS.MoveMemory (cast(LPVOID)lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
             }
             RECT* itemRect = item.getBounds (index, true, true, false, false, false, hDC);
             OS.SaveDC (hDC);
@@ -1229,7 +1229,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                     if (OS.IsWindowEnabled (handle)) drawBackground (hDC, &rect);
                 }
                 nmcd.nmcd.uItemState &= ~OS.CDIS_FOCUS;
-                OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+                OS.MoveMemory (cast(LPVOID)lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
             }
         }
     }
@@ -1252,7 +1252,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                         RECT rect;
                         HDITEM hdItem;
                         hdItem.mask = OS.HDI_WIDTH;
-                        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+                        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
                         OS.SetRect (&rect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.left + hdItem.cxy, nmcd.nmcd.rc.bottom);
                         if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
                             RECT itemRect;
@@ -1281,7 +1281,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
             if (!selected) {
                 nmcd.clrText = clrText is -1 ? getForegroundPixel () : clrText;
                 nmcd.clrTextBk = clrTextBk is -1 ? getBackgroundPixel () : clrTextBk;
-                OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+                OS.MoveMemory (cast(LPVOID)lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
             }
         }
     }
@@ -1312,14 +1312,14 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                     } else {
                         nmcd.clrText = newColor;
                     }
-                    OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+                    OS.MoveMemory (cast(LPVOID)lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
                     if (clrTextBk !is -1) {
                         if ((style & SWT.FULL_SELECTION) !is 0) {
                             RECT rect;
                             if (columnCount !is 0) {
                                 HDITEM hdItem;
                                 hdItem.mask = OS.HDI_WIDTH;
-                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+                                OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
                                 OS.SetRect (&rect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.left + hdItem.cxy, nmcd.nmcd.rc.bottom);
                             } else {
                                 OS.SetRect (&rect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.right, nmcd.nmcd.rc.bottom);
@@ -1343,7 +1343,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
             RECT rect;
             HDITEM hdItem;
             hdItem.mask = OS.HDI_WIDTH;
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
             OS.SetRect (&rect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.left + hdItem.cxy, nmcd.nmcd.rc.bottom);
             fillBackground (hDC, clrSortBk, &rect);
         }
@@ -1400,7 +1400,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                         RECT rect;
                         OS.SetRect (&rect, nmcd.nmcd.rc.left, top, nmcd.nmcd.rc.right, nmcd.nmcd.rc.bottom);
                         RECT headerRect;
-                        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+                        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
                         rect.left = headerRect.left;
                         rect.right = headerRect.right;
                         fillBackground (nmcd.nmcd.hdc, getSortColumnPixel (), &rect);
@@ -1417,7 +1417,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                 hdItem.mask = OS.HDI_WIDTH;
                 for (int i=0; i<columnCount; i++) {
                     auto index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
-                    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
                     OS.SetRect (&rect, x, nmcd.nmcd.rc.top, x + hdItem.cxy, nmcd.nmcd.rc.bottom);
                     OS.DrawEdge (hDC, &rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
                     x += hdItem.cxy;
@@ -1505,14 +1505,14 @@ override .LRESULT callWindowProc (HWND hwnd, int msg, WPARAM wParam, LPARAM lPar
                     TVITEM tvItem;
                     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
                     tvItem.hItem = cast(HTREEITEM)hItem;
-                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                     hSelect = hItem;
                     ignoreDeselect = ignoreSelect = lockSelection = true;
-                    OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
+                    OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, cast(LPARAM)hItem);
                     ignoreDeselect = ignoreSelect = lockSelection = false;
                     hSelect = null;
                     if ((tvItem.state & OS.TVIS_SELECTED) is 0) {
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     }
                 }
             }
@@ -1701,9 +1701,9 @@ bool checkScroll (HANDLE hItem) {
     */
     if (drawCount is 0) return false;
     auto hRoot = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-    auto hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+    auto hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hItem);
     while (hParent !is hRoot && hParent !is 0) {
-        hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hParent);
+        hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hParent);
     }
     return hParent is 0;
 }
@@ -1745,7 +1745,7 @@ public void clear (int index, bool all) {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
     clear (hItem, &tvItem);
     if (all) {
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
         clearAll (hItem, &tvItem, all);
     }
 }
@@ -1753,7 +1753,7 @@ public void clear (int index, bool all) {
 void clear (HANDLE hItem, TVITEM* tvItem) {
     tvItem.hItem = cast(HTREEITEM)hItem;
     TreeItem item = null;
-    if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) !is 0) {
+    if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)tvItem) !is 0) {
         item = tvItem.lParam !is -1 ? items [tvItem.lParam] : null;
     }
     if (item !is null) {
@@ -1807,10 +1807,10 @@ void clearAll (HANDLE hItem, TVITEM* tvItem, bool all) {
     while (hItem !is null) {
         clear (hItem, tvItem);
         if (all) {
-            auto hFirstItem = cast(HANDLE)OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+            auto hFirstItem = cast(HANDLE)OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
             clearAll (hFirstItem, tvItem, all);
         }
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
     }
 }
 
@@ -1830,7 +1830,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
         HDITEM hdItem;
         hdItem.mask = OS.HDI_WIDTH;
         for (int i=0; i<columnCount; i++) {
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, cast(LPARAM)&hdItem);
             width += hdItem.cxy;
         }
         RECT rect;
@@ -1846,14 +1846,14 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
             tvItem.hItem = cast(HTREEITEM)hItem;
             tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
             ignoreCustomDraw = true;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             ignoreCustomDraw = false;
         }
         if (OS.TreeView_GetItemRect (handle, cast(HTREEITEM)hItem, &rect, true)) {
             width = Math.max (width, rect.right);
             height += rect.bottom - rect.top;
         }
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hItem);
     }
     if (width is 0) width = DEFAULT_WIDTH;
     if (height is 0) height = DEFAULT_HEIGHT;
@@ -1928,7 +1928,7 @@ override void createHandle () {
     * create.
     */
     HFONT hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-    OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+    OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
 }
 
 void createHeaderToolTips () {
@@ -2040,7 +2040,7 @@ void createItem (TreeColumn column, int index) {
     if ((column.style & SWT.LEFT) is SWT.LEFT) hdItem.fmt = OS.HDF_LEFT;
     if ((column.style & SWT.CENTER) is SWT.CENTER) hdItem.fmt = OS.HDF_CENTER;
     if ((column.style & SWT.RIGHT) is SWT.RIGHT) hdItem.fmt = OS.HDF_RIGHT;
-    OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, &hdItem);
+    OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, cast(LPARAM)&hdItem);
     if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
 
     /* When the first column is created, hide the horizontal scroll bar */
@@ -2078,7 +2078,7 @@ void createItem (TreeColumn column, int index) {
     /* Add the tool tip item for the header */
     if (headerToolTipHandle !is null) {
         RECT rect;
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &rect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&rect) !is 0) {
             TOOLINFO lpti;
             lpti.cbSize = OS.TOOLINFO_sizeof;
             lpti.uFlags = OS.TTF_SUBCLASS;
@@ -2089,7 +2089,7 @@ void createItem (TreeColumn column, int index) {
             lpti.rect.right = rect.right;
             lpti.rect.bottom = rect.bottom;
             lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, &lpti);
+            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
         }
     }
 }
@@ -2120,7 +2120,7 @@ void createItem (TreeItem item, HANDLE hParent, HANDLE hInsertAfter, HANDLE hIte
         lastID = id + 1;
     }
     HANDLE hNewItem;
-    HANDLE hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+    HANDLE hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hParent);
     bool fixParent = hFirstItem is null;
     if (hItem is null) {
         TVINSERTSTRUCT tvInsert;
@@ -2136,7 +2136,7 @@ void createItem (TreeItem item, HANDLE hParent, HANDLE hInsertAfter, HANDLE hIte
             tvInsert.item.stateMask = OS.TVIS_STATEIMAGEMASK;
         }
         ignoreCustomDraw = true;
-        hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, &tvInsert);
+        hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, cast(LPARAM)&tvInsert);
         ignoreCustomDraw = false;
         if (hNewItem is null) error (SWT.ERROR_ITEM_NOT_ADDED);
         /*
@@ -2152,7 +2152,7 @@ void createItem (TreeItem item, HANDLE hParent, HANDLE hInsertAfter, HANDLE hIte
         tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
         tvItem.hItem = cast(HTREEITEM)( hNewItem = hItem );
         tvItem.lParam = id;
-        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
     }
     if (item !is null) {
         item.handle = hNewItem;
@@ -2254,7 +2254,7 @@ void createItemToolTips () {
     lpti.uId = cast(ptrdiff_t)handle;
     lpti.uFlags = OS.TTF_SUBCLASS | OS.TTF_TRANSPARENT;
     lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-    OS.SendMessage (itemToolTipHandle, OS.TTM_ADDTOOL, 0, &lpti);
+    OS.SendMessage (itemToolTipHandle, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
 }
 
 void createParent () {
@@ -2313,7 +2313,7 @@ void createParent () {
 //      }
 //  }
     HFONT hFont = cast(HFONT) OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-    if (hFont !is null) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);
+    if (hFont !is null) OS.SendMessage (hwndHeader, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
     HANDLE hwndInsertAfter = OS.GetWindow (handle, OS.GW_HWNDPREV);
     int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
     SetWindowPos (hwndParent, hwndInsertAfter, 0, 0, 0, 0, flags);
@@ -2360,11 +2360,11 @@ void deselect (HANDLE hItem, TVITEM* tvItem, HANDLE hIgnoreItem) {
     while (hItem !is null) {
         if (hItem !is hIgnoreItem) {
             tvItem.hItem = cast(HTREEITEM)hItem;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)tvItem);
         }
-        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
         deselect (hFirstItem, tvItem, hIgnoreItem);
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
     }
 }
 
@@ -2393,7 +2393,7 @@ public void deselect (TreeItem item) {
     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
     tvItem.stateMask = OS.TVIS_SELECTED;
     tvItem.hItem = cast(HTREEITEM)item.handle;
-    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
 }
 
 /**
@@ -2413,7 +2413,7 @@ public void deselectAll () {
         HANDLE hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
         if (hItem !is null) {
             tvItem.hItem = cast(HTREEITEM)hItem;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
         }
     } else {
         auto oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
@@ -2426,7 +2426,7 @@ public void deselectAll () {
                 TreeItem item = items [i];
                 if (item !is null) {
                     tvItem.hItem = cast(HTREEITEM)item.handle;
-                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                 }
             }
         }
@@ -2442,14 +2442,14 @@ void destroyItem (TreeColumn column) {
         index++;
     }
     int [] oldOrder = new int [columnCount];
-    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, oldOrder.ptr);
+    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)oldOrder.ptr);
     int orderIndex = 0;
     while (orderIndex < columnCount) {
         if (oldOrder [orderIndex] is index) break;
         orderIndex++;
     }
     RECT headerRect;
-    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
     if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) is 0) {
         error (SWT.ERROR_ITEM_NOT_REMOVED);
     }
@@ -2534,10 +2534,10 @@ void destroyItem (TreeColumn column) {
             columns [0].style |= SWT.LEFT;
             HDITEM hdItem;
             hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, cast(LPARAM)&hdItem);
             hdItem.fmt &= ~OS.HDF_JUSTIFYMASK;
             hdItem.fmt |= OS.HDF_LEFT;
-            OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+            OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
         }
         RECT rect;
         OS.GetClientRect (handle, &rect);
@@ -2549,7 +2549,7 @@ void destroyItem (TreeColumn column) {
     updateScrollBar ();
     if (columnCount !is 0) {
         int [] newOrder = new int [columnCount];
-        OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, newOrder.ptr);
+        OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)newOrder.ptr);
         TreeColumn [] newColumns = new TreeColumn [columnCount - orderIndex];
         for (int i=orderIndex; i<newOrder.length; i++) {
             newColumns [i - orderIndex] = columns [newOrder [i]];
@@ -2568,7 +2568,7 @@ void destroyItem (TreeColumn column) {
         lpti.cbSize = OS.TOOLINFO_sizeof;
         lpti.uId = column.id;
         lpti.hwnd = hwndHeader;
-        OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, &lpti);
+        OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
     }
 }
 
@@ -2599,7 +2599,7 @@ void destroyItem (TreeItem item, HANDLE hItem) {
         }
     }
     if (fixRedraw) {
-        hParent = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+        hParent = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hItem);
         OS.UpdateWindow (handle);
         OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
         /*
@@ -2627,7 +2627,7 @@ void destroyItem (TreeItem item, HANDLE hItem) {
     }
 
     shrink = ignoreShrink = true;
-    OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+    OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, cast(LPARAM)hItem);
     ignoreShrink = false;
     if ((style & SWT.MULTI) !is 0) {
         ignoreDeselect = ignoreSelect = lockSelection = false;
@@ -2639,7 +2639,7 @@ void destroyItem (TreeItem item, HANDLE hItem) {
         * If the item that was deleted was the last child of a tree item that
         * is visible, redraw the parent item to force the + / - to be updated.
         */
-        if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent) is 0) {
+        if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hParent) is 0) {
             RECT rect;
             if (OS.TreeView_GetItemRect (handle, cast(HTREEITEM)hParent, &rect, false)) {
                 OS.InvalidateRect (handle, &rect, true);
@@ -2733,7 +2733,7 @@ bool findCell (int x, int y, ref TreeItem item, ref int index, ref RECT* cellRec
     TVHITTESTINFO lpht;
     lpht.pt.x = x;
     lpht.pt.y = y;
-    OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+    OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
     if (lpht.hItem !is null) {
         item = _getItem (lpht.hItem);
         POINT pt;
@@ -2752,7 +2752,7 @@ bool findCell (int x, int y, ref TreeItem item, ref int index, ref RECT* cellRec
         }
         int count = Math.max (1, columnCount);
         int [] order = new int [count];
-        if (hwndHeader !is null) OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order.ptr);
+        if (hwndHeader !is null) OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, cast(LPARAM)order.ptr);
         index = 0;
         bool quit = false;
         while (index < count && !quit) {
@@ -2796,19 +2796,19 @@ int findIndex (HANDLE hFirstItem, HANDLE hItem) {
             return lastIndexOf = 0;
         }
         if (hLastIndexOf is hItem) return lastIndexOf;
-        auto hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+        auto hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cast(LPARAM)hLastIndexOf);
         if (hPrevItem is hItem) {
             hLastIndexOf = hPrevItem;
             return --lastIndexOf;
         }
-        HANDLE hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+        HANDLE hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hLastIndexOf);
         if (hNextItem is hItem) {
             hLastIndexOf = hNextItem;
             return ++lastIndexOf;
         }
         int previousIndex = lastIndexOf - 1;
         while (hPrevItem !is null && hPrevItem !is hItem) {
-            hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hPrevItem);
+            hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cast(LPARAM)hPrevItem);
             --previousIndex;
         }
         if (hPrevItem is hItem) {
@@ -2817,7 +2817,7 @@ int findIndex (HANDLE hFirstItem, HANDLE hItem) {
         }
         int nextIndex = lastIndexOf + 1;
         while (hNextItem !is null && hNextItem !is hItem) {
-            hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+            hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hNextItem);
             nextIndex++;
         }
         if (hNextItem is hItem) {
@@ -2829,7 +2829,7 @@ int findIndex (HANDLE hFirstItem, HANDLE hItem) {
     int index = 0;
     auto hNextItem = hFirstItem;
     while (hNextItem !is null && hNextItem !is hItem) {
-        hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+        hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hNextItem);
         index++;
     }
     if (hNextItem is hItem) {
@@ -2855,17 +2855,17 @@ HANDLE findItem (HANDLE hFirstItem, int index) {
         if (lastIndexOf is index) return hLastIndexOf;
         if (lastIndexOf - 1 is index) {
             --lastIndexOf;
-            return hLastIndexOf = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+            return hLastIndexOf = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cast(LPARAM)hLastIndexOf);
         }
         if (lastIndexOf + 1 is index) {
             lastIndexOf++;
-            return hLastIndexOf = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+            return hLastIndexOf = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hLastIndexOf);
         }
         if (index < lastIndexOf) {
             int previousIndex = lastIndexOf - 1;
-            auto hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+            auto hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cast(LPARAM)hLastIndexOf);
             while (hPrevItem !is null && index < previousIndex) {
-                hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hPrevItem);
+                hPrevItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cast(LPARAM)hPrevItem);
                 --previousIndex;
             }
             if (index is previousIndex) {
@@ -2874,9 +2874,9 @@ HANDLE findItem (HANDLE hFirstItem, int index) {
             }
         } else {
             int nextIndex = lastIndexOf + 1;
-            auto hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+            auto hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hLastIndexOf);
             while (hNextItem !is null && nextIndex < index) {
-                hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+                hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hNextItem);
                 nextIndex++;
             }
             if (index is nextIndex) {
@@ -2889,7 +2889,7 @@ HANDLE findItem (HANDLE hFirstItem, int index) {
     int nextIndex = 0;
     auto hNextItem = hFirstItem;
     while (hNextItem !is null && nextIndex < index) {
-        hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+        hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hNextItem);
         nextIndex++;
     }
     if (index is nextIndex) {
@@ -2980,7 +2980,7 @@ HANDLE getBottomItem () {
     if (hItem is null) return null;
     auto index = 0, count = OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0);
     while (index < count) {
-        HANDLE hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+        HANDLE hNextItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hItem);
         if (hNextItem is null) return hItem;
         hItem = hNextItem;
         index++;
@@ -3076,7 +3076,7 @@ public int[] getColumnOrder () {
     checkWidget ();
     if (columnCount is 0) return null;
     int [] order = new int [columnCount];
-    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order.ptr);
+    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)order.ptr);
     return order;
 }
 
@@ -3158,7 +3158,7 @@ TreeItem getItem (NMTVCUSTOMDRAW* nmcd) {
             TVITEM tvItem;
             tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
             tvItem.hItem = cast(HTREEITEM) nmcd.nmcd.dwItemSpec;
-            OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
             id = tvItem.lParam;
         }
     }
@@ -3194,7 +3194,7 @@ public TreeItem getItem (Point point) {
     TVHITTESTINFO lpht;
     lpht.pt.x = point.x;
     lpht.pt.y = point.y;
-    OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+    OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
     if (lpht.hItem !is null) {
         int flags = OS.TVHT_ONITEM;
         if ((style & SWT.FULL_SELECTION) !is 0) {
@@ -3241,7 +3241,7 @@ int getItemCount (HANDLE hItem) {
         count = lastIndexOf;
     }
     while (hFirstItem !is null) {
-        hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hFirstItem);
+        hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hFirstItem);
         count++;
     }
     if (hItem is hFirstIndexOf) itemCount = count;
@@ -3292,7 +3292,7 @@ TreeItem [] getItems (HANDLE hTreeItem) {
     int count = 0;
     auto hItem = hTreeItem;
     while (hItem !is null) {
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
         count++;
     }
     int index = 0;
@@ -3308,10 +3308,10 @@ TreeItem [] getItems (HANDLE hTreeItem) {
     * remove them from the list.
     */
     while (tvItem.hItem !is null) {
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         TreeItem item = _getItem (tvItem.hItem, tvItem.lParam);
         if (item !is null) result [index++] = item;
-        tvItem.hItem = cast(HTREEITEM) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
+        tvItem.hItem = cast(HTREEITEM) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)tvItem.hItem);
     }
     if (index !is count) {
         TreeItem [] newResult = new TreeItem [index];
@@ -3353,13 +3353,13 @@ HANDLE getNextSelection (HANDLE hItem, TVITEM* tvItem) {
             OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
             state = tvItem.state;
         } else {
-            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
         }
         if ((state & OS.TVIS_SELECTED) !is 0) return hItem;
-        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
         auto hSelected = getNextSelection (hFirstItem, tvItem);
         if (hSelected !is null) return hSelected;
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
     }
     return null;
 }
@@ -3385,7 +3385,7 @@ int getSelection (HANDLE hItem, TVITEM* tvItem, TreeItem [] selection, int index
     while (hItem !is null) {
         if (OS.IsWinCE || bigSelection) {
             tvItem.hItem = cast(HTREEITEM)hItem;
-            OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+            OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)tvItem);
             if ((tvItem.state & OS.TVIS_SELECTED) !is 0) {
                 if (selection !is null && index < selection.length) {
                     selection [index] = _getItem (hItem, tvItem.lParam);
@@ -3393,11 +3393,11 @@ int getSelection (HANDLE hItem, TVITEM* tvItem, TreeItem [] selection, int index
                 index++;
             }
         } else {
-            auto state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+            auto state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
             if ((state & OS.TVIS_SELECTED) !is 0) {
                 if (tvItem !is null && selection !is null && index < selection.length) {
                     tvItem.hItem = cast(HTREEITEM)hItem;
-                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)tvItem);
                     selection [index] = _getItem (hItem, tvItem.lParam);
                 }
                 index++;
@@ -3405,13 +3405,13 @@ int getSelection (HANDLE hItem, TVITEM* tvItem, TreeItem [] selection, int index
         }
         if (index is count) break;
         if (all) {
-            auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+            auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
             if ((index = getSelection (hFirstItem, tvItem, selection, index, count, bigSelection, all)) is count) {
                 break;
             }
-            hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+            hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
         } else {
-            hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+            hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hItem);
         }
     }
     return index;
@@ -3441,7 +3441,7 @@ public TreeItem [] getSelection () {
         TVITEM tvItem;
         tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
         tvItem.hItem = cast(HTREEITEM)hItem;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         if ((tvItem.state & OS.TVIS_SELECTED) is 0) return new TreeItem [0];
         return [_getItem (tvItem.hItem, tvItem.lParam)];
     }
@@ -3470,7 +3470,7 @@ public TreeItem [] getSelection () {
                     OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
                     state = tvItem.state;
                 } else {
-                    state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+                    state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
                 }
                 if ((state & OS.TVIS_SELECTED) !is 0) {
                     if (count < guess.length) guess [count] = item;
@@ -3523,7 +3523,7 @@ public int getSelectionCount () {
             OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
             state = tvItem.state;
         } else {
-            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
         }
         return (state & OS.TVIS_SELECTED) is 0 ? 0 : 1;
     }
@@ -3550,7 +3550,7 @@ public int getSelectionCount () {
                     OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
                     state = tvItem.state;
                 } else {
-                    state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+                    state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
                 }
                 if ((state & OS.TVIS_SELECTED) !is 0) count++;
             }
@@ -3680,7 +3680,7 @@ int imageIndex (Image image, int index) {
         auto hImageList = imageList.getHandle ();
         auto hOldImageList = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
         if (hOldImageList !is hImageList) {
-            OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+            OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, cast(LPARAM)hImageList);
             updateScrollBar ();
         }
     }
@@ -3696,7 +3696,7 @@ int imageIndexHeader (Image image) {
         if (index is -1) index = headerImageList.add (image);
         auto hImageList = headerImageList.getHandle ();
         if (hwndHeader !is null) {
-            OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
+            OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, cast(LPARAM)hImageList);
         }
         updateScrollBar ();
         return index;
@@ -3773,7 +3773,7 @@ bool isItemSelected (NMTVCUSTOMDRAW* nmcd) {
         TVITEM tvItem;
         tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
         tvItem.hItem = cast(HTREEITEM)nmcd.nmcd.dwItemSpec;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) !is 0) {
             selected = true;
             /*
@@ -3857,14 +3857,14 @@ void redrawSelection () {
                     OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
                     state = tvItem.state;
                 } else {
-                    state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+                    state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
                 }
                 if ((state & OS.TVIS_SELECTED) !is 0) {
                     if (OS.TreeView_GetItemRect (handle, cast(HTREEITEM)hItem, &rect, false)) {
                         OS.InvalidateRect (handle, &rect, true);
                     }
                 }
-                hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+                hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hItem);
                 index++;
             }
         }
@@ -3881,7 +3881,7 @@ void releaseItem (HANDLE hItem, TVITEM* tvItem, bool release) {
     if (hItem is hAnchor) hAnchor = null;
     if (hItem is hInsert) hInsert = null;
     tvItem.hItem = cast(HTREEITEM)hItem;
-    if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) !is 0) {
+    if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)tvItem) !is 0) {
         if (tvItem.lParam !is -1) {
             if (tvItem.lParam < lastID) lastID = cast(int)/*64bit*/tvItem.lParam;
             if (release) {
@@ -3894,11 +3894,11 @@ void releaseItem (HANDLE hItem, TVITEM* tvItem, bool release) {
 }
 
 void releaseItems (HANDLE hItem, TVITEM* tvItem) {
-    hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+    hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
     while (hItem !is null) {
         releaseItems (hItem, tvItem);
         releaseItem (hItem, tvItem, true);
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
     }
 }
 
@@ -4083,7 +4083,7 @@ public void setInsertMark (TreeItem item, bool before) {
     }
     hInsert = hItem;
     insertAfter = !before;
-    OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
+    OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, cast(LPARAM)hInsert);
 }
 
 /**
@@ -4113,7 +4113,7 @@ void setItemCount (int count, HANDLE hParent, HANDLE hItem) {
     }
     int itemCount = 0;
     while (hItem !is null && itemCount < count) {
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
         itemCount++;
     }
     bool expanded = false;
@@ -4123,7 +4123,7 @@ void setItemCount (int count, HANDLE hParent, HANDLE hItem) {
         if (OS.IsWinCE) {
             tvItem.hItem = cast(HTREEITEM)hParent;
             tvItem.mask = OS.TVIF_STATE;
-            OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
             expanded = (tvItem.state & OS.TVIS_EXPANDED) !is 0;
         } else {
             /*
@@ -4132,14 +4132,14 @@ void setItemCount (int count, HANDLE hParent, HANDLE hItem) {
             * with TVIS_EXPANDED, the entire state is returned.  The fix is
             * to explicitly check for the TVIS_EXPANDED bit.
             */
-            auto state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hParent, OS.TVIS_EXPANDED);
+            auto state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hParent, OS.TVIS_EXPANDED);
             expanded = (state & OS.TVIS_EXPANDED) !is 0;
         }
     }
     while (hItem !is null) {
         tvItem.hItem = cast(HTREEITEM)hItem;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
         TreeItem item = tvItem.lParam !is -1 ? items [tvItem.lParam] : null;
         if (item !is null && !item.isDisposed ()) {
             item.dispose ();
@@ -4223,10 +4223,10 @@ override HWND scrolledHandle () {
 void select (HANDLE hItem, TVITEM* tvItem) {
     while (hItem !is null) {
         tvItem.hItem = cast(HTREEITEM)hItem;
-        OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)tvItem);
+        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
         select (hFirstItem, tvItem);
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
     }
 }
 
@@ -4261,7 +4261,7 @@ public void select (TreeItem item) {
             OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
             state = tvItem.state;
         } else {
-            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, &hItem, OS.TVIS_SELECTED);
+            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)&hItem, OS.TVIS_SELECTED);
         }
         if ((state & OS.TVIS_SELECTED) !is 0) return;
         /*
@@ -4315,7 +4315,7 @@ public void select (TreeItem item) {
     tvItem.stateMask = OS.TVIS_SELECTED;
     tvItem.state = OS.TVIS_SELECTED;
     tvItem.hItem = cast(HTREEITEM)item.handle;
-    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
 }
 
 /**
@@ -4346,7 +4346,7 @@ public void selectAll () {
             TreeItem item = items [i];
             if (item !is null) {
                 tvItem.hItem = cast(HTREEITEM)item.handle;
-                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             }
         }
     }
@@ -4551,7 +4551,7 @@ public void setColumnOrder (int [] order) {
     }
     if (order.length !is columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
     int [] oldOrder = new int [columnCount];
-    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, oldOrder.ptr);
+    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)oldOrder.ptr);
     bool reorder = false;
     bool [] seen = new bool [columnCount];
     for (int i=0; i<order.length; i++) {
@@ -4565,9 +4565,9 @@ public void setColumnOrder (int [] order) {
         RECT [] oldRects = new RECT [columnCount];
         for (int i=0; i<columnCount; i++) {
             //oldRects [i] = new RECT ();
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, & oldRects [i]);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)& oldRects [i]);
         }
-        OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order.ptr);
+        OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, cast(LPARAM)order.ptr);
         OS.InvalidateRect (handle, null, true);
         updateImageList ();
         TreeColumn [] newColumns = new TreeColumn [columnCount];
@@ -4576,7 +4576,7 @@ public void setColumnOrder (int [] order) {
         for (int i=0; i<columnCount; i++) {
             TreeColumn column = newColumns [i];
             if (!column.isDisposed ()) {
-                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &newRect);
+                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&newRect);
                 if (newRect.left !is oldRects [i].left) {
                     column.updateToolTip (i);
                     column.sendEvent (SWT.Move);
@@ -4676,7 +4676,7 @@ void setCheckboxImageList () {
     }
     OS.DeleteObject (hBitmap);
     auto hOldStateList = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
-    OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hStateList);
+    OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, cast(LPARAM)hStateList);
     if (hOldStateList !is null) OS.ImageList_Destroy (hOldStateList);
 }
 
@@ -4767,7 +4767,7 @@ override public void setRedraw (bool redraw) {
             if (count is 0) {
                 TVINSERTSTRUCT tvInsert;
                 tvInsert.hInsertAfter = cast(HTREEITEM) OS.TVI_FIRST;
-                hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, &tvInsert);
+                hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, cast(LPARAM)&tvInsert);
             }
             OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
             updateScrollBar ();
@@ -4779,7 +4779,7 @@ override public void setRedraw (bool redraw) {
     }
     if (hItem !is null) {
         ignoreShrink = true;
-        OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+        OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, cast(LPARAM)hItem);
         ignoreShrink = false;
     }
 }
@@ -4790,7 +4790,7 @@ void setScrollWidth () {
     HDITEM hdItem;
     for (int i=0; i<columnCount; i++) {
         hdItem.mask = OS.HDI_WIDTH;
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, &hdItem);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, cast(LPARAM)&hdItem);
         width += hdItem.cxy;
     }
     setScrollWidth (Math.max (scrollWidth, width));
@@ -4834,7 +4834,7 @@ void setScrollWidth (int width) {
     playout.prc = &layoutrect;
     WINDOWPOS pos;
     playout.pwpos = &pos;
-    OS.SendMessage (hwndHeader, OS.HDM_LAYOUT, 0, &playout);
+    OS.SendMessage (hwndHeader, OS.HDM_LAYOUT, 0, cast(LPARAM)&playout);
     SetWindowPos (hwndHeader, cast(HWND)OS.HWND_TOP, pos.x - left, pos.y, pos.cx + left, pos.cy, OS.SWP_NOACTIVATE);
     int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
     int b = (bits & OS.WS_EX_CLIENTEDGE) !is 0 ? OS.GetSystemMetrics (OS.SM_CXEDGE) : 0;
@@ -4855,21 +4855,21 @@ void setSelection (HANDLE hItem, TVITEM* tvItem, TreeItem [] selection) {
             index++;
         }
         tvItem.hItem = cast(HTREEITEM)hItem;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         if ((tvItem.state & OS.TVIS_SELECTED) !is 0) {
             if (index is selection.length) {
                 tvItem.state = 0;
-                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             }
         } else {
             if (index !is selection.length) {
                 tvItem.state = OS.TVIS_SELECTED;
-                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             }
         }
-        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+        auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)hItem);
         setSelection (hFirstItem, tvItem, selection);
-        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+        hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cast(LPARAM)hItem);
     }
 }
 
@@ -4955,11 +4955,11 @@ public void setSelection (TreeItem [] items) {
             OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
         }
         ignoreSelect = true;
-        OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
+        OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, cast(LPARAM)hNewItem);
         ignoreSelect = false;
         if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) is 0) {
-            OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
-            auto hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hNewItem);
+            OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, cast(LPARAM)hNewItem);
+            auto hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hNewItem);
             if (hParent is 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
         }
         if (fixScroll) {
@@ -4980,7 +4980,7 @@ public void setSelection (TreeItem [] items) {
             tvItem.state = OS.TVIS_SELECTED;
             tvItem.stateMask = OS.TVIS_SELECTED;
             tvItem.hItem = cast(HTREEITEM)hNewItem;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             showItem (hNewItem);
         }
     }
@@ -5005,16 +5005,16 @@ public void setSelection (TreeItem [] items) {
                     index++;
                 }
                 tvItem.hItem = cast(HTREEITEM)item.handle;
-                OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                 if ((tvItem.state & OS.TVIS_SELECTED) !is 0) {
                     if (index is length) {
                         tvItem.state = 0;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     }
                 } else {
                     if (index !is length) {
                         tvItem.state = OS.TVIS_SELECTED;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     }
                 }
             }
@@ -5109,8 +5109,8 @@ public void setTopItem (TreeItem item) {
         redraw = drawCount is 0 && OS.IsWindowVisible (handle);
         if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
     }
-    OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-    auto hParent = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+    OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, cast(LPARAM)hItem);
+    auto hParent = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hItem);
     if (hParent is null) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
     if (fixScroll) {
         OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -5140,7 +5140,7 @@ void showItem (HANDLE hItem) {
             OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
             OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
         }
-        OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+        OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, cast(LPARAM)hItem);
         /* This code is intentionally commented */
         //auto hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
         //if (hParent is 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
@@ -5170,7 +5170,7 @@ void showItem (HANDLE hItem) {
                 OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
                 OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
             }
-            OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+            OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, cast(LPARAM)hItem);
             if (fixScroll) {
                 OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
                 OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
@@ -5234,7 +5234,7 @@ public void showColumn (TreeColumn column) {
         OS.GetClientRect (hwndParent, &rect);
         OS.MapWindowPoints (hwndParent, handle, cast(POINT*) &rect, 2);
         RECT headerRect;
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
         bool scroll = headerRect.left < rect.left;
         if (!scroll) {
             int width = Math.min (rect.right - rect.left, headerRect.right - headerRect.left);
@@ -5302,7 +5302,7 @@ public void showSelection () {
             OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
             state = tvItem.state;
         } else {
-            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+            state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)hItem, OS.TVIS_SELECTED);
         }
         if ((state & OS.TVIS_SELECTED) is 0) return;
     } else {
@@ -5329,7 +5329,7 @@ public void showSelection () {
                         OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
                         state = tvItem.state;
                     } else {
-                        state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, item.handle, OS.TVIS_SELECTED);
+                        state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, cast(WPARAM)item.handle, OS.TVIS_SELECTED);
                     }
                     if ((state & OS.TVIS_SELECTED) !is 0) {
                         hItem = item.handle;
@@ -5356,7 +5356,7 @@ void sort (HANDLE hParent, bool all) {
     hFirstIndexOf = hLastIndexOf = null;
     itemCount = -1;
     if (sortDirection is SWT.UP || sortDirection is SWT.NONE) {
-        OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, hParent);
+        OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, cast(LPARAM)hParent);
     } else {
         //Callback compareCallback = new Callback (this, "CompareFunc", 3);
         //int lpfnCompare = compareCallback.getAddress ();
@@ -5365,7 +5365,7 @@ void sort (HANDLE hParent, bool all) {
         psort.hParent = cast(HTREEITEM)hParent;
         psort.lpfnCompare = &CompareFunc;
         psort.lParam = sortColumn is null ? 0 : indexOf (sortColumn);
-        OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, &psort);
+        OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, cast(LPARAM)&psort);
         sThis = null;
         //compareCallback.dispose ();
     }
@@ -5472,13 +5472,13 @@ void updateHeaderToolTips () {
     lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
     for (int i=0; i<columnCount; i++) {
         TreeColumn column = columns [i];
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &rect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&rect) !is 0) {
             lpti.uId = column.id = display.nextToolTipId++;
             lpti.rect.left = rect.left;
             lpti.rect.top = rect.top;
             lpti.rect.right = rect.right;
             lpti.rect.bottom = rect.bottom;
-            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, &lpti);
+            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
         }
     }
 }
@@ -5509,7 +5509,7 @@ void updateImageList () {
     HBITMAP hImageList = i is items.length ? null : imageList.getHandle ();
     HANDLE hOldImageList = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
     if (hImageList !is hOldImageList) {
-        OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+        OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, cast(LPARAM)hImageList);
     }
 }
 
@@ -5662,7 +5662,7 @@ override .LRESULT windowProc (HWND hwnd, int msg, WPARAM wParam, LPARAM lParam) 
                         OS.ScreenToClient (hwnd, &pt);
                         pinfo.pt.x = pt.x;
                         pinfo.pt.y = pt.y;
-                        auto index = OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, &pinfo);
+                        auto index = OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, cast(LPARAM)&pinfo);
                         if (0 <= index && index < columnCount && !columns [index].resizable) {
                             if ((pinfo.flags & (OS.HHT_ONDIVIDER | OS.HHT_ONDIVOPEN)) !is 0) {
                                 OS.SetCursor (OS.LoadCursor (null, cast(TCHAR*) OS.IDC_ARROW));
@@ -5842,7 +5842,7 @@ override .LRESULT windowProc (HWND hwnd, int msg, WPARAM wParam, LPARAM lParam) 
             if ((style & SWT.MIRRORED) !is 0) {
                 shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x; 
             }
-            OS.MoveMemory (lParam, &shdi, SHDRAGIMAGE.sizeof);
+            OS.MoveMemory (cast(LPVOID)lParam, &shdi, SHDRAGIMAGE.sizeof);
             return 1;
         }
     }
@@ -5866,13 +5866,13 @@ override LRESULT WM_CHAR (WPARAM wParam, LPARAM lParam) {
             HANDLE hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
             if (hItem !is null) {
                 hAnchor = hItem;
-                OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+                OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, cast(LPARAM)hItem);
                 TVITEM tvItem;
                 tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE | OS.TVIF_PARAM;
                 tvItem.hItem = cast(HTREEITEM)hItem;
                 if ((style & SWT.CHECK) !is 0) {
                     tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                     int state = tvItem.state >> 12;
                     if ((state & 0x1) !is 0) {
                         state++;
@@ -5880,17 +5880,17 @@ override LRESULT WM_CHAR (WPARAM wParam, LPARAM lParam) {
                         --state;
                     }
                     tvItem.state = state << 12;
-                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     static if (!OS.IsWinCE) {
                         auto id = cast(int)/*64bit*/hItem;
                         if (OS.COMCTL32_MAJOR >= 6) {
-                            id = cast(int)/*64bit*/OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, hItem, 0);
+                            id = cast(int)/*64bit*/OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, cast(WPARAM)hItem, 0);
                         }
                         OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);
                     }
                 }
                 tvItem.stateMask = OS.TVIS_SELECTED;
-                OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                 if ((style & SWT.MULTI) !is 0 && OS.GetKeyState (OS.VK_CONTROL) < 0) {
                     if ((tvItem.state & OS.TVIS_SELECTED) !is 0) {
                         tvItem.state &= ~OS.TVIS_SELECTED;
@@ -5900,7 +5900,7 @@ override LRESULT WM_CHAR (WPARAM wParam, LPARAM lParam) {
                 } else {
                     tvItem.state |= OS.TVIS_SELECTED;
                 }
-                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                 TreeItem item = _getItem (hItem, tvItem.lParam);
                 Event event = new Event ();
                 event.item = item;
@@ -6034,8 +6034,8 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
                     int flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
                     while (hDeselectItem !is hAnchor) {
                         tvItem.hItem = cast(HTREEITEM)hDeselectItem;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
-                        hDeselectItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hDeselectItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
+                        hDeselectItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, cast(LPARAM)hDeselectItem);
                     }
                     auto hSelectItem = hAnchor;
                     OS.TreeView_GetItemRect (handle, cast(HTREEITEM)hNewItem, &rect1, false);
@@ -6044,14 +6044,14 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
                     flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
                     while (hSelectItem !is hNewItem) {
                         tvItem.hItem = cast(HTREEITEM)hSelectItem;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
-                        hSelectItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hSelectItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
+                        hSelectItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, cast(LPARAM)hSelectItem);
                     }
                     tvItem.hItem = cast(HTREEITEM)hNewItem;
-                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
                     tvItem.hItem = cast(HTREEITEM)hNewItem;
-                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                     Event event = new Event ();
                     event.item = _getItem (hNewItem, tvItem.lParam);
                     postEvent (SWT.Selection, event);
@@ -6065,15 +6065,15 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
                     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
                     tvItem.stateMask = OS.TVIS_SELECTED;
                     tvItem.hItem = cast(HTREEITEM)hItem;
-                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                     bool oldSelected = (tvItem.state & OS.TVIS_SELECTED) !is 0;
                     HANDLE hNewItem;
                     switch (wParam) {
                         case OS.VK_UP:
-                            hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUSVISIBLE, hItem);
+                            hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUSVISIBLE, cast(LPARAM)hItem);
                             break;
                         case OS.VK_DOWN:
-                            hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+                            hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hItem);
                             break;
                         case OS.VK_HOME:
                             hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
@@ -6090,7 +6090,7 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
                             OS.GetClientRect (handle, &clientRect);
                             hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
                             do {
-                                auto hVisible = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNewItem);
+                                auto hVisible = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hNewItem);
                                 if (hVisible is null) break;
                                 if (!OS.TreeView_GetItemRect (handle, cast(HTREEITEM)hVisible, &rect, false)) break;
                                 if (rect.bottom > clientRect.bottom) break;
@@ -6105,9 +6105,9 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
                         default:
                     }
                     if (hNewItem !is null) {
-                        OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hNewItem);
+                        OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, cast(LPARAM)hNewItem);
                         tvItem.hItem = cast(HTREEITEM)hNewItem;
-                        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                         bool newSelected = (tvItem.state & OS.TVIS_SELECTED) !is 0;
                         bool redraw = !newSelected && drawCount is 0 && OS.IsWindowVisible (handle);
                         if (redraw) {
@@ -6116,18 +6116,18 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
                         }
                         hSelect = hNewItem;
                         ignoreSelect = true;
-                        OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
+                        OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, cast(LPARAM)hNewItem);
                         ignoreSelect = false;
                         hSelect = null;
                         if (oldSelected) {
                             tvItem.state = OS.TVIS_SELECTED;
                             tvItem.hItem = cast(HTREEITEM)hItem;
-                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                         }
                         if (!newSelected) {
                             tvItem.state = 0;
                             tvItem.hItem = cast(HTREEITEM)hNewItem;
-                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                         }
                         if (redraw) {
                             RECT rect1, rect2;
@@ -6188,7 +6188,7 @@ override LRESULT WM_LBUTTONDBLCLK (WPARAM wParam, LPARAM lParam) {
     TVHITTESTINFO lpht;
     lpht.pt.x = OS.GET_X_LPARAM (lParam);
     lpht.pt.y = OS.GET_Y_LPARAM (lParam);
-    OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+    OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
     if (lpht.hItem !is null) {
         if ((style & SWT.CHECK) !is 0) {
             if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) !is 0) {
@@ -6209,7 +6209,7 @@ override LRESULT WM_LBUTTONDBLCLK (WPARAM wParam, LPARAM lParam) {
                 tvItem.hItem = lpht.hItem;
                 tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
                 tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-                OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                 int state = tvItem.state >> 12;
                 if ((state & 0x1) !is 0) {
                     state++;
@@ -6217,11 +6217,11 @@ override LRESULT WM_LBUTTONDBLCLK (WPARAM wParam, LPARAM lParam) {
                     --state;
                 }
                 tvItem.state = state << 12;
-                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                 static if (!OS.IsWinCE) {
                     int id = cast(int)/*64bit*/tvItem.hItem;
                     if (OS.COMCTL32_MAJOR >= 6) {
-                        id = cast(int)/*64bit*/OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
+                        id = cast(int)/*64bit*/OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, cast(WPARAM)tvItem.hItem, 0);
                     }
                     OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);
                 }
@@ -6267,7 +6267,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
     TVHITTESTINFO lpht;
     lpht.pt.x = OS.GET_X_LPARAM (lParam);
     lpht.pt.y = OS.GET_Y_LPARAM (lParam);
-    OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+    OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
     if (lpht.hItem is null || (lpht.flags & OS.TVHT_ONITEMBUTTON) !is 0) {
         Display display = this.display;
         display.captureChanged = false;
@@ -6284,21 +6284,21 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                 TVITEM tvItem;
                 tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
                 tvItem.hItem = lpht.hItem;
-                OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                 if ((tvItem.state & OS.TVIS_EXPANDED) !is 0) {
                     fixSelection = true;
                     tvItem.stateMask = OS.TVIS_SELECTED;
-                    auto hNext = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
+                    auto hNext = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)lpht.hItem);
                     while (hNext !is null) {
                         if (hNext is hAnchor) hAnchor = null;
                         tvItem.hItem = cast(HTREEITEM)hNext;
-                        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                         if ((tvItem.state & OS.TVIS_SELECTED) !is 0) deselected = true;
                         tvItem.state = 0;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
-                        HANDLE hItem = hNext = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNext);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
+                        HANDLE hItem = hNext = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, cast(LPARAM)hNext);
                         while (hItem !is null && hItem !is lpht.hItem) {
-                            hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+                            hItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, cast(LPARAM)hItem);
                         }
                         if (hItem is null) break;
                     }
@@ -6370,7 +6370,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
             tvItem.hItem = lpht.hItem;
             tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
             tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-            OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
             int state = tvItem.state >> 12;
             if ((state & 0x1) !is 0) {
                 state++;
@@ -6378,11 +6378,11 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                 --state;
             }
             tvItem.state = state << 12;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             static if (!OS.IsWinCE) {
                 int id = cast(int)/*64bit*/tvItem.hItem;
                 if (OS.COMCTL32_MAJOR >= 6) {
-                    id = cast(int)/*64bit*/OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
+                    id = cast(int)/*64bit*/OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, cast(WPARAM)tvItem.hItem, 0);
                 }
                 OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);
             }
@@ -6446,7 +6446,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
     bool hittestSelected = false;
     if ((style & SWT.MULTI) !is 0) {
         tvItem.hItem = lpht.hItem;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         hittestSelected = (tvItem.state & OS.TVIS_SELECTED) !is 0;
     }
 
@@ -6454,7 +6454,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
     auto hOldItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
     if ((style & SWT.MULTI) !is 0) {
         tvItem.hItem = cast(HTREEITEM)hOldItem;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
 
         /* Check for CONTROL or drag selection */
         if (hittestSelected || (wParam & OS.MK_CONTROL) !is 0) {
@@ -6511,7 +6511,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
     auto hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
     if (fakeSelection) {
         if (hOldItem is null || (hNewItem is hOldItem && lpht.hItem !is hOldItem)) {
-            OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+            OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, cast(LPARAM)lpht.hItem);
             hNewItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
         }
         if (!dragStarted && (state & DRAG_DETECT) !is 0 && hooks (SWT.DragDetect)) {
@@ -6540,7 +6540,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
             tvItem.state = OS.TVIS_SELECTED;
             tvItem.stateMask = OS.TVIS_SELECTED;
             tvItem.hItem = cast(HTREEITEM)hNewItem;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
         }
     }
 
@@ -6553,18 +6553,18 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                 if ((wParam & OS.MK_CONTROL) !is 0) {
                     tvItem.state ^= OS.TVIS_SELECTED;
                     if (dragStarted) tvItem.state = OS.TVIS_SELECTED;
-                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                 }
             } else {
                 if ((tvItem.state & OS.TVIS_SELECTED) !is 0) {
                     tvItem.state = OS.TVIS_SELECTED;
-                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                 }
                 if ((wParam & OS.MK_CONTROL) !is 0 && !dragStarted) {
                     if (hittestSelected) {
                         tvItem.state = 0;
                         tvItem.hItem = lpht.hItem;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     }
                 }
             }
@@ -6594,13 +6594,13 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                         TreeItem item = items [i];
                         if (item !is null && item.handle !is hNewItem) {
                             tvItem.hItem = cast(HTREEITEM)item.handle;
-                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                         }
                     }
                 }
                 tvItem.hItem = cast(HTREEITEM)hNewItem;
                 tvItem.state = OS.TVIS_SELECTED;
-                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                 OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
                 if ((wParam & OS.MK_SHIFT) !is 0) {
                     RECT rect1;
@@ -6611,11 +6611,11 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                             int flags = rect1.top < rect2.top ? OS.TVGN_NEXTVISIBLE : OS.TVGN_PREVIOUSVISIBLE;
                             tvItem.state = OS.TVIS_SELECTED;
                             auto hItem = tvItem.hItem = cast(HTREEITEM)hAnchor;
-                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                             while (hItem !is hNewItem) {
                                 tvItem.hItem = hItem;
-                                OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
-                                hItem = cast(HTREEITEM) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hItem);
+                                OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
+                                hItem = cast(HTREEITEM) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, cast(LPARAM)hItem);
                             }
                         }
                     }
@@ -6629,7 +6629,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
     if (!gestureCompleted) {
         tvItem.hItem = cast(HTREEITEM)hNewItem;
         tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-        OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+        OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
         Event event = new Event ();
         event.item = _getItem (tvItem.hItem, tvItem.lParam);
         postEvent (SWT.Selection, event);
@@ -6698,7 +6698,7 @@ override LRESULT WM_MOUSEMOVE (WPARAM wParam, LPARAM lParam) {
                 lpti.rect.top = cellRect.top;
                 lpti.rect.right = cellRect.right;
                 lpti.rect.bottom = cellRect.bottom;
-                OS.SendMessage (itemToolTipHandle, OS.TTM_NEWTOOLRECT, 0, &lpti);
+                OS.SendMessage (itemToolTipHandle, OS.TTM_NEWTOOLRECT, 0, cast(LPARAM)&lpti);
             }
         }
     }
@@ -6749,7 +6749,7 @@ override LRESULT WM_RBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
     TVHITTESTINFO lpht;
     lpht.pt.x = OS.GET_X_LPARAM (lParam);
     lpht.pt.y = OS.GET_Y_LPARAM (lParam);
-    OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+    OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
     if (lpht.hItem !is null) {
         bool fakeSelection = (style & SWT.FULL_SELECTION) !is 0;
         if (!fakeSelection) {
@@ -6766,12 +6766,12 @@ override LRESULT WM_RBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
                 tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
                 tvItem.stateMask = OS.TVIS_SELECTED;
                 tvItem.hItem = lpht.hItem;
-                OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                 if ((tvItem.state & OS.TVIS_SELECTED) is 0) {
                     ignoreSelect = true;
                     OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
                     ignoreSelect = false;
-                    OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+                    OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, cast(LPARAM)lpht.hItem);
                 }
             }
         }
@@ -7117,7 +7117,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                     TVITEM tvItem;
                     tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
                     tvItem.hItem = lptvdi.item.hItem;
-                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, &tvItem);
+                    OS.SendMessage (handle, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                     id = tvItem.lParam;
                 }
             }
@@ -7231,7 +7231,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                 TVHITTESTINFO lpht;
                 lpht.pt.x = pt.x;
                 lpht.pt.y = pt.y;
-                OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+                OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
                 if (lpht.hItem !is null && (lpht.flags & OS.TVHT_ONITEM) !is 0) {
                     return LRESULT.ONE;
                 }
@@ -7292,7 +7292,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                         tvItem.mask = OS.TVIF_STATE;
                         tvItem.stateMask = OS.TVIS_SELECTED;
                         tvItem.state = OS.TVIS_SELECTED;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     }
                     if (!newSelected && ignoreSelect) {
                         if (treeView is null) {
@@ -7302,7 +7302,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                         tvItem.mask = OS.TVIF_STATE;
                         tvItem.stateMask = OS.TVIS_SELECTED;
                         tvItem.state = 0;
-                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+                        OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
                     }
                 }
             }
@@ -7380,7 +7380,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                 * The fix is to detect this case and run the TVN_ITEMEXPANDED
                 * code in this method.
                 */
-                auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, tvItem.hItem);
+                auto hFirstItem = cast(HANDLE) OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, cast(LPARAM)tvItem.hItem);
                 runExpanded = hFirstItem is null;
             }
             if (!runExpanded) break;
@@ -7402,7 +7402,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
             * the insert mark whenever an item is expanded or collapsed.
             */
             if (hInsert !is null) {
-                OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
+                OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, cast(LPARAM)hInsert);
             }
             /*
             * Bug in Windows.  When a tree item that has an image
@@ -7442,7 +7442,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
             if (tvItem.hItem !is null && (tvItem.state & OS.TVIS_SELECTED) is 0) {
                 hSelect = tvItem.hItem;
                 ignoreSelect = ignoreDeselect = true;
-                OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, tvItem.hItem);
+                OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, cast(LPARAM)tvItem.hItem);
                 ignoreSelect = ignoreDeselect = false;
                 hSelect = null;
             }
@@ -7547,7 +7547,7 @@ LRESULT wmNotifyHeader (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                 HDITEM* pitem = cast(HDITEM*)phdn.pitem;
                 if ((pitem.mask & OS.HDI_ORDER) !is 0 && pitem.iOrder !is -1) {
                     int [] order = new int [columnCount];
-                    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order.ptr);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)order.ptr);
                     int index = 0;
                     while (index < order.length) {
                         if (order [index] is phdn.iItem) break;
@@ -7559,9 +7559,9 @@ LRESULT wmNotifyHeader (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                     int end = Math.max (index, pitem.iOrder);
                     RECT rect, headerRect;
                     OS.GetClientRect (handle, &rect);
-                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], &headerRect);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], cast(LPARAM)&headerRect);
                     rect.left = Math.max (rect.left, headerRect.left);
-                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], &headerRect);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], cast(LPARAM)&headerRect);
                     rect.right = Math.min (rect.right, headerRect.right);
                     OS.InvalidateRect (handle, &rect, true);
                     ignoreColumnMove = false;
@@ -7585,10 +7585,10 @@ LRESULT wmNotifyHeader (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                     OS.GetClientRect (handle, &rect);
                     HDITEM oldItem;
                     oldItem.mask = OS.HDI_WIDTH;
-                    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, &oldItem);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, cast(LPARAM)&oldItem);
                     int deltaX = newItem.cxy - oldItem.cxy;
                     RECT headerRect;
-                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, &headerRect);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, cast(LPARAM)&headerRect);
                     int gridWidth = linesVisible ? GRID_WIDTH : 0;
                     rect.left = headerRect.right - gridWidth;
                     int newX = rect.left + deltaX;
@@ -7639,7 +7639,7 @@ LRESULT wmNotifyHeader (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                         TreeColumn [] newColumns = new TreeColumn [columnCount];
                         System.arraycopy (columns, 0, newColumns, 0, columnCount);
                         int [] order = new int [columnCount];
-                        OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order.ptr);
+                        OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, cast(LPARAM)order.ptr);
                         bool moved = false;
                         for (int i=0; i<columnCount; i++) {
                             TreeColumn nextColumn = newColumns [order [i]];
@@ -7734,7 +7734,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW* nmcd, LPARAM lParam) {
             if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, 0) !is 0) {
                 TOOLINFO lpti;
                 lpti.cbSize = OS.TOOLINFO_sizeof;
-                if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+                if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
                     int index;
                     TreeItem item;
                     RECT* cellRect, itemRect;

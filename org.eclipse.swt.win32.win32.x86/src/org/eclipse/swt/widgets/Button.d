@@ -179,7 +179,7 @@ void _setImage (Image image) {
                 OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
                 OS.InvalidateRect (handle, null, true);
             }
-            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, &buttonImageList);
+            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
         } else {
             OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
         }
@@ -282,7 +282,7 @@ void _setImage (Image image) {
         newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
         newBits |= imageBits;
         if (newBits !is oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-        OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
+        OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, cast(LPARAM)hImage);
     }
 }
 
@@ -307,7 +307,7 @@ void _setText (String text) {
                 newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
                 newBits |= OS.BS_LEFT;
             }
-            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, &buttonImageList);
+            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
         }
     } else {
         newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
@@ -434,18 +434,18 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
             SIZE size;
             if (wHint !is SWT.DEFAULT) {
                 size.cx = wHint;
-                OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, &size);
+                OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, cast(LPARAM)&size);
                 width = size.cx;
                 height = size.cy;
             } else {
-                OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, &size);
+                OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, cast(LPARAM)&size);
                 width = size.cy;
                 height = size.cy;
                 size.cy = 0;
                 while (size.cy !is height) {
                     size.cx = width++;
                     size.cy = 0;
-                    OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, &size);
+                    OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, cast(LPARAM)&size);
                 }
             }
         } else {
@@ -614,7 +614,7 @@ override void enableWidget (bool enabled) {
     if (OS.COMCTL32_MAJOR >= 6) {
         if (imageList !is null) {
             BUTTON_IMAGELIST buttonImageList;
-            OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, &buttonImageList);
+            OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
             if (imageList !is null) imageList.dispose ();
             imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
             if (OS.IsWindowEnabled (handle)) {
@@ -625,7 +625,7 @@ override void enableWidget (bool enabled) {
                 imageList.add (disabledImage);
             }
             buttonImageList.himl = imageList.getHandle ();
-            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, &buttonImageList);
+            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
             /*
             * Bug in Windows.  Under certain cirumstances yet to be
             * isolated, BCM_SETIMAGELIST does not redraw the control
@@ -808,7 +808,7 @@ void printWidget (HWND hwnd, GC gc) {
     auto hDC = gc.handle;
     if (!OS.PrintWindow (hwnd, hDC, 0)) {
         int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND | OS.PRF_CHILDREN;
-        OS.SendMessage (hwnd, OS.WM_PRINT, hDC, flags);
+        OS.SendMessage (hwnd, OS.WM_PRINT, cast(WPARAM)hDC, flags);
     }
 }
 
@@ -922,7 +922,7 @@ public void setAlignment (int alignment) {
                 newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
                 newBits |= OS.BS_LEFT;
             }
-            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, &buttonImageList);
+            OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
         }
     }
     if (newBits !is oldBits) {
@@ -937,7 +937,7 @@ void setDefault (bool value) {
     int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
     if (value) {
         bits |= OS.BS_DEFPUSHBUTTON;
-        OS.SendMessage (hwndShell, OS.DM_SETDEFID, handle, 0);
+        OS.SendMessage (hwndShell, OS.DM_SETDEFID, cast(WPARAM)handle, 0);
     } else {
         bits &= ~OS.BS_DEFPUSHBUTTON;
         OS.SendMessage (hwndShell, OS.DM_SETDEFID, 0, 0);
@@ -1039,7 +1039,7 @@ public void setGrayed (bool grayed) {
     this.message = message;
     if (OS.COMCTL32_VERSION >= OS.VERSION (6, 1)) {
         if ((style & SWT.COMMAND) !is 0) {
-            OS.SendMessage (handle, OS.BCM_SETNOTE, 0, cast(void*)StrToTCHARz( message ));
+            OS.SendMessage (handle, OS.BCM_SETNOTE, 0, cast(LPARAM)StrToTCHARz( message ));
         }
     }
 }
@@ -1271,11 +1271,11 @@ override LRESULT WM_SIZE (WPARAM wParam, LPARAM lParam) {
         if ((style & (SWT.PUSH | SWT.TOGGLE)) !is 0) {
             if (imageList !is null && text.length !is 0) {
                 BUTTON_IMAGELIST buttonImageList;
-                OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, &buttonImageList);
+                OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
                 buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
                 buttonImageList.margin.left = computeLeftMargin ();
                 buttonImageList.margin.right = MARGIN;
-                OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, &buttonImageList);
+                OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, cast(LPARAM)&buttonImageList);
             }
         }
     }

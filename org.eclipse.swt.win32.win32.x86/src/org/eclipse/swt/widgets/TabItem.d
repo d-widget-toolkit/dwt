@@ -150,7 +150,7 @@ void _setText (int index, String string) {
     TCITEM tcItem;
     tcItem.mask = OS.TCIF_TEXT;
     tcItem.pszText = pszText;
-    OS.SendMessage (hwnd, OS.TCM_SETITEM, index, &tcItem);
+    OS.SendMessage (hwnd, OS.TCM_SETITEM, index, cast(LPARAM)&tcItem);
     OS.HeapFree (hHeap, 0, pszText);
 }
 
@@ -198,7 +198,7 @@ public Rectangle getBounds() {
     int index = parent.indexOf(this);
     if (index is -1) return new Rectangle (0, 0, 0, 0);
     RECT itemRect;
-    OS.SendMessage (parent.handle, OS.TCM_GETITEMRECT, index, &itemRect);
+    OS.SendMessage (parent.handle, OS.TCM_GETITEMRECT, index, cast(LPARAM)&itemRect);
     return new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
 }
 
@@ -309,7 +309,7 @@ override public void setImage (Image image) {
     TCITEM tcItem;
     tcItem.mask = OS.TCIF_IMAGE;
     tcItem.iImage = parent.imageIndex (image);
-    OS.SendMessage (hwnd, OS.TCM_SETITEM, index, &tcItem);
+    OS.SendMessage (hwnd, OS.TCM_SETITEM, index, cast(LPARAM)&tcItem);
 }
 /**
  * Sets the receiver's text.  The string may include

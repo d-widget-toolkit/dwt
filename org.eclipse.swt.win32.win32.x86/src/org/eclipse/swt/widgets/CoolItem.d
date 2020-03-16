@@ -231,10 +231,10 @@ public Rectangle getBounds () {
     if (index is -1) return new Rectangle (0, 0, 0, 0);
     auto hwnd = parent.handle;
     RECT rect;
-    OS.SendMessage (hwnd, OS.RB_GETRECT, index, &rect);
+    OS.SendMessage (hwnd, OS.RB_GETRECT, index, cast(LPARAM)&rect);
     if (OS.COMCTL32_MAJOR >= 6) {
         MARGINS margins;
-        OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, &margins);
+        OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, cast(LPARAM)&margins);
         rect.left -= margins.cxLeftWidth;
         rect.right += margins.cxRightWidth;
     }
@@ -255,9 +255,9 @@ Rectangle getClientArea () {
     if (index is -1) return new Rectangle (0, 0, 0, 0);
     auto hwnd = parent.handle;
     RECT insetRect;
-    OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, &insetRect);
+    OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, cast(LPARAM)&insetRect);
     RECT rect;
-    OS.SendMessage (hwnd, OS.RB_GETRECT, index, &rect);
+    OS.SendMessage (hwnd, OS.RB_GETRECT, index, cast(LPARAM)&rect);
     int x = rect.left + insetRect.left;
     int y = rect.top;
     int width = rect.right - rect.left - insetRect.left;
@@ -271,7 +271,7 @@ Rectangle getClientArea () {
         REBARBANDINFO rbBand;
         rbBand.cbSize = REBARBANDINFO.sizeof;
         rbBand.fMask = OS.RBBIM_HEADERSIZE;
-        OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+        OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
         width = width - rbBand.cxHeader + 1;
     }
     return new Rectangle (x, y, Math.max (0, width), Math.max (0, height));
@@ -361,7 +361,7 @@ public void setControl (Control control) {
     }
     bool hideNew = newControl !is null && !newControl.getVisible ();
     bool showOld = oldControl !is null && oldControl.getVisible ();
-    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
     if (hideNew) newControl.setVisible (false);
     if (showOld) oldControl.setVisible (true);
     if (hwndAbove !is null && hwndAbove !is hwndChild) {
@@ -390,7 +390,7 @@ public Point getPreferredSize () {
     REBARBANDINFO rbBand;
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
     int width = rbBand.cxIdeal + parent.getMargin (index);
     if ((parent.style & SWT.VERTICAL) !is 0) {
         return new Point (rbBand.cyMaxChild, width);
@@ -430,14 +430,14 @@ public void setPreferredSize (int width, int height) {
 
     /* Get the child size fields first so we don't overwrite them. */
     rbBand.fMask = OS.RBBIM_CHILDSIZE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
 
     /* Set the size fields we are currently modifying. */
     rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
     rbBand.cxIdeal = cxIdeal;
     rbBand.cyMaxChild = cyMaxChild;
     if (!minimum) rbBand.cyMinChild = cyMaxChild;
-    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
 }
 
 /**
@@ -478,10 +478,10 @@ public Point getSize() {
     if (index is -1) new Point (0, 0);
     auto hwnd = parent.handle;
     RECT rect;
-    OS.SendMessage (hwnd, OS.RB_GETRECT, index, &rect);
+    OS.SendMessage (hwnd, OS.RB_GETRECT, index, cast(LPARAM)&rect);
     if (OS.COMCTL32_MAJOR >= 6) {
         MARGINS margins;
-        OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, &margins);
+        OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, cast(LPARAM)&margins);
         rect.left -= margins.cxLeftWidth;
         rect.right += margins.cxRightWidth;
     }
@@ -534,7 +534,7 @@ public void setSize (int width, int height) {
 
     /* Get the child size fields first so we don't overwrite them. */
     rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
 
     /* Set the size fields we are currently modifying. */
     if (!ideal) rbBand.cxIdeal = cxIdeal;
@@ -547,14 +547,14 @@ public void setSize (int width, int height) {
     if (!parent.isLastItemOfRow (index)) {
         if (OS.COMCTL32_MAJOR >= 6) {
             MARGINS margins;
-            OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, &margins);
+            OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, cast(LPARAM)&margins);
             cx -= margins.cxLeftWidth + margins.cxRightWidth;
         }
         int separator = (parent.style & SWT.FLAT) is 0 ? CoolBar.SEPARATOR_WIDTH : 0;
         rbBand.cx = cx - separator;
         rbBand.fMask |= OS.RBBIM_SIZE;
     }
-    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
 }
 
 /**
@@ -601,7 +601,7 @@ public Point getMinimumSize () {
     REBARBANDINFO rbBand;
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_CHILDSIZE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
     if ((parent.style & SWT.VERTICAL) !is 0) {
         return new Point (rbBand.cyMinChild, rbBand.cxMinChild);
     }
@@ -643,12 +643,12 @@ public void setMinimumSize (int width, int height) {
 
     /* Get the child size fields first so we don't overwrite them. */
     rbBand.fMask = OS.RBBIM_CHILDSIZE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
 
     /* Set the size fields we are currently modifying. */
     rbBand.cxMinChild = cxMinChild;
     rbBand.cyMinChild = cyMinChild;
-    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
 }
 
 /**
@@ -679,7 +679,7 @@ bool getWrap() {
     REBARBANDINFO rbBand;
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_STYLE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
     return (rbBand.fStyle & OS.RBBS_BREAK) !is 0;
 }
 
@@ -689,13 +689,13 @@ void setWrap(bool wrap) {
     REBARBANDINFO rbBand;
     rbBand.cbSize = REBARBANDINFO.sizeof;
     rbBand.fMask = OS.RBBIM_STYLE;
-    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, cast(LPARAM)&rbBand);
     if (wrap) {
         rbBand.fStyle |= OS.RBBS_BREAK;
     } else {
         rbBand.fStyle &= ~OS.RBBS_BREAK;
     }
-    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, &rbBand);
+    OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, cast(LPARAM)&rbBand);
 }
 
 /**

@@ -225,14 +225,14 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
         TBBUTTON lpButton;
         auto count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
         for (int i=0; i<count; i++) {
-            OS.SendMessage (handle, OS.TB_GETITEMRECT, i, &rect);
+            OS.SendMessage (handle, OS.TB_GETITEMRECT, i, cast(LPARAM)&rect);
             height = Math.max (height, rect.bottom);
-            OS.SendMessage (handle, OS.TB_GETBUTTON, i, &lpButton);
+            OS.SendMessage (handle, OS.TB_GETBUTTON, i, cast(LPARAM)&lpButton);
             if ((lpButton.fsStyle & OS.BTNS_SEP) !is 0) {
                 TBBUTTONINFO info;
                 info.cbSize = TBBUTTONINFO.sizeof;
                 info.dwMask = OS.TBIF_SIZE;
-                OS.SendMessage (handle, OS.TB_GETBUTTONINFO, lpButton.idCommand, &info);
+                OS.SendMessage (handle, OS.TB_GETBUTTONINFO, lpButton.idCommand, cast(LPARAM)&info);
                 width = Math.max (width, info.cx);
             } else {
                 width = Math.max (width, rect.right);
@@ -254,7 +254,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
         auto count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
         if (count !is 0) {
             RECT rect;
-            OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, &rect);
+            OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, cast(LPARAM)&rect);
             width = Math.max (width, rect.right);
             height = Math.max (height, rect.bottom);
         }
@@ -337,7 +337,7 @@ override void createHandle () {
     * create.
     */
     HFONT hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-    OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+    OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
 
     /* Set the button struct, bitmap and button sizes */
     OS.SendMessage (handle, OS.TB_BUTTONSTRUCTSIZE, TBBUTTON.sizeof, 0);
@@ -379,7 +379,7 @@ void createItem (ToolItem item, int index) {
     * separators cannot show images.
     */
     if ((bits & OS.BTNS_SEP) is 0) lpButton.iBitmap = OS.I_IMAGENONE;
-    if (OS.SendMessage (handle, OS.TB_INSERTBUTTON, index, &lpButton) is 0) {
+    if (OS.SendMessage (handle, OS.TB_INSERTBUTTON, index, cast(LPARAM)&lpButton) is 0) {
         error (SWT.ERROR_ITEM_NOT_ADDED);
     }
     items [item.id = id] = item;
@@ -402,7 +402,7 @@ void destroyItem (ToolItem item) {
     TBBUTTONINFO info;
     info.cbSize = TBBUTTONINFO.sizeof;
     info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
-    auto index = OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, &info);
+    auto index = OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, cast(LPARAM)&info);
     /*
     * Feature in Windows.  For some reason, a tool item that has
     * the style BTNS_SEP does not return I_IMAGENONE when queried
@@ -499,7 +499,7 @@ public ToolItem getItem (int index) {
     auto count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
     if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
     TBBUTTON lpButton;
-    auto result = OS.SendMessage (handle, OS.TB_GETBUTTON, index, &lpButton);
+    auto result = OS.SendMessage (handle, OS.TB_GETBUTTON, index, cast(LPARAM)&lpButton);
     if (result is 0) error (SWT.ERROR_CANNOT_GET_ITEM);
     return items [lpButton.idCommand];
 }
@@ -568,7 +568,7 @@ public ToolItem [] getItems () {
     TBBUTTON lpButton;
     ToolItem [] result = new ToolItem [count];
     for (int i=0; i<count; i++) {
-        OS.SendMessage (handle, OS.TB_GETBUTTON, i, &lpButton);
+        OS.SendMessage (handle, OS.TB_GETBUTTON, i, cast(LPARAM)&lpButton);
         result [i] = items [lpButton.idCommand];
     }
     return result;
@@ -661,7 +661,7 @@ void layoutItems () {
                 * the tool bar to redraw and lay out.
                 */
                 auto hFont = cast(HFONT) OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-                OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+                OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
                 setDropDownItems (true);
             }
         }
@@ -695,7 +695,7 @@ void layoutItems () {
         for (int i=0; i<items.length; i++) {
             ToolItem item = items [i];
             if (item !is null && (item.style & SWT.SEPARATOR) is 0) {
-                OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, &info);
+                OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, cast(LPARAM)&info);
             }
         }
     }
@@ -708,7 +708,7 @@ void layoutItems () {
 override bool mnemonicHit (wchar ch) {
     int key = Display.wcsToMbcs (ch, 0);
     int id;
-    if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, &id) is 0) {
+    if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, cast(LPARAM)&id) is 0) {
         return false;
     }
     if ((style & SWT.FLAT) !is 0 && !setTabGroupFocus ()) return false;
@@ -722,7 +722,7 @@ override bool mnemonicHit (wchar ch) {
 override bool mnemonicMatch (wchar ch) {
     int key = Display.wcsToMbcs (ch, 0);
     int id;
-    if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, &id) is 0) {
+    if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, cast(LPARAM)&id) is 0) {
         return false;
     }
     /*
@@ -865,13 +865,13 @@ void setDropDownItems (bool set) {
                     TBBUTTONINFO info;
                     info.cbSize = TBBUTTONINFO.sizeof;
                     info.dwMask = OS.TBIF_STYLE;
-                    OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, &info);
+                    OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, cast(LPARAM)&info);
                     if (set) {
                         info.fsStyle |= OS.BTNS_DROPDOWN;
                     } else {
                         info.fsStyle &= ~OS.BTNS_DROPDOWN;
                     }
-                    OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, &info);
+                    OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, cast(LPARAM)&info);
                 }
             }
         }
@@ -885,7 +885,7 @@ void setDisabledImageList (ImageList imageList) {
         hImageList = disabledImageList.getHandle ();
     }
     setDropDownItems (false);
-    OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
+    OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, cast(LPARAM)hImageList);
     setDropDownItems (true);
 }
 
@@ -921,7 +921,7 @@ void setHotImageList (ImageList imageList) {
         hImageList = hotImageList.getHandle ();
     }
     setDropDownItems (false);
-    OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
+    OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, cast(LPARAM)hImageList);
     setDropDownItems (true);
 }
 
@@ -932,14 +932,14 @@ void setImageList (ImageList imageList) {
         hImageList = imageList.getHandle ();
     }
     setDropDownItems (false);
-    OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+    OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, cast(LPARAM)hImageList);
     setDropDownItems (true);
 }
 
 override public bool setParent (Composite parent) {
     checkWidget ();
     if (!super.setParent (parent)) return false;
-    OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
+    OS.SendMessage (handle, OS.TB_SETPARENT, cast(WPARAM)parent.handle, 0);
     return true;
 }
 
@@ -1096,7 +1096,7 @@ override LRESULT WM_CHAR (WPARAM wParam, LPARAM lParam) {
             auto index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
             if (index !is -1) {
                 TBBUTTON lpButton;
-                auto code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, &lpButton);
+                auto code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, cast(LPARAM)&lpButton);
                 if (code !is 0) {
                     items [lpButton.idCommand].click (false);
                     return LRESULT.ZERO;
@@ -1180,7 +1180,7 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
 override LRESULT WM_KILLFOCUS (WPARAM wParam, LPARAM lParam) {
     auto index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
     TBBUTTON lpButton;
-    auto code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, &lpButton);
+    auto code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, cast(LPARAM)&lpButton);
     if (code !is 0) lastFocusId = lpButton.idCommand;
     return super.WM_KILLFOCUS (wParam, lParam);
 }
@@ -1213,10 +1213,10 @@ override LRESULT WM_MOUSELEAVE (WPARAM wParam, LPARAM lParam) {
         TOOLINFO lpti;
         lpti.cbSize = OS.TOOLINFO_sizeof;
         auto hwndToolTip = cast(HWND) OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
-        if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+        if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
             if ((lpti.uFlags & OS.TTF_IDISHWND) is 0) {
-                OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, &lpti);
-                OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, &lpti);
+                OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
+                OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
             }
         }
     }
@@ -1281,7 +1281,7 @@ override LRESULT WM_SIZE (WPARAM wParam, LPARAM lParam) {
         RECT rect;
         auto count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
         while (index < count) {
-            OS.SendMessage (handle, OS.TB_GETITEMRECT, index, &rect);
+            OS.SendMessage (handle, OS.TB_GETITEMRECT, index, cast(LPARAM)&rect);
             OS.MapWindowPoints (handle, null, cast(POINT*) &rect, 2);
             if (rect.right > windowRect.right - border * 2) break;
             index++;
@@ -1328,7 +1328,7 @@ override LRESULT WM_WINDOWPOSCHANGING (WPARAM wParam, LPARAM lParam) {
     OS.GetClientRect (handle, &oldRect);
     RECT newRect;
     OS.SetRect (&newRect, 0, 0, lpwp.cx, lpwp.cy);
-    OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, &newRect);
+    OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, cast(LPARAM)&newRect);
     int oldWidth = oldRect.right - oldRect.left;
     int newWidth = newRect.right - newRect.left;
     if (newWidth > oldWidth) {
@@ -1357,7 +1357,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                 event.detail = SWT.ARROW;
                 auto index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmtb.iItem, 0);
                 RECT rect;
-                OS.SendMessage (handle, OS.TB_GETITEMRECT, index, &rect);
+                OS.SendMessage (handle, OS.TB_GETITEMRECT, index, cast(LPARAM)&rect);
                 event.x = rect.left;
                 event.y = rect.bottom;
                 child.postEvent (SWT.Selection, event);
@@ -1406,7 +1406,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                         OS.GetClientRect (handle, &client);
                         auto index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmhi.idNew, 0);
                         RECT rect;
-                        OS.SendMessage (handle, OS.TB_GETITEMRECT, index, &rect);
+                        OS.SendMessage (handle, OS.TB_GETITEMRECT, index, cast(LPARAM)&rect);
                         if (rect.right > client.right || rect.bottom > client.bottom) {
                             return LRESULT.ONE;
                         }

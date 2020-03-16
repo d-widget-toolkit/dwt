@@ -1018,7 +1018,7 @@ public class Accessible {
                 } else {
                     tvItem.hItem = cast(HTREEITEM) v.lVal;
                 }
-                auto result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, &tvItem);
+                auto result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, cast(LPARAM)&tvItem);
                 bool checked = (result !is 0) && (((tvItem.state >> 12) & 1) is 0);
                 if (checked) event.detail |= ACC.STATE_CHECKED;
                 grayed = tvItem.state >> 12 > 2;

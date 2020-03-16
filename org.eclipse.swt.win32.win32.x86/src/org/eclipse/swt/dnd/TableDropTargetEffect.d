@@ -119,7 +119,7 @@ public class TableDropTargetEffect : DropTargetEffect {
         if (dropHighlight !is null) {
             LVITEM lvItem;
             lvItem.stateMask = OS.LVIS_DROPHILITED;
-            OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, &lvItem);
+            OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, cast(LPARAM)&lvItem);
             dropHighlight = null;
         }
         scrollBeginTime = 0;
@@ -153,7 +153,7 @@ public class TableDropTargetEffect : DropTargetEffect {
         LVHITTESTINFO pinfo;
         pinfo.pt.x = coordinates.x;
         pinfo.pt.y = coordinates.y;
-        OS.SendMessage(handle, OS.LVM_HITTEST, 0, &pinfo);
+        OS.SendMessage(handle, OS.LVM_HITTEST, 0, cast(LPARAM)&pinfo);
         if ((effect & DND.FEEDBACK_SCROLL) is 0) {
             scrollBeginTime = 0;
             scrollIndex = -1;
@@ -169,7 +169,7 @@ public class TableDropTargetEffect : DropTargetEffect {
                     } else {
                         RECT itemRect;
                         itemRect.left = OS.LVIR_BOUNDS;
-                        if (OS.SendMessage (handle, OS.LVM_GETITEMRECT, pinfo.iItem, &itemRect) !is 0) {
+                        if (OS.SendMessage (handle, OS.LVM_GETITEMRECT, pinfo.iItem, cast(LPARAM)&itemRect) !is 0) {
                             RECT rect;
                             OS.GetClientRect (handle, &rect);
                             POINT pt;
@@ -199,16 +199,16 @@ public class TableDropTargetEffect : DropTargetEffect {
             if (dropHighlight !is item) {
                 LVITEM lvItem;
                 lvItem.stateMask = OS.LVIS_DROPHILITED;
-                OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, &lvItem);
+                OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, cast(LPARAM)&lvItem);
                 lvItem.state = OS.LVIS_DROPHILITED;
-                OS.SendMessage(handle, OS.LVM_SETITEMSTATE, pinfo.iItem, &lvItem);
+                OS.SendMessage(handle, OS.LVM_SETITEMSTATE, pinfo.iItem, cast(LPARAM)&lvItem);
                 dropHighlight = item;
             }
         } else {
             if (dropHighlight !is null) {
                 LVITEM lvItem;
                 lvItem.stateMask = OS.LVIS_DROPHILITED;
-                OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, &lvItem);
+                OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, cast(LPARAM)&lvItem);
                 dropHighlight = null;
             }
         }

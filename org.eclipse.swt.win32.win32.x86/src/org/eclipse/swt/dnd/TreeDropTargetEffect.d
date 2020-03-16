@@ -135,7 +135,7 @@ public class TreeDropTargetEffect : DropTargetEffect {
             tvItem.mask = OS.TVIF_STATE;
             tvItem.stateMask = OS.TVIS_DROPHILITED;
             tvItem.state = 0;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             dropIndex = -1;
         }
         if (insertItem !is null) {
@@ -176,7 +176,7 @@ public class TreeDropTargetEffect : DropTargetEffect {
         TVHITTESTINFO lpht;
         lpht.pt.x = coordinates.x;
         lpht.pt.y = coordinates.y;
-        OS.SendMessage (handle, OS.TVM_HITTEST, 0, &lpht);
+        OS.SendMessage (handle, OS.TVM_HITTEST, 0, cast(LPARAM)&lpht);
         auto hItem = cast(ptrdiff_t)lpht.hItem;
         if ((effect & DND.FEEDBACK_SCROLL) is 0) {
             scrollBeginTime = 0;
@@ -204,7 +204,7 @@ public class TreeDropTargetEffect : DropTargetEffect {
                         }
                     }
                     if (scroll) {
-                        OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
+                        OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, cast(LPARAM)nextItem);
                         tree.redraw();
                     }
                     scrollBeginTime = 0;
@@ -245,7 +245,7 @@ public class TreeDropTargetEffect : DropTargetEffect {
             tvItem.mask = OS.TVIF_STATE;
             tvItem.stateMask = OS.TVIS_DROPHILITED;
             tvItem.state = 0;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             dropIndex = -1;
         }
         if (hItem !is -1 && hItem !is dropIndex && (effect & DND.FEEDBACK_SELECT) !is 0) {
@@ -254,7 +254,7 @@ public class TreeDropTargetEffect : DropTargetEffect {
             tvItem.mask = OS.TVIF_STATE;
             tvItem.stateMask = OS.TVIS_DROPHILITED;
             tvItem.state = OS.TVIS_DROPHILITED;
-            OS.SendMessage (handle, OS.TVM_SETITEM, 0, &tvItem);
+            OS.SendMessage (handle, OS.TVM_SETITEM, 0, cast(LPARAM)&tvItem);
             dropIndex = hItem;
         }
         if ((effect & DND.FEEDBACK_INSERT_BEFORE) !is 0 || (effect & DND.FEEDBACK_INSERT_AFTER) !is 0) {

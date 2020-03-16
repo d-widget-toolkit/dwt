@@ -340,7 +340,7 @@ void printWidget (HWND hwnd, GC gc) {
         * the children, drawing each one.
         */
         int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND;
-        OS.SendMessage (hwnd, OS.WM_PRINT, hDC, flags);
+        OS.SendMessage (hwnd, OS.WM_PRINT, cast(WPARAM)hDC, flags);
         int nSavedDC = OS.SaveDC (hDC);
         Control [] children = _getChildren ();
         Rectangle rect = getBounds ();
@@ -541,7 +541,7 @@ override LRESULT WM_WINDOWPOSCHANGING (WPARAM wParam, LPARAM lParam) {
     }
     RECT rect;
     OS.SetRect (&rect, 0, 0, lpwp.cx, lpwp.cy);
-    OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, &rect);
+    OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, cast(LPARAM)&rect);
     int newWidth = rect.right - rect.left;
     int newHeight = rect.bottom - rect.top;
     OS.GetClientRect (handle, &rect);

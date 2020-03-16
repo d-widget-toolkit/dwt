@@ -103,7 +103,7 @@ extern(Windows)static int BrowseCallbackProc (HWND hwnd, uint uMsg, LPARAM lPara
             if (pThis.filterPath !is null && pThis.filterPath.length !is 0) {
                 /* Use the character encoding for the default locale */
                 StringT buffer = StrToTCHARs (0, pThis.filterPath.replace ('/', '\\'), true);
-                OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, cast(void*)buffer.ptr);
+                OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, cast(LPARAM)buffer.ptr);
             }
             if (pThis.title !is null && pThis.title.length !is 0) {
                 /* Use the character encoding for the default locale */

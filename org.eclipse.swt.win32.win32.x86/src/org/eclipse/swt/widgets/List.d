@@ -124,7 +124,7 @@ public void add (String string) {
     // SWT extension: allow null string
     //if (string is null) error (SWT.ERROR_NULL_ARGUMENT);
     LPCTSTR buffer = StrToTCHARz ( getCodePage (), string);
-    auto result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, cast(void*)buffer);
+    auto result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, cast(LPARAM)buffer);
     if (result is OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
     if (result is OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
     if ((style & SWT.H_SCROLL) !is 0) setScrollWidth (buffer, true);
@@ -157,7 +157,7 @@ public void add (String string, int index) {
     //if (string is null) error (SWT.ERROR_NULL_ARGUMENT);
     if (index is -1) error (SWT.ERROR_INVALID_RANGE);
     LPCTSTR buffer = StrToTCHARz(getCodePage (), string);
-    auto result = OS.SendMessage (handle, OS.LB_INSERTSTRING, index, cast(void*)buffer);
+    auto result = OS.SendMessage (handle, OS.LB_INSERTSTRING, index, cast(LPARAM)buffer);
     if (result is OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
     if (result is OS.LB_ERR) {
         auto count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -256,7 +256,7 @@ override public Point computeSize (int wHint, int hHint, bool changed) {
                     if (length + 1 > buffer.length) {
                         buffer = NewTCHARs (cp, length + 1);
                     }
-                    auto result = OS.SendMessage (handle, OS.LB_GETTEXT, i, buffer.ptr);
+                    auto result = OS.SendMessage (handle, OS.LB_GETTEXT, i, cast(LPARAM)buffer.ptr);
                     if (result !is OS.LB_ERR) {
                         OS.DrawText (hDC, buffer.ptr, length, &rect, flags);
                         width = Math.max (width, rect.right - rect.left);
@@ -452,7 +452,7 @@ public String getItem (int index) {
     auto length_ = OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
     if (length_ !is OS.LB_ERR) {
         TCHAR[] buffer = NewTCHARs (getCodePage (), length_ + 1);
-        auto result = OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer.ptr);
+        auto result = OS.SendMessage (handle, OS.LB_GETTEXT, index, cast(LPARAM)buffer.ptr);
         if (result !is OS.LB_ERR) return TCHARsToStr( buffer[0 .. length_] );
     }
     auto count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -592,7 +592,7 @@ public int getSelectionIndex () {
     if (result is OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_SELECTION);
     if (result !is 0) return cast(int)/*64bit*/index;
     INT_PTR buffer;
-    result = OS.SendMessage (handle, OS.LB_GETSELITEMS, 1, &buffer);
+    result = OS.SendMessage (handle, OS.LB_GETSELITEMS, 1, cast(LPARAM)&buffer);
     if (result !is 1) error (SWT.ERROR_CANNOT_GET_SELECTION);
     return cast(int)/*64bit*/buffer;
 }
@@ -623,7 +623,7 @@ public int [] getSelectionIndices () {
     auto length = OS.SendMessage (handle, OS.LB_GETSELCOUNT, 0, 0);
     if (length is OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_SELECTION);
     int [] indices = new int [length];
-    auto result = OS.SendMessage (handle, OS.LB_GETSELITEMS, length, indices.ptr);
+    auto result = OS.SendMessage (handle, OS.LB_GETSELITEMS, length, cast(LPARAM)indices.ptr);
     if (result !is length) error (SWT.ERROR_CANNOT_GET_SELECTION);
     return indices;
 }
@@ -706,7 +706,7 @@ public int indexOf (String string, int start) {
     int index = start - 1, last;
     LPCTSTR buffer = StrToTCHARz (getCodePage (), string );
     do {
-        index = cast(int)/*64bit*/OS.SendMessage (handle, OS.LB_FINDSTRINGEXACT, last = index, cast(void*)buffer);
+        index = cast(int)/*64bit*/OS.SendMessage (handle, OS.LB_FINDSTRINGEXACT, last = index, cast(LPARAM)buffer);
         if (index is OS.LB_ERR || index <= last) return -1;
     } while (string !=/*eq*/ getItem (index));
     return index;
@@ -779,7 +779,7 @@ public void remove (int [] indices) {
                 auto length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
                 if (length is OS.LB_ERR) break;
                 buffer = NewTCHARs (cp, length + 1);
-                auto result = OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer.ptr);
+                auto result = OS.SendMessage (handle, OS.LB_GETTEXT, index, cast(LPARAM)buffer.ptr);
                 if (result is OS.LB_ERR) break;
             }
             auto result = OS.SendMessage (handle, OS.LB_DELETESTRING, index, 0);
@@ -831,7 +831,7 @@ public void remove (int index) {
             error (SWT.ERROR_INVALID_RANGE);
         }
         buffer = NewTCHARs (getCodePage (), length + 1);
-        auto result = OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer.ptr);
+        auto result = OS.SendMessage (handle, OS.LB_GETTEXT, index, cast(LPARAM)buffer.ptr);
         if (result is OS.LB_ERR) {
             auto count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
             if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -898,7 +898,7 @@ public void remove (int start, int end) {
             auto length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, start, 0);
             if (length is OS.LB_ERR) break;
             buffer = NewTCHARs (cp, length + 1);
-            auto result = OS.SendMessage (handle, OS.LB_GETTEXT, start, buffer.ptr);
+            auto result = OS.SendMessage (handle, OS.LB_GETTEXT, start, cast(LPARAM)buffer.ptr);
             if (result is OS.LB_ERR) break;
         }
         auto result = OS.SendMessage (handle, OS.LB_DELETESTRING, start, 0);
@@ -1058,7 +1058,7 @@ void select (int index, bool scroll) {
     auto topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
     RECT itemRect, selectedRect;
     bool selectedRectNull = true;
-    OS.SendMessage (handle, OS.LB_GETITEMRECT, index, &itemRect);
+    OS.SendMessage (handle, OS.LB_GETITEMRECT, index, cast(LPARAM)&itemRect);
     bool redraw = drawCount is 0 && OS.IsWindowVisible (handle);
     if (redraw) {
         OS.UpdateWindow (handle);
@@ -1070,7 +1070,7 @@ void select (int index, bool scroll) {
         if (oldIndex !is -1) {
             //selectedRect = new RECT ();
             selectedRectNull = false;
-            OS.SendMessage (handle, OS.LB_GETITEMRECT, oldIndex, &selectedRect);
+            OS.SendMessage (handle, OS.LB_GETITEMRECT, oldIndex, cast(LPARAM)&selectedRect);
         }
         OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
     } else {
@@ -1244,7 +1244,7 @@ public void setItems (String [] items) {
     while (index < length) {
         String string = items [index];
         LPCTSTR buffer = StrToTCHARz (cp, string);
-        auto result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, cast(void*)buffer);
+        auto result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, cast(LPARAM)buffer);
         if (result is OS.LB_ERR || result is OS.LB_ERRSPACE) break;
         if ((style & SWT.H_SCROLL) !is 0) {
             int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
@@ -1289,7 +1289,7 @@ void setScrollWidth () {
         auto length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, i, 0);
         if (length !is OS.LB_ERR) {
             TCHAR[] buffer = NewTCHARs (cp, length + 1 );
-            auto result = OS.SendMessage (handle, OS.LB_GETTEXT, i, buffer.ptr);
+            auto result = OS.SendMessage (handle, OS.LB_GETTEXT, i, cast(LPARAM)buffer.ptr);
             if (result !is OS.LB_ERR) {
                 OS.DrawText (hDC, buffer.ptr, -1, &rect, flags);
                 newWidth = Math.max (newWidth, rect.right - rect.left);
@@ -1507,7 +1507,7 @@ public void showSelection () {
         index = OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
     } else {
         .LRESULT indices;
-        auto result = OS.SendMessage (handle, OS.LB_GETSELITEMS, 1, &indices);
+        auto result = OS.SendMessage (handle, OS.LB_GETSELITEMS, 1, cast(LPARAM)&indices);
         index = indices;
         if (result !is 1) index = -1;
     }
@@ -1677,7 +1677,7 @@ override LRESULT WM_KEYDOWN (WPARAM wParam, LPARAM lParam) {
             * focus item.
             */
             RECT itemRect;
-            OS.SendMessage (handle, OS.LB_GETITEMRECT, newIndex, &itemRect);
+            OS.SendMessage (handle, OS.LB_GETITEMRECT, newIndex, cast(LPARAM)&itemRect);
             OS.InvalidateRect (handle, &itemRect, true);
         }
         return new LRESULT (code);

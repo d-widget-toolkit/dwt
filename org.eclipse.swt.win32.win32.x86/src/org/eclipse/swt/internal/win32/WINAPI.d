@@ -1899,9 +1899,6 @@ version(Tango){
             LONG DispatchMessageA(LPMSG);
             WINBOOL PeekMessageA(LPMSG, HWND, UINT, UINT, UINT);
             LRESULT SendMessageA(HWND, UINT, WPARAM, LPARAM);
-            LRESULT SendMessageA(HWND, UINT, void*, LPARAM);
-            LRESULT SendMessageA(HWND, UINT, WPARAM, void*);
-            LRESULT SendMessageA(HWND, UINT, void*, void*);
             LRESULT SendMessageTimeoutA(HWND, UINT, WPARAM, LPARAM, UINT, UINT, PDWORD_PTR);
             WINBOOL SendNotifyMessageA(HWND, UINT, WPARAM, LPARAM);
             WINBOOL SendMessageCallbackA(HWND, UINT, WPARAM, LPARAM, SENDASYNCPROC, ULONG_PTR);
@@ -2299,9 +2296,6 @@ version(Tango){
             LONG DispatchMessageW(LPMSG);
             WINBOOL PeekMessageW(LPMSG, HWND, UINT, UINT, UINT);
             LRESULT SendMessageW(HWND, UINT, WPARAM, LPARAM);
-            LRESULT SendMessageW(HWND, UINT, WPARAM, void*);
-            LRESULT SendMessageW(HWND, UINT, void*, LPARAM);
-            LRESULT SendMessageW(HWND, UINT, void*, void*);
             LRESULT SendMessageTimeoutW(HWND, UINT, WPARAM, LPARAM, UINT, UINT, PDWORD_PTR);
             WINBOOL SendNotifyMessageW(HWND, UINT, WPARAM, LPARAM);
             WINBOOL SendMessageCallbackW(HWND, UINT, WPARAM, LPARAM, SENDASYNCPROC, ULONG_PTR);
@@ -5149,12 +5143,7 @@ void OleUninitialize();
 //);
 //alias STDWIN.RoundRect RoundRect;
 
-// basic
 void RtlMoveMemory(void* Destination, LPCVOID Source, SIZE_T Length);
-// extends
-void RtlMoveMemory(intptr_t Destination, LPCVOID Source, SIZE_T Length);
-void RtlMoveMemory(void* Destination, intptr_t Source, SIZE_T Length);
-void RtlMoveMemory(intptr_t Destination, intptr_t Source, SIZE_T Length);
 
 LPITEMIDLIST SHBrowseForFolderA(
     BROWSEINFOA* lpbi

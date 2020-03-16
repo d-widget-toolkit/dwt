@@ -269,7 +269,7 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
         if (parent.explorerTheme) {
             rect.left = OS.LVIR_ICON;
             parent.ignoreCustomDraw = true;
-            auto code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, &rect);
+            auto code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, cast(LPARAM)&rect);
             parent.ignoreCustomDraw = false;
             if (code is 0) return RECT.init;
             if (getText) {
@@ -277,7 +277,7 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
                 auto hFont = fontHandle (column);
                 if (hFont is cast(HFONT)-1 && hDC is null) {
                     LPCTSTR buffer = StrToTCHARz (parent.getCodePage (), text);
-                    width = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, cast(void*)buffer);
+                    width = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, cast(LPARAM)buffer);
                 } else {
                     StringT buffer = StrToTCHARs (parent.getCodePage (), text, false);
                     auto textDC = hDC !is null ? hDC : OS.GetDC (hwnd), oldFont = cast(HFONT)-1;
@@ -301,21 +301,21 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
             if (getText) {
                 rect.left = OS.LVIR_SELECTBOUNDS;
                 parent.ignoreCustomDraw = true;
-                auto code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, &rect);
+                auto code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, cast(LPARAM)&rect);
                 parent.ignoreCustomDraw = false;
                 if (code is 0) return RECT.init;
                 if (!getImage) {
                     RECT iconRect;
                     iconRect.left = OS.LVIR_ICON;
                     parent.ignoreCustomDraw = true;
-                    code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, &iconRect);
+                    code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, cast(LPARAM)&iconRect);
                     parent.ignoreCustomDraw = false;
                     if (code !is 0) rect.left = iconRect.right;
                 }
             } else {
                 rect.left = OS.LVIR_ICON;
                 parent.ignoreCustomDraw = true;
-                auto code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, &rect);
+                auto code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, cast(LPARAM)&rect);
                 parent.ignoreCustomDraw = false;
                 if (code is 0) return RECT.init;
             }
@@ -323,7 +323,7 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
         if (fullText || fullImage) {
             RECT headerRect;
             auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, &headerRect);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, cast(LPARAM)&headerRect);
             OS.MapWindowPoints (hwndHeader, hwnd, cast(POINT*) &headerRect, 2);
             if (getText && fullText) rect.right = headerRect.right;
             if (getImage && fullImage) rect.left = headerRect.left;
@@ -346,7 +346,7 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
             */
             rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
             parent.ignoreCustomDraw = true;
-            auto code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, &rect);
+            auto code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, cast(LPARAM)&rect);
             parent.ignoreCustomDraw = false;
             if (code is 0) return RECT.init;
             /*
@@ -362,7 +362,7 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
                 RECT iconRect;
                 iconRect.left = OS.LVIR_ICON;
                 parent.ignoreCustomDraw = true;
-                code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, &iconRect);
+                code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, cast(LPARAM)&iconRect);
                 parent.ignoreCustomDraw = false;
                 if (code !is 0) rect.left = iconRect.left;
             }
@@ -371,7 +371,7 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
                     RECT iconRect;
                     iconRect.top = column;
                     iconRect.left = OS.LVIR_ICON;
-                    if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, &iconRect) !is 0) {
+                    if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, cast(LPARAM)&iconRect) !is 0) {
                         rect.left = iconRect.right + Table.INSET / 2;
                     }
                 }
@@ -381,14 +381,14 @@ RECT getBounds (int row, int column, bool getText, bool getImage, bool fullText,
             if (column is 0 && fullImage) {
                 RECT headerRect;
                 auto hwndHeader = cast(HWND) OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, &headerRect);
+                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, cast(LPARAM)&headerRect);
                 OS.MapWindowPoints (hwndHeader, hwnd, cast(POINT*) &headerRect, 2);
                 rect.left = headerRect.left;
             }
         } else {
             rect.left = OS.LVIR_ICON;
             parent.ignoreCustomDraw = true;
-            auto code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, &rect);
+            auto code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, cast(LPARAM)&rect);
             parent.ignoreCustomDraw = false;
             if (code is 0) return RECT.init;
             if (!hasImage) rect.right = rect.left;
@@ -876,7 +876,7 @@ public void setFont (Font font){
             lvItem.mask = OS.LVIF_TEXT;
             lvItem.iItem = itemIndex;
             lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-            OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, &lvItem);
+            OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
             cached = false;
         }
     }
@@ -940,7 +940,7 @@ public void setFont (int index, Font font) {
                 lvItem.mask = OS.LVIF_TEXT;
                 lvItem.iItem = itemIndex;
                 lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-                OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, &lvItem);
+                OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
                 cached = false;
             }
         }
@@ -1147,7 +1147,7 @@ public void setImageIndent (int indent) {
             lvItem.mask = OS.LVIF_INDENT;
             lvItem.iItem = index;
             lvItem.iIndent = indent;
-            OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, &lvItem);
+            OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
         }
     }
     parent.setScrollWidth (this, false);
@@ -1220,7 +1220,7 @@ public void setText (int index, String string) {
                 lvItem.mask = OS.LVIF_TEXT;
                 lvItem.iItem = itemIndex;
                 lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-                OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, &lvItem);
+                OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
                 cached = false;
             }
         }

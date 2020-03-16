@@ -2726,7 +2726,7 @@ public void setCapture (bool capture) {
 
 void setCursor () {
     LPARAM lParam = OS.MAKELPARAM (OS.HTCLIENT, OS.WM_MOUSEMOVE);
-    OS.SendMessage (handle, OS.WM_SETCURSOR, handle, lParam);
+    OS.SendMessage (handle, OS.WM_SETCURSOR, cast(WPARAM)handle, lParam);
 }
 
 /**
@@ -2774,7 +2774,7 @@ public void setCursor (Cursor cursor) {
 
 void setDefaultFont () {
     auto hFont = display.getSystemFont ().handle;
-    OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+    OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
 }
 
 /**
@@ -2884,7 +2884,7 @@ public void setFont (Font font) {
     }
     this.font = font;
     if (hFont is null) hFont = defaultFont ();
-    OS.SendMessage (handle, OS.WM_SETFONT, hFont, 1);
+    OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 1);
 }
 
 /**

@@ -230,7 +230,7 @@ public bool getVisible () {
     if (OS.SendMessage (hwndToolTip_, OS.TTM_GETCURRENTTOOL, 0, 0) !is 0) {
         TOOLINFO lpti;
         lpti.cbSize = OS.TOOLINFO_sizeof;
-        if (OS.SendMessage (hwndToolTip_, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+        if (OS.SendMessage (hwndToolTip_, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
             return (lpti.uFlags & OS.TTF_IDISHWND) is 0 && lpti.uId is id;
         }
     }
@@ -276,10 +276,10 @@ override void releaseWidget () {
             if (OS.SendMessage (hwndToolTip_, OS.TTM_GETCURRENTTOOL, 0, 0) !is 0) {
                 TOOLINFO lpti;
                 lpti.cbSize = OS.TOOLINFO_sizeof;
-                if (OS.SendMessage (hwndToolTip_, OS.TTM_GETCURRENTTOOL, 0, &lpti) !is 0) {
+                if (OS.SendMessage (hwndToolTip_, OS.TTM_GETCURRENTTOOL, 0, cast(LPARAM)&lpti) !is 0) {
                     if ((lpti.uFlags & OS.TTF_IDISHWND) is 0) {
                         if (lpti.uId is id) {
-                            OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 0, &lpti);
+                            OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 0, cast(LPARAM)&lpti);
                             OS.SendMessage (hwndToolTip_, OS.TTM_POP, 0, 0);
                             OS.KillTimer (hwndToolTip_, TIMER_ID);
                         }
@@ -507,17 +507,17 @@ public void setVisible (bool visible) {
                 HCURSOR hCursor = OS.GetCursor ();
                 OS.SetCursor (null);
                 OS.SetCursorPos (rect.left, rect.top);
-                OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 1, &lpti);
+                OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 1, cast(LPARAM)&lpti);
                 OS.SetCursorPos (pt.x, pt.y);
                 OS.SetCursor (hCursor);
             } else {
-                OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 1, &lpti);
+                OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 1, cast(LPARAM)&lpti);
             }
 
             auto time = OS.SendMessage (hwndToolTip_, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
             OS.SetTimer (hwndToolTip_, TIMER_ID, cast(int)/*64bit*/time, null);
         } else {
-            OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 0, &lpti);
+            OS.SendMessage (hwndToolTip_, OS.TTM_TRACKACTIVATE, 0, cast(LPARAM)&lpti);
             OS.SendMessage (hwndToolTip_, OS.TTM_POP, 0, 0);
             OS.KillTimer (hwndToolTip_, TIMER_ID);
         }

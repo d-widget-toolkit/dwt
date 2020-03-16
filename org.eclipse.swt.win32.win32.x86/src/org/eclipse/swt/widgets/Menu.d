@@ -474,7 +474,7 @@ void createItem (MenuItem item, int index) {
         if ((item.style & SWT.SEPARATOR) !is 0) lpButton.fsStyle = cast(byte) OS.BTNS_SEP;
         lpButton.fsState = cast(byte) OS.TBSTATE_ENABLED;
         lpButton.iBitmap = OS.I_IMAGENONE;
-        success = OS.SendMessage (hwndCB, OS.TB_INSERTBUTTON, index, &lpButton) !is 0;
+        success = OS.SendMessage (hwndCB, OS.TB_INSERTBUTTON, index, cast(LPARAM)&lpButton) !is 0;
     } else {
         static if (OS.IsWinCE) {
             int uFlags = OS.MF_BYPOSITION;
@@ -864,7 +864,7 @@ public MenuItem [] getItems () {
         TBBUTTON lpButton;
         MenuItem [] result = new MenuItem [count];
         for (int i=0; i<count; i++) {
-            OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, &lpButton);
+            OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, cast(LPARAM)&lpButton);
             result [i] = display.getMenuItem (lpButton.idCommand);
         }
         return result;
@@ -1032,7 +1032,7 @@ int imageIndex (Image image) {
         imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
         int index = imageList.add (image);
         HANDLE hImageList = imageList.getHandle ();
-        OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
+        OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, cast(LPARAM)hImageList);
         return index;
     }
     int index = imageList.indexOf (image);

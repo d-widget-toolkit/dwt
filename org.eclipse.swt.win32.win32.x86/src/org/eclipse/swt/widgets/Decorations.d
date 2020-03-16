@@ -383,12 +383,12 @@ override public Rectangle computeTrim (int x, int y, int width, int height) {
     if (hasMenu) {
         RECT testRect;
         OS.SetRect (&testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
-        OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, &testRect);
+        OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, cast(LPARAM)&testRect);
         while ((testRect.bottom - testRect.top) < height) {
             if (testRect.bottom - testRect.top is 0) break;
             rect.top -= OS.GetSystemMetrics (OS.SM_CYMENU) - OS.GetSystemMetrics (OS.SM_CYBORDER);
             OS.SetRect (&testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
-            OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, &testRect);
+            OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, cast(LPARAM)&testRect);
         }
     }
     return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
@@ -1017,7 +1017,7 @@ void setImages (Image image, Image [] images) {
             default:
         }
     }
-    OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
+    OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, cast(LPARAM)hSmallIcon);
     if (largeIcon !is null) {
         switch (largeIcon.type) {
             case SWT.BITMAP:
@@ -1030,7 +1030,7 @@ void setImages (Image image, Image [] images) {
             default:
         }
     }
-    OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hLargeIcon);
+    OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, cast(LPARAM)hLargeIcon);
 
     /*
     * Bug in Windows.  When WM_SETICON is used to remove an

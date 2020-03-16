@@ -270,7 +270,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
             int[1] pTypedesc;
             COM.MoveMemory(pTypedesc.ptr, (cast(void*)funcdesc.lprgelemdescParam) + i * 16, 4);
             short[1] vt2;
-            COM.MoveMemory(vt2.ptr, pTypedesc[0] + 4, 2);
+            COM.MoveMemory(vt2.ptr, cast(LPCVOID)(pTypedesc[0] + 4), 2);
             vt[0] = cast(short)(vt2[0] | COM.VT_BYREF);
         }
         data.args[i].type = vt[0];

@@ -506,17 +506,17 @@ LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
                                     rect.left = OS.LVIR_BOUNDS;
                                     bool oldIgnore = ignoreCustomDraw;
                                     ignoreCustomDraw = true;
-                                    OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.nmcd.dwItemSpec, &rect);
+                                    OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.nmcd.dwItemSpec, cast(LPARAM)&rect);
                                     auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
                                     auto index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
                                     RECT itemRect;
                                     if (index is 0) {
                                         itemRect.left = OS.LVIR_LABEL;
-                                        OS.SendMessage (handle, OS. LVM_GETITEMRECT, index, &itemRect);
+                                        OS.SendMessage (handle, OS. LVM_GETITEMRECT, index, cast(LPARAM)&itemRect);
                                     } else {
                                         itemRect.top = cast(int)/*64bit*/index;
                                         itemRect.left = OS.LVIR_ICON;
-                                        OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, nmcd.nmcd.dwItemSpec, &itemRect);
+                                        OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, nmcd.nmcd.dwItemSpec, cast(LPARAM)&itemRect);
                                     }
                                     ignoreCustomDraw = oldIgnore;
                                     rect.left = itemRect.left;
@@ -553,7 +553,7 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                     if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) is 0) {
                         if ((nmcd.nmcd.uItemState & OS.CDIS_FOCUS) !is 0) {
                             nmcd.nmcd.uItemState &= ~OS.CDIS_FOCUS;
-                            OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+                            OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
                         }
                     }
                 }
@@ -712,7 +712,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                                     RECT columnRect, headerRect;
                                     OS.GetClientRect (handle, &columnRect);
                                     auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-                                    if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect) !is 0) {
+                                    if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect) !is 0) {
                                         OS.MapWindowPoints (hwndHeader, handle, cast(POINT*) &headerRect, 2);
                                         columnRect.left = headerRect.left;
                                         columnRect.right = headerRect.right;
@@ -842,7 +842,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam
                 lvItem.mask = OS.LVIF_STATE;
                 lvItem.stateMask = OS.LVIS_SELECTED;
                 lvItem.iItem = cast(int)/*64bit*/nmcd.nmcd.dwItemSpec;
-                auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, &lvItem);
+                auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, cast(LPARAM)&lvItem);
                 if ((result !is 0 && (lvItem.state & OS.LVIS_SELECTED) !is 0)) {
                     int clrSelection = -1;
                     if (nmcd.iSubItem is 0) {
@@ -906,7 +906,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam
                 } else {
                     nmcd.clrTextBk = selectionForeground !is -1 ? OS.CLR_NONE : clrTextBk;
                 }
-                OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+                OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
             }
             code |= OS.CDRF_NEWFONT;
         }
@@ -949,7 +949,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam
             nmcd.clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
         }
         nmcd.nmcd.uItemState &= ~OS.CDIS_SELECTED;
-        OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+        OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
         code |= OS.CDRF_NEWFONT;
     }
     return new LRESULT (code);
@@ -1040,7 +1040,7 @@ public void clear (int index) {
             lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
             lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
             lvItem.iItem = index;
-            OS.SendMessage (handle, OS.LVM_SETITEM, 0, &lvItem);
+            OS.SendMessage (handle, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
             item.cached = false;
         }
         if (currentItem is null && drawCount is 0 && OS.IsWindowVisible (handle)) {
@@ -1110,7 +1110,7 @@ public void clear (int start, int end) {
                         lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
                     //}
                     lvItem.iItem = i;
-                    OS.SendMessage (handle, OS.LVM_SETITEM, 0, &lvItem);
+                    OS.SendMessage (handle, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
                     item.cached = false;
                 }
             }
@@ -1185,7 +1185,7 @@ public void clear (int [] indices) {
                     lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
                 //}
                 lvItem.iItem = i;
-                OS.SendMessage (handle, OS.LVM_SETITEM, 0, &lvItem);
+                OS.SendMessage (handle, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
                 item.cached = false;
             }
             if (currentItem is null && drawCount is 0 && OS.IsWindowVisible (handle)) {
@@ -1242,7 +1242,7 @@ public void clearAll () {
                     lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
                 //}
                 lvItem.iItem = i;
-                OS.SendMessage (handle, OS.LVM_SETITEM, 0, &lvItem);
+                OS.SendMessage (handle, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
                 item.cached = false;
             }
         }
@@ -1380,7 +1380,7 @@ override void createHandle () {
     * create.
     */
     auto hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-    OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+    OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
 
     /*
     * Bug in Windows.  When the first column is inserted
@@ -1394,7 +1394,7 @@ override void createHandle () {
     auto hHeap = OS.GetProcessHeap ();
     auto pszText = cast(TCHAR*) OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
     lvColumn.pszText = pszText;
-    OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 0, &lvColumn);
+    OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 0, cast(LPARAM)&lvColumn);
     OS.HeapFree (hHeap, 0, pszText);
 
     /* Set the extended style bits */
@@ -1541,8 +1541,8 @@ void createItem (TableColumn column, int index) {
         if (columnCount > 1) {
             LVCOLUMN lvColumn;
             lvColumn.mask = OS.LVCF_WIDTH;
-            OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 1, &lvColumn);
-            OS.SendMessage (handle, OS.LVM_GETCOLUMN, 1, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 1, cast(LPARAM)&lvColumn);
+            OS.SendMessage (handle, OS.LVM_GETCOLUMN, 1, cast(LPARAM)&lvColumn);
             int width = lvColumn.cx;
             int cchTextMax = 1024;
             auto hHeap = OS.GetProcessHeap ();
@@ -1551,16 +1551,16 @@ void createItem (TableColumn column, int index) {
             lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;
             lvColumn.pszText = pszText;
             lvColumn.cchTextMax = cchTextMax;
-            OS.SendMessage (handle, OS.LVM_GETCOLUMN, 0, &lvColumn);
-            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 1, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_GETCOLUMN, 0, cast(LPARAM)&lvColumn);
+            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 1, cast(LPARAM)&lvColumn);
             lvColumn.fmt = OS.LVCFMT_IMAGE;
             lvColumn.cx = width;
             lvColumn.iImage = OS.I_IMAGENONE;
             lvColumn.pszText = null, lvColumn.cchTextMax = 0;
-            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, cast(LPARAM)&lvColumn);
             lvColumn.mask = OS.LVCF_FMT;
             lvColumn.fmt = OS.LVCFMT_LEFT;
-            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, cast(LPARAM)&lvColumn);
             if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
         } else {
             OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
@@ -1583,7 +1583,7 @@ void createItem (TableColumn column, int index) {
             lvItem.iImage = OS.I_IMAGECALLBACK;
             for (int i=0; i<itemCount; i++) {
                 lvItem.iItem = i;
-                OS.SendMessage (handle, OS.LVM_SETITEM, 0, &lvItem);
+                OS.SendMessage (handle, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
             }
         }
     } else {
@@ -1593,7 +1593,7 @@ void createItem (TableColumn column, int index) {
         LVCOLUMN lvColumn;
         lvColumn.mask = OS.LVCF_WIDTH | OS.LVCF_FMT;
         lvColumn.fmt = fmt;
-        OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, index, &lvColumn);
+        OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, index, cast(LPARAM)&lvColumn);
     }
     ignoreColumnResize = false;
 
@@ -1601,7 +1601,7 @@ void createItem (TableColumn column, int index) {
     if (headerToolTipHandle !is null) {
         RECT rect;
         auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &rect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&rect) !is 0) {
             TOOLINFO lpti;
             lpti.cbSize = OS.TOOLINFO_sizeof;
             lpti.uFlags = OS.TTF_SUBCLASS;
@@ -1612,7 +1612,7 @@ void createItem (TableColumn column, int index) {
             lpti.rect.right = rect.right;
             lpti.rect.bottom = rect.bottom;
             lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, &lpti);
+            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
         }
     }
 }
@@ -1652,7 +1652,7 @@ void createItem (TableItem item, int index) {
     /* Insert the item */
     setDeferResize (true);
     ignoreSelect = ignoreShrink = true;
-    auto result = OS.SendMessage (handle, OS.LVM_INSERTITEM, 0, &lvItem);
+    auto result = OS.SendMessage (handle, OS.LVM_INSERTITEM, 0, cast(LPARAM)&lvItem);
     ignoreSelect = ignoreShrink = false;
     if (result is -1) error (SWT.ERROR_ITEM_NOT_ADDED);
     System.arraycopy (items, index, items, index + 1, count - index);
@@ -1708,7 +1708,7 @@ public void deselect (int [] indices) {
         */
         if (indices [i] >= 0) {
             ignoreSelect = true;
-            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], &lvItem);
+            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], cast(LPARAM)&lvItem);
             ignoreSelect = false;
         }
     }
@@ -1736,7 +1736,7 @@ public void deselect (int index) {
     LVITEM lvItem;
     lvItem.stateMask = OS.LVIS_SELECTED;
     ignoreSelect = true;
-    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, &lvItem);
+    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, cast(LPARAM)&lvItem);
     ignoreSelect = false;
 }
 
@@ -1770,7 +1770,7 @@ public void deselect (int start, int end) {
         start = Math.max (0, start);
         for (int i=start; i<=end; i++) {
             ignoreSelect = true;
-            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, &lvItem);
+            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, cast(LPARAM)&lvItem);
             ignoreSelect = false;
         }
     }
@@ -1790,7 +1790,7 @@ public void deselectAll () {
     lvItem.mask = OS.LVIF_STATE;
     lvItem.stateMask = OS.LVIS_SELECTED;
     ignoreSelect = true;
-    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, &lvItem);
+    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, cast(LPARAM)&lvItem);
     ignoreSelect = false;
 }
 
@@ -1810,7 +1810,7 @@ void destroyItem (TableColumn column) {
     }
     int orderIndex = 0;
     int [] oldOrder = new int [columnCount];
-    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder.ptr);
+    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, cast(LPARAM)oldOrder.ptr);
     while (orderIndex < columnCount) {
         if (oldOrder [orderIndex] is index) break;
         orderIndex++;
@@ -1829,10 +1829,10 @@ void destroyItem (TableColumn column) {
             lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;
             lvColumn.pszText = pszText;
             lvColumn.cchTextMax = cchTextMax;
-            OS.SendMessage (handle, OS.LVM_GETCOLUMN, 1, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_GETCOLUMN, 1, cast(LPARAM)&lvColumn);
             lvColumn.fmt &= ~(OS.LVCFMT_CENTER | OS.LVCFMT_RIGHT);
             lvColumn.fmt |= OS.LVCFMT_LEFT;
-            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, cast(LPARAM)&lvColumn);
             if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
         } else {
             auto hHeap = OS.GetProcessHeap ();
@@ -1842,14 +1842,14 @@ void destroyItem (TableColumn column) {
             lvColumn.pszText = pszText;
             lvColumn.iImage = OS.I_IMAGENONE;
             lvColumn.fmt = OS.LVCFMT_LEFT;
-            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, &lvColumn);
+            OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, cast(LPARAM)&lvColumn);
             if (pszText !is null) OS.HeapFree (hHeap, 0, pszText);
             if (OS.COMCTL32_MAJOR >= 6) {
                 HDITEM hdItem;
                 hdItem.mask = OS.HDI_FORMAT;
                 hdItem.fmt = OS.HDF_LEFT;
                 auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-                OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, &hdItem);
+                OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, cast(LPARAM)&hdItem);
             }
         }
         /*
@@ -1871,7 +1871,7 @@ void destroyItem (TableColumn column) {
             auto itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
             for (int i=0; i<itemCount; i++) {
                 lvItem.iItem = i;
-                OS.SendMessage (handle, OS.LVM_SETITEM, 0, &lvItem);
+                OS.SendMessage (handle, OS.LVM_SETITEM, 0, cast(LPARAM)&lvItem);
             }
         }
     }
@@ -1964,14 +1964,14 @@ void destroyItem (TableColumn column) {
                 newOrder [count++] = newIndex;
             }
         }
-        OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder.ptr);
+        OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, cast(LPARAM)oldOrder.ptr);
         int j = 0;
         while (j < newOrder.length) {
             if (oldOrder [j] !is newOrder [j]) break;
             j++;
         }
         if (j !is newOrder.length) {
-            OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, newOrder.length, newOrder.ptr);
+            OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, newOrder.length, cast(LPARAM)newOrder.ptr);
             /*
             * Bug in Windows.  When LVM_SETCOLUMNORDERARRAY is used to change
             * the column order, the header redraws correctly but the table does
@@ -1997,7 +1997,7 @@ void destroyItem (TableColumn column) {
         lpti.cbSize = OS.TOOLINFO_sizeof;
         lpti.uId = column.id;
         lpti.hwnd = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-        OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, &lpti);
+        OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, cast(LPARAM)&lpti);
     }
 }
 
@@ -2088,12 +2088,12 @@ void fixItemHeight (bool fixScroll) {
     OS.GetWindowRect (hwndHeader, &rect);
     int height = rect.bottom - rect.top - 1;
     auto hImageList = OS.ImageList_Create (1, height, 0, 0, 0);
-    OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+    OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, cast(LPARAM)hImageList);
     fixCheckboxImageList (false);
     OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
     if (headerImageList !is null) {
         auto hHeaderImageList = headerImageList.getHandle ();
-        OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+        OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, cast(LPARAM)hHeaderImageList);
     }
     OS.ImageList_Destroy (hImageList);
     if (fixScroll && topIndex !is 0) {
@@ -2186,7 +2186,7 @@ public int[] getColumnOrder () {
     checkWidget ();
     if (columnCount is 0) return new int [0];
     int [] order = new int [columnCount];
-    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order.ptr);
+    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, cast(LPARAM)order.ptr);
     return order;
 }
 
@@ -2343,16 +2343,16 @@ public TableItem getItem (Point point) {
     pinfo.pt.y = point.y;
     if ((style & SWT.FULL_SELECTION) is 0) {
         if (hooks (SWT.MeasureItem)) {
-            OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, &pinfo);
+            OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, cast(LPARAM)&pinfo);
             if (pinfo.iItem is -1) {
                 RECT rect;
                 rect.left = OS.LVIR_ICON;
                 ignoreCustomDraw = true;
-                auto code = OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, &rect);
+                auto code = OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, cast(LPARAM)&rect);
                 ignoreCustomDraw = false;
                 if (code !is 0) {
                     pinfo.pt.x = rect.left;
-                    OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, &pinfo);
+                    OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, cast(LPARAM)&pinfo);
                 }
             }
             if (pinfo.iItem !is -1 && pinfo.iSubItem is 0) {
@@ -2363,7 +2363,7 @@ public TableItem getItem (Point point) {
             return null;
         }
     }
-    OS.SendMessage (handle, OS.LVM_HITTEST, 0, &pinfo);
+    OS.SendMessage (handle, OS.LVM_HITTEST, 0, cast(LPARAM)&pinfo);
     if (pinfo.iItem !is -1) {
         /*
         * Bug in Windows.  When the point that is used by
@@ -2710,11 +2710,11 @@ int imageIndex (Image image, int column) {
             setRedraw (false);
             setTopIndex (0);
         }
-        OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+        OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, cast(LPARAM)hImageList);
         if (headerImageList !is null) {
             auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
             auto hHeaderImageList = headerImageList.getHandle ();
-            OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+            OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, cast(LPARAM)hHeaderImageList);
         }
         fixCheckboxImageList (false);
         if (itemHeight !is -1) setItemHeight (false);
@@ -2738,7 +2738,7 @@ int imageIndexHeader (Image image) {
         if (index is -1) index = headerImageList.add (image);
         auto hImageList = headerImageList.getHandle ();
         auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-        OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
+        OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, cast(LPARAM)hImageList);
         return index;
     }
     int index = headerImageList.indexOf (image);
@@ -2838,7 +2838,7 @@ public bool isSelected (int index) {
     lvItem.mask = OS.LVIF_STATE;
     lvItem.stateMask = OS.LVIS_SELECTED;
     lvItem.iItem = index;
-    auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, &lvItem);
+    auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, cast(LPARAM)&lvItem);
     return (result !is 0) && ((lvItem.state & OS.LVIS_SELECTED) !is 0);
 }
 
@@ -3167,7 +3167,7 @@ public void select (int [] indices) {
         */
         if (indices [i] >= 0) {
             ignoreSelect = true;
-            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], &lvItem);
+            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], cast(LPARAM)&lvItem);
             ignoreSelect = false;
         }
     }
@@ -3196,7 +3196,7 @@ public void select (int index) {
     lvItem.state = OS.LVIS_SELECTED;
     lvItem.stateMask = OS.LVIS_SELECTED;
     ignoreSelect = true;
-    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, &lvItem);
+    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, cast(LPARAM)&lvItem);
     ignoreSelect = false;
 }
 
@@ -3242,7 +3242,7 @@ public void select (int start, int end) {
         lvItem.stateMask = OS.LVIS_SELECTED;
         for (int i=start; i<=end; i++) {
             ignoreSelect = true;
-            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, &lvItem);
+            OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, cast(LPARAM)&lvItem);
             ignoreSelect = false;
         }
     }
@@ -3267,7 +3267,7 @@ public void selectAll () {
     lvItem.state = OS.LVIS_SELECTED;
     lvItem.stateMask = OS.LVIS_SELECTED;
     ignoreSelect = true;
-    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, &lvItem);
+    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, cast(LPARAM)&lvItem);
     ignoreSelect = false;
 }
 
@@ -3296,7 +3296,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, int lParam, Event
     lvItem.mask = OS.LVIF_STATE;
     lvItem.stateMask = OS.LVIS_SELECTED;
     lvItem.iItem = cast(int)/*64bit*/nmcd.nmcd.dwItemSpec;
-    auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, &lvItem);
+    auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, cast(LPARAM)&lvItem);
     bool selected = (result !is 0 && (lvItem.state & OS.LVIS_SELECTED) !is 0);
     GCData data = new GCData ();
     data.device = display;
@@ -3392,12 +3392,12 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, int lParam, Event
                 selectionForeground = clrSelectionText;
             }
             nmcd.nmcd.uItemState &= ~OS.CDIS_SELECTED;
-            OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+            OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
         }
     } else {
         if (ignoreDrawSelection) {
             nmcd.nmcd.uItemState |= OS.CDIS_SELECTED;
-            OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+            OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
         }
     }
 
@@ -3419,7 +3419,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, int lParam, Event
             }
             if (!ignoreDrawFocus) {
                 nmcd.nmcd.uItemState &= ~OS.CDIS_FOCUS;
-                OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+                OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
                 focusRect = new RECT;
                 *focusRect = textRect;
             }
@@ -3435,7 +3435,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, int lParam, Event
                     auto count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
                     auto index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
                     RECT headerRect;
-                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+                    OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
                     OS.MapWindowPoints (hwndHeader, handle, cast(POINT*) &headerRect, 2);
                     rect.left = 0;
                     rect.right = headerRect.right;
@@ -3457,7 +3457,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, int lParam, Event
     }
     if (focused && ignoreDrawFocus) {
         nmcd.nmcd.uItemState &= ~OS.CDIS_FOCUS;
-        OS.MoveMemory (lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
+        OS.MoveMemory (cast(LPVOID)lParam, nmcd, OS.NMLVCUSTOMDRAW_sizeof);
     }
     if (ignoreDrawForeground) {
         RECT clipRect = item.getBounds (cast(int)/*64bit*/nmcd.nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, false, hDC);
@@ -3552,21 +3552,21 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, WPARAM wParam, LPARAM
     LVHITTESTINFO pinfo;
     pinfo.pt.x = OS.GET_X_LPARAM (lParam);
     pinfo.pt.y = OS.GET_Y_LPARAM (lParam);
-    OS.SendMessage (handle, OS.LVM_HITTEST, 0, &pinfo);
+    OS.SendMessage (handle, OS.LVM_HITTEST, 0, cast(LPARAM)&pinfo);
     if ((style & SWT.FULL_SELECTION) is 0) {
         if (hooks (SWT.MeasureItem)) {
-            OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, &pinfo);
+            OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, cast(LPARAM)&pinfo);
             if (pinfo.iItem is -1) {
                 auto count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
                 if (count !is 0) {
                     RECT rect;
                     rect.left = OS.LVIR_ICON;
                     ignoreCustomDraw = true;
-                    auto code = OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, &rect);
+                    auto code = OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, cast(LPARAM)&rect);
                     ignoreCustomDraw = false;
                     if (code !is 0) {
                         pinfo.pt.x = rect.left;
-                        OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, &pinfo);
+                        OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, cast(LPARAM)&pinfo);
                         pinfo.flags &= ~(OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL);
                     }
                 }
@@ -3618,7 +3618,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, WPARAM wParam, LPARAM
         lvItem.mask = OS.LVIF_STATE;
         lvItem.stateMask = OS.LVIS_SELECTED;
         lvItem.iItem = pinfo.iItem;
-        OS.SendMessage (handle, OS.LVM_GETITEM, 0, &lvItem);
+        OS.SendMessage (handle, OS.LVM_GETITEM, 0, cast(LPARAM)&lvItem);
         if ((lvItem.state & OS.LVIS_SELECTED) !is 0) {
             forceSelect = true;
         }
@@ -3705,7 +3705,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd) {
     lvItem.mask = OS.LVIF_STATE;
     lvItem.stateMask = OS.LVIS_SELECTED;
     lvItem.iItem = cast(int)/*64bit*/nmcd.nmcd.dwItemSpec;
-    auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, &lvItem);
+    auto result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, cast(LPARAM)&lvItem);
     bool selected = result !is 0 && (lvItem.state & OS.LVIS_SELECTED) !is 0;
     bool drawSelected = false, drawBackground = false, drawHot = false;
     if (nmcd.iSubItem is 0 || (style & SWT.FULL_SELECTION) !is 0) {
@@ -3992,7 +3992,7 @@ public void setColumnOrder (int [] order) {
     }
     if (order.length !is columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
     int [] oldOrder = new int [columnCount];
-    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder.ptr);
+    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, cast(LPARAM)oldOrder.ptr);
     bool reorder = false;
     bool [] seen = new bool [columnCount];
     for (int i=0; i<order.length; i++) {
@@ -4006,9 +4006,9 @@ public void setColumnOrder (int [] order) {
         RECT [] oldRects = new RECT [columnCount];
         for (int i=0; i<columnCount; i++) {
             //oldRects [i] = new RECT ();
-            OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &oldRects [i]);
+            OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&oldRects [i]);
         }
-        OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, order.length, order.ptr);
+        OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, order.length, cast(LPARAM)order.ptr);
         /*
         * Bug in Windows.  When LVM_SETCOLUMNORDERARRAY is used to change
         * the column order, the header redraws correctly but the table does
@@ -4021,7 +4021,7 @@ public void setColumnOrder (int [] order) {
         for (int i=0; i<columnCount; i++) {
             TableColumn column = newColumns [i];
             if (!column.isDisposed ()) {
-                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &newRect);
+                OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&newRect);
                 if (newRect.left !is oldRects [i].left) {
                     column.updateToolTip (i);
                     column.sendEvent (SWT.Move);
@@ -4182,7 +4182,7 @@ void setCheckboxImageList (int width, int height, bool fixScroll) {
         setTopIndex (0);
     }
     auto hOldStateList = cast(HANDLE) OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-    OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
+    OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, cast(LPARAM)hStateList);
     if (hOldStateList !is null) OS.ImageList_Destroy (hOldStateList);
     /*
     * Bug in Windows.  Setting the LVSIL_STATE state image list
@@ -4192,7 +4192,7 @@ void setCheckboxImageList (int width, int height, bool fixScroll) {
     */
     if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
         auto hImageList = cast(HANDLE) OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-        OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+        OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, cast(LPARAM)hImageList);
     }
     if (fixScroll && topIndex !is 0) {
         setTopIndex (topIndex);
@@ -4211,7 +4211,7 @@ void setFocusIndex (int index) {
     lvItem.state = OS.LVIS_FOCUSED;
     lvItem.stateMask = OS.LVIS_FOCUSED;
     ignoreSelect = true;
-    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, &lvItem);
+    OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, cast(LPARAM)&lvItem);
     ignoreSelect = false;
     OS.SendMessage (handle, OS.LVM_SETSELECTIONMARK, 0, index);
 }
@@ -4411,7 +4411,7 @@ void setItemHeight (bool fixScroll) {
         * height.
         */
         auto hFont = cast(HFONT) OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-        OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+        OS.SendMessage (handle, OS.WM_SETFONT, cast(WPARAM)hFont, 0);
     } else {
         /*
         * Feature in Windows.  Window has no API to set the item
@@ -4617,7 +4617,7 @@ bool setScrollWidth (TableItem item, bool force) {
                     newWidth = Math.max (newWidth, rect.right - rect.left);
                 } else {
                     LPCTSTR buffer = StrToTCHARz (getCodePage (), string );
-                    newWidth = cast(int)/*64bit*/Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, cast(void*)buffer));
+                    newWidth = cast(int)/*64bit*/Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, cast(LPARAM)buffer));
                 }
             }
             if (item !is null) break;
@@ -4635,7 +4635,7 @@ bool setScrollWidth (TableItem item, bool force) {
         */
         if (newWidth is 0) {
             StringT buffer = StrToTCHARs (getCodePage (), " ", true);
-            newWidth = cast(int)/*64bit*/Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, cast(void*)buffer.ptr));
+            newWidth = cast(int)/*64bit*/Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, cast(LPARAM)buffer.ptr));
         }
         auto hStateList = cast(HANDLE) OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
         if (hStateList !is null) {
@@ -4922,12 +4922,12 @@ void setTableEmpty () {
         * list is removed.
         */
         auto hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
-        OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+        OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, cast(LPARAM)hImageList);
         OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
         if (headerImageList !is null) {
             auto hHeaderImageList = headerImageList.getHandle ();
             auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-            OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+            OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, cast(LPARAM)hHeaderImageList);
         }
         OS.ImageList_Destroy (hImageList);
         display.releaseImageList (imageList);
@@ -5010,7 +5010,7 @@ public void setTopIndex (int index) {
     RECT rect;
     rect.left = OS.LVIR_BOUNDS;
     ignoreCustomDraw = true;
-    OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, &rect);
+    OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, cast(LPARAM)&rect);
     ignoreCustomDraw = false;
     auto dy = (index - topIndex) * (rect.bottom - rect.top);
     OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
@@ -5055,7 +5055,7 @@ public void showColumn (TableColumn column) {
     if (index is 0) {
         itemRect.top = 1;
         ignoreCustomDraw = true;
-        OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, &itemRect);
+        OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, cast(LPARAM)&itemRect);
         ignoreCustomDraw = false;
         itemRect.right = itemRect.left;
         auto width = cast(int)/*64bit*/OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
@@ -5063,7 +5063,7 @@ public void showColumn (TableColumn column) {
     } else {
         itemRect.top = index;
         ignoreCustomDraw = true;
-        OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, &itemRect);
+        OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, cast(LPARAM)&itemRect);
         ignoreCustomDraw = false;
     }
     /*
@@ -5296,13 +5296,13 @@ void updateHeaderToolTips () {
     lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
     for (int i=0; i<columnCount; i++) {
         TableColumn column = columns [i];
-        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &rect) !is 0) {
+        if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&rect) !is 0) {
             lpti.uId = column.id = display.nextToolTipId++;
             lpti.rect.left = rect.left;
             lpti.rect.top = rect.top;
             lpti.rect.right = rect.right;
             lpti.rect.bottom = rect.bottom;
-            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, &lpti);
+            OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, cast(LPARAM)&lpti);
         }
     }
 }
@@ -5423,7 +5423,7 @@ override .LRESULT windowProc (HWND hwnd, int msg, WPARAM wParam, LPARAM lParam) 
                         pinfo.pt.x = pt.x;
                         pinfo.pt.y = pt.y;
                         auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-                        auto index = OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, &pinfo);
+                        auto index = OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, cast(LPARAM)&pinfo);
                         if (0 <= index && index < columnCount && !columns [index].resizable) {
                             if ((pinfo.flags & (OS.HHT_ONDIVIDER | OS.HHT_ONDIVOPEN)) !is 0) {
                                 OS.SetCursor (OS.LoadCursor (null, cast(TCHAR*)OS.IDC_ARROW));
@@ -5520,7 +5520,7 @@ override .LRESULT windowProc (HWND hwnd, int msg, WPARAM wParam, LPARAM lParam) 
             if ((style & SWT.MIRRORED) !is 0) {
                 shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x; 
             }
-            OS.MoveMemory (lParam, &shdi, SHDRAGIMAGE.sizeof);
+            OS.MoveMemory (cast(LPVOID)lParam, &shdi, SHDRAGIMAGE.sizeof);
             return 1;
         }
     }
@@ -5706,7 +5706,7 @@ override LRESULT WM_LBUTTONDBLCLK (WPARAM wParam, LPARAM lParam) {
     LVHITTESTINFO pinfo;
     pinfo.pt.x = OS.GET_X_LPARAM (lParam);
     pinfo.pt.y = OS.GET_Y_LPARAM (lParam);
-    int index = cast(int)/*64bit*/OS.SendMessage (handle, OS.LVM_HITTEST, 0, &pinfo);
+    int index = cast(int)/*64bit*/OS.SendMessage (handle, OS.LVM_HITTEST, 0, cast(LPARAM)&pinfo);
     Display display = this.display;
     display.captureChanged = false;
     sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -5766,7 +5766,7 @@ override LRESULT WM_LBUTTONDOWN (WPARAM wParam, LPARAM lParam) {
         * the correct way to determine that the user has selected
         * the check box, equality is needed.
         */
-        int index = cast(int)/*64bit*/OS.SendMessage (handle, OS.LVM_HITTEST, 0, &pinfo);
+        int index = cast(int)/*64bit*/OS.SendMessage (handle, OS.LVM_HITTEST, 0, cast(LPARAM)&pinfo);
         if (index !is -1 && pinfo.flags is OS.LVHT_ONITEMSTATEICON) {
             TableItem item = _getItem (index);
             item.setChecked (!item.getChecked (), true);
@@ -5878,7 +5878,7 @@ override LRESULT WM_RBUTTONDBLCLK (WPARAM wParam, LPARAM lParam) {
     LVHITTESTINFO pinfo;
     pinfo.pt.x = OS.GET_X_LPARAM (lParam);
     pinfo.pt.y = OS.GET_Y_LPARAM (lParam);
-    OS.SendMessage (handle, OS.LVM_HITTEST, 0, &pinfo);
+    OS.SendMessage (handle, OS.LVM_HITTEST, 0, cast(LPARAM)&pinfo);
     Display display = this.display;
     display.captureChanged = false;
     sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
@@ -5931,7 +5931,7 @@ override LRESULT WM_SETFOCUS (WPARAM wParam, LPARAM lParam) {
         lvItem.state = OS.LVIS_FOCUSED;
         lvItem.stateMask = OS.LVIS_FOCUSED;
         ignoreSelect = true;
-        OS.SendMessage (handle, OS.LVM_SETITEMSTATE, 0, &lvItem);
+        OS.SendMessage (handle, OS.LVM_SETITEMSTATE, 0, cast(LPARAM)&lvItem);
         ignoreSelect = false;
     }
     return result;
@@ -6087,7 +6087,7 @@ override LRESULT WM_HSCROLL (WPARAM wParam, LPARAM lParam) {
             bool [] visible = new bool [columnCount];
             for (int i=0; i<columnCount; i++) {
                 visible [i] = true;
-                if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &headerRect) !is 0) {
+                if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&headerRect) !is 0) {
                     OS.MapWindowPoints (hwndHeader, handle, cast(POINT*)&headerRect, 2);
                     visible [i] = OS.IntersectRect(&headerRect, &rect, &headerRect) !is 0;
                 }
@@ -6186,7 +6186,7 @@ override LRESULT WM_VSCROLL (WPARAM wParam, LPARAM lParam) {
             bool [] visible = new bool [columnCount];
             for (int i=0; i<columnCount; i++) {
                 visible [i] = true;
-                if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, &headerRect) !is 0) {
+                if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, cast(LPARAM)&headerRect) !is 0) {
                     OS.MapWindowPoints (hwndHeader, handle, cast(POINT*)&headerRect, 2);
                     visible [i] = OS.IntersectRect(&headerRect, &rect, &headerRect) !is 0;
                 }
@@ -6539,11 +6539,11 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                         RECT itemRect;
                         itemRect.left = OS.LVIR_BOUNDS;
                         ignoreCustomDraw = true;
-                        OS.SendMessage (handle, OS. LVM_GETITEMRECT, pnmlv.iItem, &itemRect);
+                        OS.SendMessage (handle, OS. LVM_GETITEMRECT, pnmlv.iItem, cast(LPARAM)&itemRect);
                         ignoreCustomDraw = false;
                         RECT headerRect;
                         auto index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
-                        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, &headerRect);
+                        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, cast(LPARAM)&headerRect);
                         OS.MapWindowPoints (hwndHeader, handle, cast(POINT*) &headerRect, 2);
                         rect.left = headerRect.right;
                         rect.top = itemRect.top;
@@ -6667,7 +6667,7 @@ LRESULT wmNotifyHeader (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                 if ((pitem.mask & OS.HDI_ORDER) !is 0 && pitem.iOrder !is -1) {
                     if (columnCount is 0) break;
                     int [] order = new int [columnCount];
-                    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order.ptr);
+                    OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, cast(LPARAM)order.ptr);
                     int index = 0;
                     while (index < order.length) {
                         if (order [index] is phdn.iItem) break;
@@ -6728,7 +6728,7 @@ LRESULT wmNotifyHeader (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                             TableColumn [] newColumns = new TableColumn [columnCount];
                             System.arraycopy (columns, 0, newColumns, 0, columnCount);
                             int [] order = new int [columnCount];
-                            OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order.ptr);
+                            OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, cast(LPARAM)order.ptr);
                             bool moved = false;
                             for (int i=0; i<columnCount; i++) {
                                 TableColumn nextColumn = newColumns [order [i]];
@@ -6786,7 +6786,7 @@ LRESULT wmNotifyToolTip (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                 OS.ScreenToClient (handle, &pt);
                 pinfo.pt.x = pt.x;
                 pinfo.pt.y = pt.y;
-                if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, &pinfo) !is -1) {
+                if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, cast(LPARAM)&pinfo) !is -1) {
                     TableItem item = _getItem (pinfo.iItem);
                     auto hDC = OS.GetDC (handle);
                     HFONT oldFont, newFont = cast(HFONT)OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -6814,7 +6814,7 @@ LRESULT wmNotifyToolTip (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                                 }
                             } else {
                                 lpnmtdi = cast(NMTTDISPINFO*)new NMTTDISPINFOW;
-                                OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
+                                OS.MoveMemory (lpnmtdi, cast(LPCVOID)lParam, NMTTDISPINFOW.sizeof);
                                 if (lpnmtdi.lpszText !is null) {
                                     (cast(wchar*)lpnmtdi.lpszText)[0] = 0;
                                 }
@@ -6837,10 +6837,10 @@ LRESULT wmNotifyToolTip (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
                                         CHAR [] bytes = new CHAR [chars.length * 2];
                                         OS.WideCharToMultiByte (getCodePage (), 0, chars.ptr, cast(int)/*64bit*/chars.length, bytes.ptr, cast(int)/*64bit*/bytes.length, null, null);
                                         shell.setToolTipText (lpnmtdi, bytes);
-                                        OS.MoveMemory (lParam, cast(NMTTDISPINFOA*)lpnmtdi, NMTTDISPINFOA.sizeof);
+                                        OS.MoveMemory (cast(LPVOID)lParam, cast(NMTTDISPINFOA*)lpnmtdi, NMTTDISPINFOA.sizeof);
                                     } else {
                                         shell.setToolTipText (lpnmtdi, chars);
-                                        OS.MoveMemory (lParam, cast(NMTTDISPINFOW*)lpnmtdi, NMTTDISPINFOW.sizeof);
+                                        OS.MoveMemory (cast(LPVOID)lParam, cast(NMTTDISPINFOW*)lpnmtdi, NMTTDISPINFOW.sizeof);
                                     }
                                 }
                             }
@@ -6878,7 +6878,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW* nmcd, LPARAM lParam) {
             OS.ScreenToClient (handle, &pt);
             pinfo.pt.x = pt.x;
             pinfo.pt.y = pt.y;
-            if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, &pinfo) !is -1) {
+            if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, cast(LPARAM)&pinfo) !is -1) {
                 TableItem item = _getItem (pinfo.iItem);
                 auto hDC = OS.GetDC (handle);
                 auto hFont = item.fontHandle (pinfo.iSubItem);
