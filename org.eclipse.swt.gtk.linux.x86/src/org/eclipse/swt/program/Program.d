@@ -260,20 +260,20 @@ static int getDesktop(Display display) {
         ptrdiff_t gnome = OS.XInternAtom(xDisplay, gnomeName.ptr, true);
         if (gnome !is OS.None && (OS.GTK_VERSION >= OS.buildVERSION (2, 2, 0)) && gnome_init()) {
             desktop = DESKTOP_GNOME;
-            int icon_theme = cast(int)GNOME.gnome_icon_theme_new();
-            display.setData(ICON_THEME_DATA, new Integer(icon_theme));
+            ptrdiff_t icon_theme = cast(ptrdiff_t)GNOME.gnome_icon_theme_new();
+            display.setData(ICON_THEME_DATA, new Long(icon_theme));
             display.addListener(SWT.Dispose, new class(display) Listener {
                 Display display;
                 this( Display display ){ this.display = display; }
                 public void handleEvent(Event event) {
-                    Integer gnomeIconTheme = cast(Integer)display.getData(ICON_THEME_DATA);
+                    Long gnomeIconTheme = cast(Long)display.getData(ICON_THEME_DATA);
                     if (gnomeIconTheme is null) return;
                     display.setData(ICON_THEME_DATA, null);
                     /*
                      * Note.  gnome_icon_theme_new uses g_object_new to allocate the
                      * data it returns. Use g_object_unref to free the pointer it returns.
                      */
-                    if (gnomeIconTheme.intValue !is 0) OS.g_object_unref( cast(void*)gnomeIconTheme.intValue);
+                    if (gnomeIconTheme.longValue !is 0) OS.g_object_unref( cast(void*)gnomeIconTheme.longValue);
                 }
             });
             /* Check for libgnomevfs-2 version 2.4 */
@@ -685,11 +685,11 @@ static Program gnome_getProgram(Display display, String mimeType) {
         program.gnomeExpectUri = application.expects_uris is GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
 
         buffer = (fromStringz( application.id) ~ '\0')._idup();
-        Integer gnomeIconTheme = cast(Integer)display.getData(ICON_THEME_DATA);
-        char* icon_name = GNOME.gnome_icon_lookup( cast(GtkIconTheme*) gnomeIconTheme.intValue, null, null, cast(char*)buffer.ptr, null, mimeTypeBuffer,
+        Long gnomeIconTheme = cast(Long)display.getData(ICON_THEME_DATA);
+        char* icon_name = GNOME.gnome_icon_lookup( cast(GtkIconTheme*) gnomeIconTheme.longValue, null, null, cast(char*)buffer.ptr, null, mimeTypeBuffer,
                 GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
         char* path = null;
-        if (icon_name !is null) path = GNOME.gnome_icon_theme_lookup_icon(cast(GtkIconTheme*)gnomeIconTheme.intValue, icon_name, PREFERRED_ICON_SIZE, null, null);
+        if (icon_name !is null) path = GNOME.gnome_icon_theme_lookup_icon(cast(GtkIconTheme*)gnomeIconTheme.longValue, icon_name, PREFERRED_ICON_SIZE, null, null);
         if (path !is null) {
             program.iconPath = fromStringz( path)._idup();
             OS.g_free(path);
