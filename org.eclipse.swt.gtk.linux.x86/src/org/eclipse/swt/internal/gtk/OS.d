@@ -2196,6 +2196,31 @@ public static const int PictOpOver = 3;
     mixin ForwardGtkOsCFunc!(.gtk_scrolled_window_get_hscrollbar);
     mixin ForwardGtkOsCFunc!(.gtk_scrolled_window_get_vscrollbar);
     mixin ForwardGtkOsCFunc!(.gtk_widget_set_tooltip_window);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_is_toplevel);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_has_window);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_realized);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_mapped);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_visible);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_is_drawable);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_sensitive);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_is_sensitive);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_can_focus);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_has_focus);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_can_default);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_receives_default);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_has_default);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_has_grab);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_has_rc_style);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_app_paintable);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_double_buffered);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_get_state);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_has_window);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_realized);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_mapped);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_visible);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_can_focus);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_can_default);
+    mixin ForwardGtkOsCFunc!(.gtk_widget_set_receives_default);
     mixin ForwardGtkOsCFunc!(.pango_attr_background_new );
     mixin ForwardGtkOsCFunc!(.pango_attr_font_desc_new);
     mixin ForwardGtkOsCFunc!(.pango_attr_foreground_new );
@@ -2650,6 +2675,33 @@ public static const int PictOpOver = 3;
 
     static guint GTK_WIDGET_FLAGS( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            guint flags = 0;
+            if (gtk_widget_is_toplevel(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_TOPLEVEL;
+            if (!gtk_widget_get_has_window(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_NO_WINDOW;
+            if (gtk_widget_get_realized(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_REALIZED;
+            if (gtk_widget_get_mapped(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_MAPPED;
+            if (gtk_widget_get_visible(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_VISIBLE;
+            //if (gtk_widget_is_drawable(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_DRAWABLE;
+            if (gtk_widget_get_sensitive(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_SENSITIVE;
+            if (auto parent = OS.gtk_widget_get_parent(cast(GtkWidget*)arg0)) {
+                if (gtk_widget_get_sensitive(parent)) flags |= GtkWidgetFlags.GTK_PARENT_SENSITIVE;
+            }
+            //if (gtk_widget_is_sensitive(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_IS_SENSITIVE;
+            if (gtk_widget_get_can_focus(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_CAN_FOCUS;
+            if (gtk_widget_has_focus(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_HAS_FOCUS;
+            if (gtk_widget_get_can_default(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_CAN_DEFAULT;
+            if (gtk_widget_get_receives_default(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_RECEIVES_DEFAULT;
+            if (gtk_widget_has_default(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_HAS_DEFAULT;
+            if (gtk_widget_has_grab(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_HAS_GRAB;
+            if (gtk_widget_has_rc_style(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_RC_STYLE;
+            //GValue gvalue;
+            //gtk_widget_style_get_property(cast(GtkWidget*)arg0, "composite-child".ptr, &gvalue);
+            //if (g_value_get_boolean(&gvalue)) flags |= GtkWidgetFlags.GTK_COMPOSITE_CHILD;
+            if (gtk_widget_get_app_paintable(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_APP_PAINTABLE;
+            //if (gtk_widget_get_double_buffered(cast(GtkWidget*)arg0)) flags |= GtkWidgetFlags.GTK_DOUBLE_BUFFERED;
+            return flags;
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return    (cast(GtkObject*) g_type_check_instance_cast (cast(GTypeInstance*) arg0,  gtk_object_get_type ())).flags ;
@@ -2657,6 +2709,9 @@ public static const int PictOpOver = 3;
 
     static ubyte GTK_WIDGET_STATE( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(ubyte)gtk_widget_get_state(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return (  cast(GtkWidget*) g_type_check_instance_cast (cast(GTypeInstance*)arg0, gtk_widget_get_type ())).state;
@@ -2664,6 +2719,9 @@ public static const int PictOpOver = 3;
 
     static bool GTK_WIDGET_HAS_DEFAULT( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(bool)gtk_widget_has_default(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return ( ( ( cast(GtkObject*) g_type_check_instance_cast (cast(GTypeInstance*)arg0, gtk_object_get_type () )).flags & GtkWidgetFlags.GTK_HAS_DEFAULT) != 0) ;
@@ -2671,6 +2729,9 @@ public static const int PictOpOver = 3;
 
     static bool GTK_WIDGET_HAS_FOCUS( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(bool)gtk_widget_has_focus(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return ( ( ( cast(GtkObject*) g_type_check_instance_cast (cast(GTypeInstance*)arg0, gtk_object_get_type () )).flags & GtkWidgetFlags.GTK_HAS_FOCUS) != 0) ;
@@ -2678,6 +2739,9 @@ public static const int PictOpOver = 3;
 
     static bool GTK_WIDGET_IS_SENSITIVE( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(bool)gtk_widget_is_sensitive(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return ( ( ( cast (GtkObject*) g_type_check_instance_cast ( cast(GTypeInstance*)arg0, gtk_object_get_type ()) ).flags & GtkWidgetFlags.GTK_SENSITIVE) != 0)   && ( ( ( cast(GtkObject*) g_type_check_instance_cast ( cast(GTypeInstance*)arg0, gtk_object_get_type ()) ).flags & GtkWidgetFlags.GTK_PARENT_SENSITIVE) != 0);
@@ -2685,6 +2749,9 @@ public static const int PictOpOver = 3;
 
     static bool GTK_WIDGET_MAPPED( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(bool)gtk_widget_get_mapped(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return ( ( ( cast(GtkObject*) g_type_check_instance_cast (cast(GTypeInstance*)arg0, gtk_object_get_type () )).flags & GtkWidgetFlags.GTK_MAPPED) != 0) ;
@@ -2692,6 +2759,9 @@ public static const int PictOpOver = 3;
 
     static bool GTK_WIDGET_SENSITIVE( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(bool)gtk_widget_get_sensitive(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return ( ( ( cast(GtkObject*) g_type_check_instance_cast (cast(GTypeInstance*)arg0, gtk_object_get_type () )).flags & GTK_SENSITIVE) != 0) ;
@@ -2699,6 +2769,24 @@ public static const int PictOpOver = 3;
 
     static void GTK_WIDGET_SET_FLAGS( void* arg0, uint arg1 )
     {
+        if (OS.buildVERSION(2, 22, 0) <= OS.GTK_VERSION) {
+            switch (arg1) {
+            case GtkWidgetFlags.GTK_NO_WINDOW: gtk_widget_set_has_window(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_REALIZED: gtk_widget_set_realized(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_MAPPED:  gtk_widget_set_mapped(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_VISIBLE: gtk_widget_set_visible(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_SENSITIVE: gtk_widget_set_sensitive(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_CAN_FOCUS: gtk_widget_set_can_focus(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_HAS_FOCUS: /+ TODO +/ break;
+            case GtkWidgetFlags.GTK_CAN_DEFAULT: gtk_widget_set_can_default(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_RECEIVES_DEFAULT: gtk_widget_set_receives_default(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_APP_PAINTABLE: gtk_widget_set_app_paintable(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_DOUBLE_BUFFERED: gtk_widget_set_double_buffered(cast(GtkWidget*)arg0, true); break;
+            default:
+                implMissing(__FILE__,__LINE__);
+            }
+            return;
+        }
         lock.lock();
         scope(exit) lock.unlock();
         (cast(GtkObject*) g_type_check_instance_cast ( cast(GTypeInstance*)arg0,  gtk_object_get_type () ) ).flags |= arg1;
@@ -2706,6 +2794,24 @@ public static const int PictOpOver = 3;
 
     static void GTK_WIDGET_UNSET_FLAGS( void* arg0, uint arg1 )
     {
+        if (OS.buildVERSION(2, 22, 0) <= OS.GTK_VERSION) {
+            switch (arg1) {
+            case GtkWidgetFlags.GTK_NO_WINDOW: gtk_widget_set_has_window(cast(GtkWidget*)arg0, true); break;
+            case GtkWidgetFlags.GTK_REALIZED: gtk_widget_set_realized(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_MAPPED:  gtk_widget_set_mapped(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_VISIBLE: gtk_widget_set_visible(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_SENSITIVE: gtk_widget_set_sensitive(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_CAN_FOCUS: gtk_widget_set_can_focus(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_HAS_FOCUS: /+ TODO +/ break;
+            case GtkWidgetFlags.GTK_CAN_DEFAULT: gtk_widget_set_can_default(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_RECEIVES_DEFAULT: gtk_widget_set_receives_default(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_APP_PAINTABLE: gtk_widget_set_app_paintable(cast(GtkWidget*)arg0, false); break;
+            case GtkWidgetFlags.GTK_DOUBLE_BUFFERED: gtk_widget_set_double_buffered(cast(GtkWidget*)arg0, false); break;
+            default:
+                implMissing(__FILE__,__LINE__);
+            }
+            return;
+        }
         lock.lock();
         scope(exit) lock.unlock();
         (cast(GtkObject*) g_type_check_instance_cast ( cast(GTypeInstance*)arg0,  gtk_object_get_type () ) ).flags &= ~arg1;
@@ -2713,6 +2819,9 @@ public static const int PictOpOver = 3;
 
     static bool GTK_WIDGET_VISIBLE( void* arg0 )
     {
+        if (OS.buildVERSION(2, 20, 0) <= OS.GTK_VERSION) {
+            return cast(bool)gtk_widget_get_visible(cast(GtkWidget*)arg0);
+        }
         lock.lock();
         scope(exit) lock.unlock();
         return ( ( ( cast(GtkObject*) g_type_check_instance_cast (cast(GTypeInstance*)arg0, gtk_object_get_type () )).flags & GTK_VISIBLE) != 0) ;

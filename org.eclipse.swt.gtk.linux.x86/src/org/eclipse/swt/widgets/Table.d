@@ -290,7 +290,7 @@ override void cellDataProc (
                 ptr = null;
                 OS.gtk_tree_model_get1 (tree_model, iter, modelIndex + CELL_BACKGROUND, &ptr);
                 if (ptr !is null) {
-                    OS.g_object_set1 (cell, OS.cell_background_gdk.ptr, cast(int)ptr);
+                    OS.g_object_set1 (cell, OS.cell_background_gdk.ptr, cast(ptrdiff_t)ptr);
                 }
             }
         }
