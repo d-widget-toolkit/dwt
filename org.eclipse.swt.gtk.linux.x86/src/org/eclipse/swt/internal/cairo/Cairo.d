@@ -67,18 +67,10 @@ private int CAIRO_VERSION_ENCODE(int major, int minor, int micro) {
 template NameOfFunc(alias f) {
     // Note: highly dependent on the .stringof formatting
     // the value begins with "& " which is why the first two chars are cut off
-    static if( (&f).stringof[0] == '&' && (&f).stringof[1] != ' ' ){
-        // stringof in old LLVMDC is "&foobar"
-        static assert( (&f).stringof[0] == '&' );
-        static assert( (&f).stringof[1] != ' ' );
-        const char[] NameOfFunc = (&f).stringof[1 .. $];
-    }
-    else{
-        // stringof in DMD is "& foobar"
-        static assert( (&f).stringof[0] == '&' );
-        static assert( (&f).stringof[1] == ' ' );
-        const char[] NameOfFunc = (&f).stringof[2 .. $];
-    }
+    // stringof in DMD and LDC is "& foobar"
+    static assert( (&f).stringof[0] == '&' );
+    static assert( (&f).stringof[1] == ' ' );
+    const char[] NameOfFunc = (&f).stringof[2 .. $];
 }
 
 template ForwardGtkCairoCFunc( alias cFunc ) {
