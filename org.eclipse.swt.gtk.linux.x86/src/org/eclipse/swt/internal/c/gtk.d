@@ -9683,7 +9683,33 @@ alias extern (C) _GtkAccelGroup * function()TGTKgtk_accel_group_new; extern(D) T
 alias extern (C) GType function()TGTKgtk_accel_group_get_type; extern(D) TGTKgtk_accel_group_get_type gtk_accel_group_get_type;
 alias extern (C) GdkWindow* function(GtkWidget*)TGTKgtk_widget_get_window; extern(D) TGTKgtk_widget_get_window gtk_widget_get_window;
 alias extern (C) void function(GtkWidget *, GtkAllocation *)TGTKgtk_widget_get_allocation; extern(D) TGTKgtk_widget_get_allocation gtk_widget_get_allocation;
-alias extern (C) void function(GtkWidget *, const GtkAllocation *)TGTKgtk_widget_set_allocation; extern(D) TGTKgtk_widget_set_allocation gtk_widget_set_allocation;"
+alias extern (C) void function(GtkWidget *, const GtkAllocation *)TGTKgtk_widget_set_allocation; extern(D) TGTKgtk_widget_set_allocation gtk_widget_set_allocation;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_is_toplevel; extern(D) TGTKgtk_widget_is_toplevel gtk_widget_is_toplevel;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_has_window; extern(D) TGTKgtk_widget_get_has_window gtk_widget_get_has_window;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_realized; extern(D) TGTKgtk_widget_get_realized gtk_widget_get_realized;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_mapped; extern(D) TGTKgtk_widget_get_mapped gtk_widget_get_mapped;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_visible; extern(D) TGTKgtk_widget_get_visible gtk_widget_get_visible;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_is_drawable; extern(D) TGTKgtk_widget_is_drawable gtk_widget_is_drawable;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_sensitive; extern(D) TGTKgtk_widget_get_sensitive gtk_widget_get_sensitive;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_is_sensitive; extern(D) TGTKgtk_widget_is_sensitive gtk_widget_is_sensitive;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_can_focus; extern(D) TGTKgtk_widget_get_can_focus gtk_widget_get_can_focus;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_has_focus; extern(D) TGTKgtk_widget_has_focus gtk_widget_has_focus;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_can_default; extern(D) TGTKgtk_widget_get_can_default gtk_widget_get_can_default;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_receives_default; extern(D) TGTKgtk_widget_get_receives_default gtk_widget_get_receives_default;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_has_default; extern(D) TGTKgtk_widget_has_default gtk_widget_has_default;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_has_grab; extern(D) TGTKgtk_widget_has_grab gtk_widget_has_grab;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_has_rc_style; extern(D) TGTKgtk_widget_has_rc_style gtk_widget_has_rc_style;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_app_paintable; extern(D) TGTKgtk_widget_get_app_paintable gtk_widget_get_app_paintable;
+alias extern (C) gboolean function(aGtkWidget *)TGTKgtk_widget_get_double_buffered; extern(D) TGTKgtk_widget_get_double_buffered gtk_widget_get_double_buffered;
+alias extern (C) GtkStateType function(aGtkWidget *)TGTKgtk_widget_get_state; extern(D) TGTKgtk_widget_get_state gtk_widget_get_state;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_has_window; extern(D) TGTKgtk_widget_set_has_window gtk_widget_set_has_window;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_realized; extern(D) TGTKgtk_widget_set_realized gtk_widget_set_realized;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_mapped; extern(D) TGTKgtk_widget_set_mapped gtk_widget_set_mapped;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_visible; extern(D) TGTKgtk_widget_set_visible gtk_widget_set_visible;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_can_focus; extern(D) TGTKgtk_widget_set_can_focus gtk_widget_set_can_focus;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_can_default; extern(D) TGTKgtk_widget_set_can_default gtk_widget_set_can_default;
+alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_receives_default; extern(D) TGTKgtk_widget_set_receives_default gtk_widget_set_receives_default;
+"
 ));
 
 extern(D) Symbol[] symbols;
@@ -13100,7 +13126,32 @@ static this () {
         Symbol( "gtk_widget_set_allocation",  cast(void**)& gtk_widget_set_allocation),
         Symbol( "gtk_scrolled_window_get_hscrollbar",  cast(void**)& gtk_scrolled_window_get_hscrollbar),
         Symbol( "gtk_scrolled_window_get_vscrollbar",  cast(void**)& gtk_scrolled_window_get_vscrollbar),
-        Symbol( "gtk_widget_set_tooltip_window",  cast(void**)& gtk_widget_set_tooltip_window)
+        Symbol( "gtk_widget_set_tooltip_window",  cast(void**)& gtk_widget_set_tooltip_window),
+        Symbol( "gtk_widget_is_toplevel",  cast(void**)& gtk_widget_is_toplevel),
+        Symbol( "gtk_widget_get_has_window",  cast(void**)& gtk_widget_get_has_window),
+        Symbol( "gtk_widget_get_realized",  cast(void**)& gtk_widget_get_realized),
+        Symbol( "gtk_widget_get_mapped",  cast(void**)& gtk_widget_get_mapped),
+        Symbol( "gtk_widget_get_visible",  cast(void**)& gtk_widget_get_visible),
+        Symbol( "gtk_widget_is_drawable",  cast(void**)& gtk_widget_is_drawable),
+        Symbol( "gtk_widget_get_sensitive",  cast(void**)& gtk_widget_get_sensitive),
+        Symbol( "gtk_widget_is_sensitive",  cast(void**)& gtk_widget_is_sensitive),
+        Symbol( "gtk_widget_get_can_focus",  cast(void**)& gtk_widget_get_can_focus),
+        Symbol( "gtk_widget_has_focus",  cast(void**)& gtk_widget_has_focus),
+        Symbol( "gtk_widget_get_can_default",  cast(void**)& gtk_widget_get_can_default),
+        Symbol( "gtk_widget_get_receives_default",  cast(void**)& gtk_widget_get_receives_default),
+        Symbol( "gtk_widget_has_default",  cast(void**)& gtk_widget_has_default),
+        Symbol( "gtk_widget_has_grab",  cast(void**)& gtk_widget_has_grab),
+        Symbol( "gtk_widget_has_rc_style",  cast(void**)& gtk_widget_has_rc_style),
+        Symbol( "gtk_widget_get_app_paintable",  cast(void**)& gtk_widget_get_app_paintable),
+        Symbol( "gtk_widget_get_double_buffered,",  cast(void**)& gtk_widget_get_double_buffered),
+        Symbol( "gtk_widget_get_state,",  cast(void**)& gtk_widget_get_state),
+        Symbol( "gtk_widget_set_has_window",  cast(void**)& gtk_widget_set_has_window),
+        Symbol( "gtk_widget_set_realized",  cast(void**)& gtk_widget_set_realized),
+        Symbol( "gtk_widget_set_mapped",  cast(void**)& gtk_widget_set_mapped),
+        Symbol( "gtk_widget_set_visible",  cast(void**)& gtk_widget_set_visible),
+        Symbol( "gtk_widget_set_can_focus",  cast(void**)& gtk_widget_set_can_focus),
+        Symbol( "gtk_widget_set_can_default",  cast(void**)& gtk_widget_set_can_default),
+        Symbol( "gtk_widget_set_receives_default",  cast(void**)& gtk_widget_set_receives_default),
     ];
 }
 
@@ -16519,5 +16570,30 @@ extern (C) void gtk_widget_set_allocation(GtkWidget *, const GtkAllocation *);
 extern (C) GtkWidget * gtk_scrolled_window_get_hscrollbar(GtkScrolledWindow *);
 extern (C) GtkWidget * gtk_scrolled_window_get_vscrollbar(GtkScrolledWindow *);
 extern (C) void gtk_widget_set_tooltip_window(GtkWidget *, GtkWindow *);
+extern (C) gboolean gtk_widget_is_toplevel(GtkWidget *);
+extern (C) gboolean gtk_widget_get_has_window(GtkWidget *);
+extern (C) gboolean gtk_widget_get_realized(GtkWidget *);
+extern (C) gboolean gtk_widget_get_mapped(GtkWidget *);
+extern (C) gboolean gtk_widget_get_visible(GtkWidget *);
+extern (C) gboolean gtk_widget_is_drawable(GtkWidget *);
+extern (C) gboolean gtk_widget_get_sensitive(GtkWidget *);
+extern (C) gboolean gtk_widget_is_sensitive(GtkWidget *);
+extern (C) gboolean gtk_widget_get_can_focus(GtkWidget *);
+extern (C) gboolean gtk_widget_has_focus(GtkWidget *);
+extern (C) gboolean gtk_widget_get_can_default(GtkWidget *);
+extern (C) gboolean gtk_widget_get_receives_default(GtkWidget *);
+extern (C) gboolean gtk_widget_has_default(GtkWidget *);
+extern (C) gboolean gtk_widget_has_grab(GtkWidget *);
+extern (C) gboolean gtk_widget_has_rc_style(GtkWidget *);
+extern (C) gboolean gtk_widget_get_app_paintable(GtkWidget *);
+extern (C) gboolean gtk_widget_get_double_buffered(GtkWidget *);
+extern (C) GtkStateType gtk_widget_get_state(GtkWidget *);
+extern (C) void gtk_widget_set_has_window(GtkWidget *, gboolean);
+extern (C) void gtk_widget_set_realized(GtkWidget *, gboolean);
+extern (C) void gtk_widget_set_mapped(GtkWidget *, gboolean);
+extern (C) void gtk_widget_set_visible(GtkWidget *, gboolean);
+extern (C) void gtk_widget_set_can_focus(GtkWidget *, gboolean);
+extern (C) void gtk_widget_set_can_default(GtkWidget *, gboolean);
+extern (C) void gtk_widget_set_receives_default(GtkWidget *, gboolean);
 } // version(DYNLINK)
 
