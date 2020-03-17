@@ -2451,7 +2451,7 @@ version(ANSI) {
     alias DWTWINAPI.RemovePropA RemoveProp;
     alias DWTWINAPI.SHBrowseForFolderA SHBrowseForFolder;
     alias DWTWINAPI.SHGetPathFromIDListA SHGetPathFromIDList;
-    alias DWTWINAPI.SendMessageA SendMessage;
+    alias SendMessageA SendMessage;
     alias DWTWINAPI.SetMenuItemInfoA SetMenuItemInfo;
     alias DWTWINAPI.SetPropA SetProp;
     alias DWTWINAPI.SetWindowLongA SetWindowLong;
@@ -2558,7 +2558,7 @@ version(ANSI) {
     alias DWTWINAPI.RemovePropW RemoveProp;
     alias DWTWINAPI.SHBrowseForFolderW SHBrowseForFolder;
     alias DWTWINAPI.SHGetPathFromIDListW SHGetPathFromIDList;
-    alias DWTWINAPI.SendMessageW SendMessage;
+    alias SendMessageW SendMessage;
     alias DWTWINAPI.SetMenuItemInfoW SetMenuItemInfo;
     alias DWTWINAPI.SetWindowLongW SetWindowLong;
     alias DWTWINAPI.SetWindowLongPtrW SetWindowLongPtr;
@@ -3241,7 +3241,18 @@ alias DWTWINAPI.ReleaseDC ReleaseDC;
 alias DWTWINAPI.RemoveMenu RemoveMenu;
 alias DWTWINAPI.RestoreDC RestoreDC;
 alias DWTWINAPI.RoundRect RoundRect;
-alias DWTWINAPI.RtlMoveMemory MoveMemory;
+static void MoveMemory(void* Destination, LPCVOID Source, SIZE_T Length) {
+    DWTWINAPI.RtlMoveMemory(Destination, Source, Length);
+}
+static void MoveMemory(ptrdiff_t Destination, LPCVOID Source, SIZE_T Length) {
+    DWTWINAPI.RtlMoveMemory(cast(void*)Destination, Source, Length);
+}
+static void MoveMemory(void* Destination, ptrdiff_t Source, SIZE_T Length) {
+    DWTWINAPI.RtlMoveMemory(Destination, cast(void*)Source, Length);
+}
+static void MoveMemory(ptrdiff_t Destination, ptrdiff_t Source, SIZE_T Length) {
+    DWTWINAPI.RtlMoveMemory(cast(void*)Destination, cast(void*)Source, Length);
+}
 alias DWTWINAPI.SHBrowseForFolderA SHBrowseForFolderA;
 alias DWTWINAPI.SHBrowseForFolderW SHBrowseForFolderW;
 version(WinCE){
@@ -3285,8 +3296,30 @@ alias DWTWINAPI.SelectClipRgn SelectClipRgn;
 alias DWTWINAPI.SelectObject SelectObject;
 alias DWTWINAPI.SelectPalette SelectPalette;
 alias DWTWINAPI.SendInput SendInput;
-alias DWTWINAPI.SendMessageA SendMessageA;
-alias DWTWINAPI.SendMessageW SendMessageW;
+static LRESULT SendMessageA(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    return DWTWINAPI.SendMessageA(hWnd, msg, wParam, lParam);
+}
+static LRESULT SendMessageA(HWND hWnd, UINT msg, void* wParam, LPARAM lParam) {
+    return DWTWINAPI.SendMessageA(hWnd, msg, cast(WPARAM)wParam, lParam);
+}
+static LRESULT SendMessageA(HWND hWnd, UINT msg, WPARAM wParam, void* lParam) {
+    return DWTWINAPI.SendMessageA(hWnd, msg, wParam, cast(LPARAM)lParam);
+}
+static LRESULT SendMessageA(HWND hWnd, UINT msg, void* wParam, void* lParam) {
+    return DWTWINAPI.SendMessageA(hWnd, msg, cast(WPARAM)wParam, cast(LPARAM)lParam);
+}
+static LRESULT SendMessageW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    return DWTWINAPI.SendMessageW(hWnd, msg, wParam, lParam);
+}
+static LRESULT SendMessageW(HWND hWnd, UINT msg, void* wParam, LPARAM lParam) {
+    return DWTWINAPI.SendMessageW(hWnd, msg, cast(WPARAM)wParam, lParam);
+}
+static LRESULT SendMessageW(HWND hWnd, UINT msg, WPARAM wParam, void* lParam) {
+    return DWTWINAPI.SendMessageW(hWnd, msg, wParam, cast(LPARAM)lParam);
+}
+static LRESULT SendMessageW(HWND hWnd, UINT msg, void* wParam, void* lParam) {
+    return DWTWINAPI.SendMessageW(hWnd, msg, cast(WPARAM)wParam, cast(LPARAM)lParam);
+}
 alias DWTWINAPI.SetActiveWindow SetActiveWindow;
 alias DWTWINAPI.SetBkColor SetBkColor;
 alias DWTWINAPI.SetBkMode SetBkMode;
