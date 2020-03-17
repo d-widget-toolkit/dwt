@@ -69,14 +69,10 @@ private GtkAccessible* GTK_ACCESSIBLE(AtkObject*){
 template NameOfFunc(alias f) {
     // Note: highly dependent on the .stringof formatting
     // the value begins with "& " which is why the first two chars are cut off
-    version( LDC ){
-        // stringof in LLVMDC is "&foobar"
-        const char[] NameOfFunc = (&f).stringof[1 .. $];
-    }
-    else{
-        // stringof in DMD is "& foobar"
-        const char[] NameOfFunc = (&f).stringof[2 .. $];
-    }
+    // stringof in DMD and LDC is "& foobar"
+    static assert( (&f).stringof[0] == '&' );
+    static assert( (&f).stringof[1] == ' ' );
+    const char[] NameOfFunc = (&f).stringof[2 .. $];
 }
 
 template ForwardGtkAtkCFunc( alias cFunc ) {

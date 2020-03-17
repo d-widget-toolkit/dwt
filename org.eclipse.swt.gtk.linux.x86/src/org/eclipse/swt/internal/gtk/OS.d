@@ -628,18 +628,10 @@ template NameOfFunc(alias f) {
     // the value begins with "& " which is why the first two chars are cut off
 
     // this is also used in org.eclipse.swt/internal/cairo/Cairo and org.eclipse.swt/internal/accessible/gtk/ATK
-    version( LDC ){
-        // stringof in LDC is "&foobar"
-        static assert( (&f).stringof[0] == '&' );
-        static assert( (&f).stringof[1] != ' ' );
-        const char[] NameOfFunc = (&f).stringof[1 .. $];
-    }
-    else{
-        // stringof in DMD is "& foobar"
-        static assert( (&f).stringof[0] == '&' );
-        static assert( (&f).stringof[1] == ' ' );
-        const char[] NameOfFunc = (&f).stringof[2 .. $];
-    }
+    // stringof in DMD and LDC is "& foobar"
+    static assert( (&f).stringof[0] == '&' );
+    static assert( (&f).stringof[1] == ' ' );
+    const char[] NameOfFunc = (&f).stringof[2 .. $];
 }
 
 template ForwardGtkOsCFunc( alias cFunc ) {
