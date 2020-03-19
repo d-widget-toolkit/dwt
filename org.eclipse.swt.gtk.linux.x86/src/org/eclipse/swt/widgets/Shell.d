@@ -665,7 +665,7 @@ override void createHandle (int index) {
         createHandle (index, false, true);
         OS.gtk_container_add (cast(GtkContainer*)vboxHandle, scrolledHandle);
         OS.gtk_box_set_child_packing (cast(GtkBox*)vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
-        String dummy = "a";
+        String dummy = "";
         OS.gtk_window_set_title (cast(GtkWindow*)shellHandle, dummy.ptr );
         if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) is 0) {
             OS.gtk_container_set_border_width (cast(GtkContainer*)shellHandle, 1);
