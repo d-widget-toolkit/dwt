@@ -659,7 +659,7 @@ void addPopup (Menu menu) {
 void addWidget (GtkWidget* handle, Widget widget) {
     if (handle is null) return;
     if (freeSlot is -1) {
-        ptrdiff_t len = freeSlot = indexTable.length + GROW_SIZE;
+        ptrdiff_t len = (freeSlot = indexTable.length) + GROW_SIZE;
         ptrdiff_t[] newIndexTable = new ptrdiff_t[len];
         Widget[] newWidgetTable = new Widget [len];
         System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
