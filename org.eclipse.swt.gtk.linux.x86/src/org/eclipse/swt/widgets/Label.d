@@ -321,7 +321,7 @@ public String getText () {
 override void hookEvents () {
     super.hookEvents();
     if (labelHandle !is null) {
-        OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+        OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
     }
 }
 

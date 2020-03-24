@@ -793,8 +793,8 @@ override
 void hookEvents () {
     super.hookEvents();
     if ((style & SWT.CALENDAR) !is 0) {
-        OS.g_signal_connect_closure (handle, OS.day_selected.ptr, display.closures [DAY_SELECTED], false);
-        OS.g_signal_connect_closure (handle, OS.month_changed.ptr, display.closures [MONTH_CHANGED], false);
+        OS.g_signal_connect_closure (handle, OS.day_selected.ptr, display.getClosure (DAY_SELECTED), false);
+        OS.g_signal_connect_closure (handle, OS.month_changed.ptr, display.getClosure (MONTH_CHANGED), false);
     }
 }
 

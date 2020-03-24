@@ -3009,7 +3009,9 @@ extern (C) _GArray * function(_GArray *, void *, guint)g_array_prepend_vals;
 extern (C) _GArray * function(_GArray *, void *, guint)g_array_append_vals;
 extern (C) char * function(_GArray *, gint)g_array_free;
 extern (C) _GArray * function(gint, gint, guint, guint)g_array_sized_new;
-extern (C) _GArray * function(gint, gint, guint)g_array_new;"
+extern (C) _GArray * function(gint, gint, guint)g_array_new;
+extern (C) void function(_GClosure *)g_closure_sink;
+"
 ));
 
 Symbol[] symbols;
@@ -4424,7 +4426,8 @@ static this () {
         Symbol("g_array_append_vals",  cast(void**)& g_array_append_vals),
         Symbol("g_array_free",  cast(void**)& g_array_free),
         Symbol("g_array_sized_new",  cast(void**)& g_array_sized_new),
-        Symbol("g_array_new",  cast(void**)& g_array_new)
+        Symbol("g_array_new",  cast(void**)& g_array_new),
+        Symbol("g_closure_sink",  cast(void**)& g_closure_sink),
     ];
 }
 
@@ -5847,5 +5850,6 @@ extern (C) _GArray * g_array_append_vals(_GArray *, void *, guint);
 extern (C) char * g_array_free(_GArray *, gint);
 extern (C) _GArray * g_array_sized_new(gint, gint, guint, guint);
 extern (C) _GArray * g_array_new(gint, gint, guint);
+extern (C) void g_closure_sink(_GClosure *);
 } // version(DYNLINK)
 

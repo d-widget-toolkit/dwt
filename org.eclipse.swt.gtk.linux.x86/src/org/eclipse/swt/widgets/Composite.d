@@ -801,7 +801,7 @@ override void hookEvents () {
     if ((state & CANVAS) !is 0) {
         OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
         if (scrolledHandle !is null) {
-            OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child.ptr, display.closures [SCROLL_CHILD], false);
+            OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child.ptr, display.getClosure (SCROLL_CHILD), false);
         }
     }
 }

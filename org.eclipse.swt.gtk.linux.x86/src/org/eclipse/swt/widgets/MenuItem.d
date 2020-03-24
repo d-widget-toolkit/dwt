@@ -475,9 +475,9 @@ override int gtk_show_help (GtkWidget* widget, ptrdiff_t helpType) {
 
 override void hookEvents () {
     super.hookEvents ();
-    OS.g_signal_connect_closure (handle, OS.activate.ptr, display.closures [ACTIVATE], false);
-    OS.g_signal_connect_closure (handle, OS.select.ptr, display.closures [SELECT], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.closures [SHOW_HELP], false);
+    OS.g_signal_connect_closure (handle, OS.activate.ptr, display.getClosure (ACTIVATE), false);
+    OS.g_signal_connect_closure (handle, OS.select.ptr, display.getClosure (SELECT), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
 }
 
 /**

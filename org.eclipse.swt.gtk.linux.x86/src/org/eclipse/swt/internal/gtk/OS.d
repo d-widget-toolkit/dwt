@@ -674,6 +674,10 @@ private gint GTK_VERSION(){
     version( GTK_DYN_LINK ) return buildVERSION(*gtk_major_version, *gtk_minor_version, *gtk_micro_version);
     else                    return buildVERSION( gtk_major_version,  gtk_minor_version,  gtk_micro_version);
 }
+private gint GLIB_VERSION(){
+    version( DYNLINK ) return buildVERSION(*glib_major_version, *glib_minor_version, *glib_micro_version);
+    else               return buildVERSION( glib_major_version,  glib_minor_version,  glib_micro_version);
+}
 
 public class OS : Platform {
 
@@ -1158,6 +1162,9 @@ public class OS : Platform {
     }
 //     = buildVERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version());
 
+    public static gint GLIB_VERSION(){
+        return .GLIB_VERSION();
+    }
 
 public static gint buildVERSION(gint major, gint minor, gint micro) {
     return .buildVERSION( major, minor, micro );
@@ -1222,6 +1229,20 @@ public static const int PictOpOver = 3;
         version(GTK_DYN_LINK) return *.gtk_micro_version;
         else                  return .gtk_micro_version;
     }
+
+    public static gint glib_major_version(){
+        version(DYNLINK) return *.glib_minor_version;
+        else             return .glib_minor_version;
+    }
+    public static gint glib_minor_version(){
+        version(DYNLINK) return *.glib_minor_version;
+        else             return .glib_minor_version;
+    }
+    public static gint glib_micro_version(){
+        version(DYNLINK) return *.glib_micro_version;
+        else             return .glib_micro_version;
+    }
+
     mixin ForwardGtkOsCFunc!(localeconv_decimal_point);
     mixin ForwardGtkOsCFunc!(realpath);
 
@@ -1368,6 +1389,7 @@ public static const int PictOpOver = 3;
     mixin ForwardGtkOsCFunc!(.g_utf8_strlen);
     mixin ForwardGtkOsCFunc!(.g_utf8_to_utf16);
     mixin ForwardGtkOsCFunc!(.g_value_peek_pointer);
+    mixin ForwardGtkOsCFunc!(.g_closure_sink);
     mixin ForwardGtkOsCFunc!(.gdk_atom_intern);
     mixin ForwardGtkOsCFunc!(.gdk_atom_name);
     mixin ForwardGtkOsCFunc!(.gdk_beep);

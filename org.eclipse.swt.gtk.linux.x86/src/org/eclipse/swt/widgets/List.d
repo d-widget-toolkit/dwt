@@ -813,8 +813,8 @@ override void gtk_row_activated (GtkTreeView* tree, GtkTreePath* path, GtkTreeVi
 override void hookEvents () {
     super.hookEvents();
     auto selection = OS.gtk_tree_view_get_selection(cast(GtkTreeView*)handle);
-    OS.g_signal_connect_closure (selection, OS.changed.ptr, display.closures [CHANGED], false);
-    OS.g_signal_connect_closure (handle, OS.row_activated.ptr, display.closures [ROW_ACTIVATED], false);
+    OS.g_signal_connect_closure (selection, OS.changed.ptr, display.getClosure (CHANGED), false);
+    OS.g_signal_connect_closure (handle, OS.row_activated.ptr, display.getClosure (ROW_ACTIVATED), false);
 }
 
 /**

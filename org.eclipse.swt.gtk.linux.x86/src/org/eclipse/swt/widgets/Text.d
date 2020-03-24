@@ -1369,21 +1369,21 @@ override int gtk_text_buffer_insert_text (GtkTextBuffer *widget, GtkTextIter *it
 override void hookEvents () {
     super.hookEvents();
     if ((style & SWT.SINGLE) !is 0) {
-        OS.g_signal_connect_closure (handle, OS.changed.ptr, display.closures [CHANGED], true);
-        OS.g_signal_connect_closure (handle, OS.insert_text.ptr, display.closures [INSERT_TEXT], false);
-        OS.g_signal_connect_closure (handle, OS.delete_text.ptr, display.closures [DELETE_TEXT], false);
-        OS.g_signal_connect_closure (handle, OS.activate.ptr, display.closures [ACTIVATE], false);
-        OS.g_signal_connect_closure (handle, OS.grab_focus.ptr, display.closures [GRAB_FOCUS], false);
-        OS.g_signal_connect_closure (handle, OS.populate_popup.ptr, display.closures [POPULATE_POPUP], false);
+        OS.g_signal_connect_closure (handle, OS.changed.ptr, display.getClosure (CHANGED), true);
+        OS.g_signal_connect_closure (handle, OS.insert_text.ptr, display.getClosure (INSERT_TEXT), false);
+        OS.g_signal_connect_closure (handle, OS.delete_text.ptr, display.getClosure (DELETE_TEXT), false);
+        OS.g_signal_connect_closure (handle, OS.activate.ptr, display.getClosure (ACTIVATE), false);
+        OS.g_signal_connect_closure (handle, OS.grab_focus.ptr, display.getClosure (GRAB_FOCUS), false);
+        OS.g_signal_connect_closure (handle, OS.populate_popup.ptr, display.getClosure (POPULATE_POPUP), false);
     } else {
-        OS.g_signal_connect_closure (bufferHandle, OS.changed.ptr, display.closures [CHANGED], false);
-        OS.g_signal_connect_closure (bufferHandle, OS.insert_text.ptr, display.closures [TEXT_BUFFER_INSERT_TEXT], false);
-        OS.g_signal_connect_closure (bufferHandle, OS.delete_range.ptr, display.closures [DELETE_RANGE], false);
-        OS.g_signal_connect_closure (handle, OS.populate_popup.ptr, display.closures [POPULATE_POPUP], false);
+        OS.g_signal_connect_closure (bufferHandle, OS.changed.ptr, display.getClosure (CHANGED), false);
+        OS.g_signal_connect_closure (bufferHandle, OS.insert_text.ptr, display.getClosure (TEXT_BUFFER_INSERT_TEXT), false);
+        OS.g_signal_connect_closure (bufferHandle, OS.delete_range.ptr, display.getClosure (DELETE_RANGE), false);
+        OS.g_signal_connect_closure (handle, OS.populate_popup.ptr, display.getClosure (POPULATE_POPUP), false);
     }
     auto imContext = imContext ();
     if (imContext !is null) {
-        OS.g_signal_connect_closure (imContext, OS.commit.ptr, display.closures [COMMIT], false);
+        OS.g_signal_connect_closure (imContext, OS.commit.ptr, display.getClosure (COMMIT), false);
         int id = OS.g_signal_lookup (OS.commit.ptr, OS.gtk_im_context_get_type ());
         int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
         OS.g_signal_handlers_block_matched (imContext, mask, id, 0, null, null, cast(void*)handle);

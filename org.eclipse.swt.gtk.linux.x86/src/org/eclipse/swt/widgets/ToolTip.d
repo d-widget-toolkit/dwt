@@ -532,15 +532,15 @@ override int gtk_size_allocate (GtkWidget* widget, ptrdiff_t allocation) {
 
 override void hookEvents () {
     if ((style & SWT.BALLOON) !is 0) {
-        OS.g_signal_connect_closure (handle, OS.expose_event.ptr, display.closures [EXPOSE_EVENT], false);
+        OS.g_signal_connect_closure (handle, OS.expose_event.ptr, display.getClosure (EXPOSE_EVENT), false);
         OS.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
-        OS.g_signal_connect_closure (handle, OS.button_press_event.ptr, display.closures [BUTTON_PRESS_EVENT], false);
+        OS.g_signal_connect_closure (handle, OS.button_press_event.ptr, display.getClosure (BUTTON_PRESS_EVENT), false);
     } else {
         auto tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (cast(GtkTooltips*)handle);
         if (tipWindow !is null) {
-            OS.g_signal_connect_closure (tipWindow, OS.size_allocate.ptr, display.closures [SIZE_ALLOCATE], false);
+            OS.g_signal_connect_closure (tipWindow, OS.size_allocate.ptr, display.getClosure (SIZE_ALLOCATE), false);
             OS.gtk_widget_add_events (tipWindow, OS.GDK_BUTTON_PRESS_MASK);
-            OS.g_signal_connect_closure (tipWindow, OS.button_press_event.ptr, display.closures [BUTTON_PRESS_EVENT], false);
+            OS.g_signal_connect_closure (tipWindow, OS.button_press_event.ptr, display.getClosure (BUTTON_PRESS_EVENT), false);
         }
     }
 }

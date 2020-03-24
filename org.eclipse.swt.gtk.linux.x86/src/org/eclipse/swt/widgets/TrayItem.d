@@ -307,8 +307,8 @@ override int gtk_size_allocate (GtkWidget* widget, ptrdiff_t allocation) {
 override void hookEvents () {
     int eventMask = OS.GDK_BUTTON_PRESS_MASK;
     OS.gtk_widget_add_events (handle, eventMask);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-    OS.g_signal_connect_closure_by_id (imageHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+    OS.g_signal_connect_closure_by_id (imageHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
  }
 
 /**
