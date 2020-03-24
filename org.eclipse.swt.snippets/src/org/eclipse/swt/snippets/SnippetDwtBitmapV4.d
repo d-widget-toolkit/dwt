@@ -38,7 +38,7 @@ dub.sdl:
  * Author: kntroh
  * License: CC0(http://creativecommons.org/publicdomain/zero/1.0/)
  */
-module org.eclipse.swt.snippets.SnippetDwt1;
+module org.eclipse.swt.snippets.SnippetDwtBitmapV4;
 
 /**
  * This program snippet is the test of displaying RLE4 bitmap and V4 Header bitmap.

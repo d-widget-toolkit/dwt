@@ -38,7 +38,7 @@ dub.sdl:
  * Author: kntroh
  * License: CC0(http://creativecommons.org/publicdomain/zero/1.0/)
  */
-module org.eclipse.swt.snippets.SnippetDwt1;
+module org.eclipse.swt.snippets.SnippetManyWidget;
 
 /**
  * This program snippet is a test for many widgets creation on GTK.
