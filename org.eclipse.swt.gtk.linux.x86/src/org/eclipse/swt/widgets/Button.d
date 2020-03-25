@@ -456,9 +456,9 @@ override int gtk_key_press_event (GtkWidget* widget, GdkEventKey* event) {
 
 override void hookEvents () {
     super.hookEvents();
-    OS.g_signal_connect_closure (handle, OS.clicked.ptr, display.closures [CLICKED], false);
+    OS.g_signal_connect_closure (handle, OS.clicked.ptr, display.getClosure (CLICKED), false);
     if (labelHandle !is null) {
-        OS.g_signal_connect_closure_by_id (cast(void*)labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+        OS.g_signal_connect_closure_by_id (cast(void*)labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
     }
 }
 

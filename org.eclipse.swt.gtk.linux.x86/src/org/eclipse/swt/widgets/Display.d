@@ -29,6 +29,7 @@ import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.Lock;
 import org.eclipse.swt.internal.LONG;
+import org.eclipse.swt.internal.c.glib_object;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Control;
@@ -150,6 +151,8 @@ public class Display : Device {
     static const String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent";
     static const String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
     GClosure*[] closures;
+    GCallback[] closuresProc;
+    int [] closuresCount;
     int [] signalIds;
 
     /* Widget Table */
@@ -659,7 +662,7 @@ void addPopup (Menu menu) {
 void addWidget (GtkWidget* handle, Widget widget) {
     if (handle is null) return;
     if (freeSlot is -1) {
-        ptrdiff_t len = freeSlot = indexTable.length + GROW_SIZE;
+        ptrdiff_t len = (freeSlot = indexTable.length) + GROW_SIZE;
         ptrdiff_t[] newIndexTable = new ptrdiff_t[len];
         Widget[] newWidgetTable = new Widget [len];
         System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
@@ -1445,6 +1448,18 @@ int getCaretBlinkTime () {
     * an effective blink rate of about 1/2 the total time.
     */
     return buffer / 2;
+}
+
+GClosure* getClosure (int id) {
+    if (OS.GLIB_VERSION >= OS.buildVERSION(2, 36, 0) && ++closuresCount [id] >= 255) {
+        if (closures [id] !is null) OS.g_closure_unref (closures [id]);
+        auto res = windowProcCallbackDatas [id];
+        closures [id] = OS.g_cclosure_new (closuresProc [id], res, null);
+        OS.g_closure_ref (closures [id]);
+        OS.g_closure_sink (closures [id]);
+        closuresCount [id] = 0;
+    }
+    return closures [id];
 }
 
 /**
@@ -2393,6 +2408,8 @@ protected override void init_ () {
 
 void initializeCallbacks () {
     closures = new GClosure* [Widget.LAST_SIGNAL];
+    closuresCount = new int[Widget.LAST_SIGNAL];
+    closuresProc = new GCallback [Widget.LAST_SIGNAL];
     signalIds = new int [Widget.LAST_SIGNAL];
 
     /* Cache signals for GtkWidget */
@@ -2429,88 +2446,95 @@ void initializeCallbacks () {
     signalIds [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_signal_lookup (OS.visibility_notify_event.ptr, OS.GTK_TYPE_WIDGET ());
     signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event.ptr, OS.GTK_TYPE_WIDGET ());
 
-    GClosure* do_cclosure_new( GCallback cb, int value, ptrdiff_t notify ){
+    GCallback do_cclosure_new( GCallback cb, int value, ptrdiff_t notify ){
         CallbackData* res= new CallbackData;
         res.display = this;
         res.data = cast(void*)value;
         windowProcCallbackDatas[ value ] = res;
-        return OS.g_cclosure_new( cb, cast(void*)res, cast(GClosureNotify)notify );
+        return cb;
     }
 
     GCallback windowProc2 = cast(GCallback)&windowProcFunc2;
-    closures [Widget.ACTIVATE] = do_cclosure_new (windowProc2, Widget.ACTIVATE, 0);
-    closures [Widget.ACTIVATE_INVERSE] = do_cclosure_new (windowProc2, Widget.ACTIVATE_INVERSE, 0);
-    closures [Widget.CHANGED] = do_cclosure_new (windowProc2, Widget.CHANGED, 0);
-    closures [Widget.CLICKED] = do_cclosure_new (windowProc2, Widget.CLICKED, 0);
-    closures [Widget.DAY_SELECTED] = do_cclosure_new (windowProc2, Widget.DAY_SELECTED, 0);
-    closures [Widget.HIDE] = do_cclosure_new (windowProc2, Widget.HIDE, 0);
-    closures [Widget.GRAB_FOCUS] = do_cclosure_new (windowProc2, Widget.GRAB_FOCUS, 0);
-    closures [Widget.MAP] = do_cclosure_new (windowProc2, Widget.MAP, 0);
-    closures [Widget.MONTH_CHANGED] = do_cclosure_new (windowProc2, Widget.MONTH_CHANGED, 0);
-    closures [Widget.OUTPUT] = do_cclosure_new (windowProc2, Widget.OUTPUT, 0);
-    closures [Widget.POPUP_MENU] = do_cclosure_new (windowProc2, Widget.POPUP_MENU, 0);
-    closures [Widget.PREEDIT_CHANGED] = do_cclosure_new (windowProc2, Widget.PREEDIT_CHANGED, 0);
-    closures [Widget.REALIZE] = do_cclosure_new (windowProc2, Widget.REALIZE, 0);
-    closures [Widget.SELECT] = do_cclosure_new (windowProc2, Widget.SELECT, 0);
-    closures [Widget.SHOW] = do_cclosure_new (windowProc2, Widget.SHOW, 0);
-    closures [Widget.VALUE_CHANGED] = do_cclosure_new (windowProc2, Widget.VALUE_CHANGED, 0);
-    closures [Widget.UNMAP] = do_cclosure_new (windowProc2, Widget.UNMAP, 0);
-    closures [Widget.UNREALIZE] = do_cclosure_new (windowProc2, Widget.UNREALIZE, 0);
+    closuresProc [Widget.ACTIVATE] = do_cclosure_new (windowProc2, Widget.ACTIVATE, 0);
+    closuresProc [Widget.ACTIVATE_INVERSE] = do_cclosure_new (windowProc2, Widget.ACTIVATE_INVERSE, 0);
+    closuresProc [Widget.CHANGED] = do_cclosure_new (windowProc2, Widget.CHANGED, 0);
+    closuresProc [Widget.CLICKED] = do_cclosure_new (windowProc2, Widget.CLICKED, 0);
+    closuresProc [Widget.DAY_SELECTED] = do_cclosure_new (windowProc2, Widget.DAY_SELECTED, 0);
+    closuresProc [Widget.HIDE] = do_cclosure_new (windowProc2, Widget.HIDE, 0);
+    closuresProc [Widget.GRAB_FOCUS] = do_cclosure_new (windowProc2, Widget.GRAB_FOCUS, 0);
+    closuresProc [Widget.MAP] = do_cclosure_new (windowProc2, Widget.MAP, 0);
+    closuresProc [Widget.MONTH_CHANGED] = do_cclosure_new (windowProc2, Widget.MONTH_CHANGED, 0);
+    closuresProc [Widget.OUTPUT] = do_cclosure_new (windowProc2, Widget.OUTPUT, 0);
+    closuresProc [Widget.POPUP_MENU] = do_cclosure_new (windowProc2, Widget.POPUP_MENU, 0);
+    closuresProc [Widget.PREEDIT_CHANGED] = do_cclosure_new (windowProc2, Widget.PREEDIT_CHANGED, 0);
+    closuresProc [Widget.REALIZE] = do_cclosure_new (windowProc2, Widget.REALIZE, 0);
+    closuresProc [Widget.SELECT] = do_cclosure_new (windowProc2, Widget.SELECT, 0);
+    closuresProc [Widget.SHOW] = do_cclosure_new (windowProc2, Widget.SHOW, 0);
+    closuresProc [Widget.VALUE_CHANGED] = do_cclosure_new (windowProc2, Widget.VALUE_CHANGED, 0);
+    closuresProc [Widget.UNMAP] = do_cclosure_new (windowProc2, Widget.UNMAP, 0);
+    closuresProc [Widget.UNREALIZE] = do_cclosure_new (windowProc2, Widget.UNREALIZE, 0);
 
     GCallback windowProc3 = cast(GCallback)&windowProcFunc3;
-    closures [Widget.BUTTON_PRESS_EVENT] = do_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT, 0);
-    closures [Widget.BUTTON_PRESS_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT_INVERSE, 0);
-    closures [Widget.BUTTON_RELEASE_EVENT] = do_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT, 0);
-    closures [Widget.BUTTON_RELEASE_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT_INVERSE, 0);
-    closures [Widget.COMMIT] = do_cclosure_new (windowProc3, Widget.COMMIT, 0);
-    closures [Widget.CONFIGURE_EVENT] = do_cclosure_new (windowProc3, Widget.CONFIGURE_EVENT, 0);
-    closures [Widget.DELETE_EVENT] = do_cclosure_new (windowProc3, Widget.DELETE_EVENT, 0);
-    closures [Widget.ENTER_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.ENTER_NOTIFY_EVENT, 0);
-    closures [Widget.EVENT] = do_cclosure_new (windowProc3, Widget.EVENT, 0);
-    closures [Widget.EVENT_AFTER] = do_cclosure_new (windowProc3, Widget.EVENT_AFTER, 0);
-    closures [Widget.EXPOSE_EVENT] = do_cclosure_new (windowProc3, Widget.EXPOSE_EVENT, 0);
-    closures [Widget.EXPOSE_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.EXPOSE_EVENT_INVERSE, 0);
-    closures [Widget.FOCUS] = do_cclosure_new (windowProc3, Widget.FOCUS, 0);
-    closures [Widget.FOCUS_IN_EVENT] = do_cclosure_new (windowProc3, Widget.FOCUS_IN_EVENT, 0);
-    closures [Widget.FOCUS_OUT_EVENT] = do_cclosure_new (windowProc3, Widget.FOCUS_OUT_EVENT, 0);
-    closures [Widget.KEY_PRESS_EVENT] = do_cclosure_new (windowProc3, Widget.KEY_PRESS_EVENT, 0);
-    closures [Widget.KEY_RELEASE_EVENT] = do_cclosure_new (windowProc3, Widget.KEY_RELEASE_EVENT, 0);
-    closures [Widget.INPUT] = do_cclosure_new (windowProc3, Widget.INPUT, 0);
-    closures [Widget.LEAVE_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.LEAVE_NOTIFY_EVENT, 0);
-    closures [Widget.MAP_EVENT] = do_cclosure_new (windowProc3, Widget.MAP_EVENT, 0);
-    closures [Widget.MNEMONIC_ACTIVATE] = do_cclosure_new (windowProc3, Widget.MNEMONIC_ACTIVATE, 0);
-    closures [Widget.MOTION_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT, 0);
-    closures [Widget.MOTION_NOTIFY_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT_INVERSE, 0);
-    closures [Widget.MOVE_FOCUS] = do_cclosure_new (windowProc3, Widget.MOVE_FOCUS, 0);
-    closures [Widget.POPULATE_POPUP] = do_cclosure_new (windowProc3, Widget.POPULATE_POPUP, 0);
-    closures [Widget.SCROLL_EVENT] = do_cclosure_new (windowProc3, Widget.SCROLL_EVENT, 0);
-    closures [Widget.SHOW_HELP] = do_cclosure_new (windowProc3, Widget.SHOW_HELP, 0);
-    closures [Widget.SIZE_ALLOCATE] = do_cclosure_new (windowProc3, Widget.SIZE_ALLOCATE, 0);
-    closures [Widget.STYLE_SET] = do_cclosure_new (windowProc3, Widget.STYLE_SET, 0);
-    closures [Widget.TOGGLED] = do_cclosure_new (windowProc3, Widget.TOGGLED, 0);
-    closures [Widget.UNMAP_EVENT] = do_cclosure_new (windowProc3, Widget.UNMAP_EVENT, 0);
-    closures [Widget.VISIBILITY_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.VISIBILITY_NOTIFY_EVENT, 0);
-    closures [Widget.WINDOW_STATE_EVENT] = do_cclosure_new (windowProc3, Widget.WINDOW_STATE_EVENT, 0);
+    closuresProc [Widget.BUTTON_PRESS_EVENT] = do_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT, 0);
+    closuresProc [Widget.BUTTON_PRESS_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT_INVERSE, 0);
+    closuresProc [Widget.BUTTON_RELEASE_EVENT] = do_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT, 0);
+    closuresProc [Widget.BUTTON_RELEASE_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT_INVERSE, 0);
+    closuresProc [Widget.COMMIT] = do_cclosure_new (windowProc3, Widget.COMMIT, 0);
+    closuresProc [Widget.CONFIGURE_EVENT] = do_cclosure_new (windowProc3, Widget.CONFIGURE_EVENT, 0);
+    closuresProc [Widget.DELETE_EVENT] = do_cclosure_new (windowProc3, Widget.DELETE_EVENT, 0);
+    closuresProc [Widget.ENTER_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.ENTER_NOTIFY_EVENT, 0);
+    closuresProc [Widget.EVENT] = do_cclosure_new (windowProc3, Widget.EVENT, 0);
+    closuresProc [Widget.EVENT_AFTER] = do_cclosure_new (windowProc3, Widget.EVENT_AFTER, 0);
+    closuresProc [Widget.EXPOSE_EVENT] = do_cclosure_new (windowProc3, Widget.EXPOSE_EVENT, 0);
+    closuresProc [Widget.EXPOSE_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.EXPOSE_EVENT_INVERSE, 0);
+    closuresProc [Widget.FOCUS] = do_cclosure_new (windowProc3, Widget.FOCUS, 0);
+    closuresProc [Widget.FOCUS_IN_EVENT] = do_cclosure_new (windowProc3, Widget.FOCUS_IN_EVENT, 0);
+    closuresProc [Widget.FOCUS_OUT_EVENT] = do_cclosure_new (windowProc3, Widget.FOCUS_OUT_EVENT, 0);
+    closuresProc [Widget.KEY_PRESS_EVENT] = do_cclosure_new (windowProc3, Widget.KEY_PRESS_EVENT, 0);
+    closuresProc [Widget.KEY_RELEASE_EVENT] = do_cclosure_new (windowProc3, Widget.KEY_RELEASE_EVENT, 0);
+    closuresProc [Widget.INPUT] = do_cclosure_new (windowProc3, Widget.INPUT, 0);
+    closuresProc [Widget.LEAVE_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.LEAVE_NOTIFY_EVENT, 0);
+    closuresProc [Widget.MAP_EVENT] = do_cclosure_new (windowProc3, Widget.MAP_EVENT, 0);
+    closuresProc [Widget.MNEMONIC_ACTIVATE] = do_cclosure_new (windowProc3, Widget.MNEMONIC_ACTIVATE, 0);
+    closuresProc [Widget.MOTION_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT, 0);
+    closuresProc [Widget.MOTION_NOTIFY_EVENT_INVERSE] = do_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT_INVERSE, 0);
+    closuresProc [Widget.MOVE_FOCUS] = do_cclosure_new (windowProc3, Widget.MOVE_FOCUS, 0);
+    closuresProc [Widget.POPULATE_POPUP] = do_cclosure_new (windowProc3, Widget.POPULATE_POPUP, 0);
+    closuresProc [Widget.SCROLL_EVENT] = do_cclosure_new (windowProc3, Widget.SCROLL_EVENT, 0);
+    closuresProc [Widget.SHOW_HELP] = do_cclosure_new (windowProc3, Widget.SHOW_HELP, 0);
+    closuresProc [Widget.SIZE_ALLOCATE] = do_cclosure_new (windowProc3, Widget.SIZE_ALLOCATE, 0);
+    closuresProc [Widget.STYLE_SET] = do_cclosure_new (windowProc3, Widget.STYLE_SET, 0);
+    closuresProc [Widget.TOGGLED] = do_cclosure_new (windowProc3, Widget.TOGGLED, 0);
+    closuresProc [Widget.UNMAP_EVENT] = do_cclosure_new (windowProc3, Widget.UNMAP_EVENT, 0);
+    closuresProc [Widget.VISIBILITY_NOTIFY_EVENT] = do_cclosure_new (windowProc3, Widget.VISIBILITY_NOTIFY_EVENT, 0);
+    closuresProc [Widget.WINDOW_STATE_EVENT] = do_cclosure_new (windowProc3, Widget.WINDOW_STATE_EVENT, 0);
 
     GCallback windowProc4 = cast(GCallback)&windowProcFunc4;
-    closures [Widget.DELETE_RANGE] = do_cclosure_new (windowProc4, Widget.DELETE_RANGE, 0);
-    closures [Widget.DELETE_TEXT] = do_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
-    closures [Widget.ROW_ACTIVATED] = do_cclosure_new (windowProc4, Widget.ROW_ACTIVATED, 0);
-    closures [Widget.SCROLL_CHILD] = do_cclosure_new (windowProc4, Widget.SCROLL_CHILD, 0);
-    closures [Widget.SWITCH_PAGE] = do_cclosure_new (windowProc4, Widget.SWITCH_PAGE, 0);
-    closures [Widget.TEST_COLLAPSE_ROW] = do_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
-    closures [Widget.TEST_EXPAND_ROW] = do_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);
+    closuresProc [Widget.DELETE_RANGE] = do_cclosure_new (windowProc4, Widget.DELETE_RANGE, 0);
+    closuresProc [Widget.DELETE_TEXT] = do_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
+    closuresProc [Widget.ROW_ACTIVATED] = do_cclosure_new (windowProc4, Widget.ROW_ACTIVATED, 0);
+    closuresProc [Widget.SCROLL_CHILD] = do_cclosure_new (windowProc4, Widget.SCROLL_CHILD, 0);
+    closuresProc [Widget.SWITCH_PAGE] = do_cclosure_new (windowProc4, Widget.SWITCH_PAGE, 0);
+    closuresProc [Widget.TEST_COLLAPSE_ROW] = do_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
+    closuresProc [Widget.TEST_EXPAND_ROW] = do_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);
 
     GCallback windowProc5 = cast(GCallback)&windowProcFunc5;
-    closures [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = do_cclosure_new (windowProc5, Widget.EXPAND_COLLAPSE_CURSOR_ROW, 0);
-    closures [Widget.INSERT_TEXT] = do_cclosure_new (windowProc5, Widget.INSERT_TEXT, 0);
-    closures [Widget.TEXT_BUFFER_INSERT_TEXT] = do_cclosure_new (windowProc5, Widget.TEXT_BUFFER_INSERT_TEXT, 0);
+    closuresProc [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = do_cclosure_new (windowProc5, Widget.EXPAND_COLLAPSE_CURSOR_ROW, 0);
+    closuresProc [Widget.INSERT_TEXT] = do_cclosure_new (windowProc5, Widget.INSERT_TEXT, 0);
+    closuresProc [Widget.TEXT_BUFFER_INSERT_TEXT] = do_cclosure_new (windowProc5, Widget.TEXT_BUFFER_INSERT_TEXT, 0);
 
     GCallback windowChangeValueProc = cast(GCallback)&windowProcChangeValueFunc;
-    closures [Widget.CHANGE_VALUE] = do_cclosure_new (windowChangeValueProc, Widget.CHANGE_VALUE, 0);
+    closuresProc [Widget.CHANGE_VALUE] = do_cclosure_new (windowChangeValueProc, Widget.CHANGE_VALUE, 0);
 
     for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
-        if (closures [i] !is null) OS.g_closure_ref (closures [i]);
+        if (closuresProc[i] !is null) {
+            auto res = windowProcCallbackDatas [i];
+            closures [i] = OS.g_cclosure_new(closuresProc [i], res, null);
+        }
+        if (closures [i] !is null) {
+            OS.g_closure_ref (closures [i]);
+            OS.g_closure_sink (closures [i]);
+        }
     }
     shellMapProcCallbackData.display = this;
     shellMapProcCallbackData.data = null;

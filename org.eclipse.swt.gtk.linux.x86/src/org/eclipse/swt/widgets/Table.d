@@ -2055,10 +2055,10 @@ void hideFirstColumn () {
 override void hookEvents () {
     super.hookEvents ();
     auto selection = OS.gtk_tree_view_get_selection(handle);
-    OS.g_signal_connect_closure (selection, OS.changed.ptr, display.closures [CHANGED], false);
-    OS.g_signal_connect_closure (handle, OS.row_activated.ptr, display.closures [ROW_ACTIVATED], false);
+    OS.g_signal_connect_closure (selection, OS.changed.ptr, display.getClosure (CHANGED), false);
+    OS.g_signal_connect_closure (handle, OS.row_activated.ptr, display.getClosure (ROW_ACTIVATED), false);
     if (checkRenderer !is null) {
-        OS.g_signal_connect_closure (checkRenderer, OS.toggled.ptr, display.closures [TOGGLED], false);
+        OS.g_signal_connect_closure (checkRenderer, OS.toggled.ptr, display.getClosure (TOGGLED), false);
     }
 }
 
@@ -2177,7 +2177,7 @@ void recreateRenderers () {
         if (checkRenderer is null) error (SWT.ERROR_NO_HANDLES);
         OS.g_object_ref (checkRenderer);
         display.addWidget (checkRenderer, this);
-        OS.g_signal_connect_closure (checkRenderer, OS.toggled.ptr, display.closures [TOGGLED], false);
+        OS.g_signal_connect_closure (checkRenderer, OS.toggled.ptr, display.getClosure (TOGGLED), false);
     }
     if (columnCount is 0) {
         createRenderers (OS.gtk_tree_view_get_column (handle, 0), Table.FIRST_COLUMN, true, 0);

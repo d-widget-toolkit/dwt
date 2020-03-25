@@ -419,11 +419,11 @@ override int gtk_event_after (GtkWidget* widget, GdkEvent* gdkEvent) {
 override void hookEvents () {
     super.hookEvents ();
     if (OS.GTK_VERSION >= OS.buildVERSION (2, 6, 0)) {
-        OS.g_signal_connect_closure (handle, OS.change_value.ptr, display.closures [CHANGE_VALUE], false);
+        OS.g_signal_connect_closure (handle, OS.change_value.ptr, display.getClosure (CHANGE_VALUE), false);
     }
-    OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed.ptr, display.closures [VALUE_CHANGED], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+    OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed.ptr, display.getClosure (VALUE_CHANGED), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 }
 
 /**

@@ -371,12 +371,12 @@ bool hasFocus () {
 override void hookEvents () {
     super.hookEvents ();
     if (OS.GTK_VERSION >= OS.buildVERSION (2, 4, 0)) {
-        OS.g_signal_connect_closure (handle, OS.activate.ptr, display.closures [ACTIVATE], false);
-        OS.g_signal_connect_closure (handle, OS.activate.ptr, display.closures [ACTIVATE_INVERSE], true);
-        OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-        OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
-        OS.g_signal_connect_closure (clientHandle, OS.size_allocate.ptr, display.closures [SIZE_ALLOCATE], true);
-        OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+        OS.g_signal_connect_closure (handle, OS.activate.ptr, display.getClosure (ACTIVATE), false);
+        OS.g_signal_connect_closure (handle, OS.activate.ptr, display.getClosure (ACTIVATE_INVERSE), true);
+        OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+        OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
+        OS.g_signal_connect_closure (clientHandle, OS.size_allocate.ptr, display.getClosure (SIZE_ALLOCATE), true);
+        OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
     }
 }
 

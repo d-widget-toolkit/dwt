@@ -472,7 +472,7 @@ override int gtk_switch_page (GtkWidget* widget, ptrdiff_t page, ptrdiff_t page_
 
 override void hookEvents () {
     super.hookEvents ();
-    OS.g_signal_connect_closure (handle, OS.switch_page.ptr, display.closures [SWITCH_PAGE], false);
+    OS.g_signal_connect_closure (handle, OS.switch_page.ptr, display.getClosure (SWITCH_PAGE), false);
 }
 
 /**

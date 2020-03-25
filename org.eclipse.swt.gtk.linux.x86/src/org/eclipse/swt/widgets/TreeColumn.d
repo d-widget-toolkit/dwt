@@ -406,9 +406,9 @@ override int gtk_size_allocate (GtkWidget* widget, ptrdiff_t allocation) {
 override
 void hookEvents () {
     super.hookEvents ();
-    OS.g_signal_connect_closure (handle, OS.clicked.ptr, display.closures [CLICKED], false);
-    if (buttonHandle !is null) OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
-    if (labelHandle !is null) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+    OS.g_signal_connect_closure (handle, OS.clicked.ptr, display.getClosure (CLICKED), false);
+    if (buttonHandle !is null) OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
+    if (labelHandle !is null) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 }
 
 /**

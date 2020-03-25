@@ -249,9 +249,9 @@ override int gtk_event_after (GtkWidget* widget, GdkEvent* gdkEvent) {
 override void hookEvents () {
     super.hookEvents ();
     if (OS.GTK_VERSION >= OS.buildVERSION (2, 6, 0)) {
-        OS.g_signal_connect_closure (handle, OS.change_value.ptr, display.closures [CHANGE_VALUE], false);
+        OS.g_signal_connect_closure (handle, OS.change_value.ptr, display.getClosure (CHANGE_VALUE), false);
     }
-    OS.g_signal_connect_closure (handle, OS.value_changed.ptr, display.closures [VALUE_CHANGED], false);
+    OS.g_signal_connect_closure (handle, OS.value_changed.ptr, display.getClosure (VALUE_CHANGED), false);
 }
 
 override void register () {

@@ -623,12 +623,12 @@ bool hasFocus () {
 override void hookEvents () {
     super.hookEvents ();
     if ((style & SWT.SEPARATOR) !is 0) return;
-    OS.g_signal_connect_closure (handle, OS.clicked.ptr, display.closures [CLICKED], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
-    if (labelHandle !is null) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+    OS.g_signal_connect_closure (handle, OS.clicked.ptr, display.getClosure (CLICKED), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
+    if (labelHandle !is null) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 
     /*
     * Feature in GTK.  Usually, GTK widgets propagate all events to their
@@ -645,12 +645,12 @@ override void hookEvents () {
         OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
         OS.GDK_FOCUS_CHANGE_MASK;
     OS.gtk_widget_add_events (handle, mask);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
-    OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.closures[EVENT_AFTER], false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+    OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 
     auto topHandle = topHandle ();
-    OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
+    OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
 }
 
 /**

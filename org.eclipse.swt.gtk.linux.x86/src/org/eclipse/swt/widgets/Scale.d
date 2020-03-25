@@ -151,7 +151,7 @@ override void createHandle (int index) {
 
 override void hookEvents () {
     super.hookEvents ();
-    OS.g_signal_connect_closure (handle, OS.value_changed.ptr, display.closures [VALUE_CHANGED], false);
+    OS.g_signal_connect_closure (handle, OS.value_changed.ptr, display.getClosure (VALUE_CHANGED), false);
 }
 
 /**
