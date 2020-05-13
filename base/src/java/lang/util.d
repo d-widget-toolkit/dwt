@@ -467,7 +467,7 @@ version( D_Version2 ) {
 }
 
 template sharedStaticThis(String content) {
-    const sharedStaticThis = prefixedIfD2!("shared", "static this()" ~ content);
+    const sharedStaticThis = prefixedIfD2!("extern(D) shared", "static this()" ~ content);
 }
 
 template sharedStatic_This(String content) {

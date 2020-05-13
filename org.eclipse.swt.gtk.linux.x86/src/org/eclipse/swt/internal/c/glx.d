@@ -115,7 +115,7 @@ extern (C) Bool function(void *, GLint *, GLint *)dwt_glXQueryExtension;"
 ));
 
 Symbol[] symbols;
-static this () {
+extern(D) static this () {
     symbols = [
         Symbol("glGetIntegerv", cast(void**)& dwt_glGetIntegerv),
         Symbol("glViewport", cast(void**)& dwt_glViewport),

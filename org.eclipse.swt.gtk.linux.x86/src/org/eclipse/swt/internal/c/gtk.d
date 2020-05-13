@@ -9713,7 +9713,7 @@ alias extern (C) void function(aGtkWidget *, gboolean)TGTKgtk_widget_set_receive
 ));
 
 extern(D) Symbol[] symbols;
-static this () {
+extern(D) static this () {
     symbols = [
         Symbol( "gtk_vseparator_new",  cast(void**)& gtk_vseparator_new),
         Symbol( "gtk_vseparator_get_type",  cast(void**)& gtk_vseparator_get_type),
