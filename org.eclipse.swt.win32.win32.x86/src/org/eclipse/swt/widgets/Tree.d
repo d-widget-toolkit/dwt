@@ -297,7 +297,7 @@ TreeItem _getItem (HANDLE hItem, LPARAM id) {
 }
 
 void _setBackgroundPixel (int newPixel) {
-    auto oldPixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
+    auto oldPixel = cast(int)OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
     if (oldPixel !is newPixel) {
         /*
         * Bug in Windows.  When TVM_SETBKCOLOR is used more
@@ -4454,7 +4454,7 @@ override void setBackgroundImage (HBITMAP hBitmap) {
         * it is already the default) to make Windows use the
         * brush.
         */
-        if (OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) is -1) {
+        if (cast(int)OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) is -1) {
             OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
         }
         _setBackgroundPixel (-1);

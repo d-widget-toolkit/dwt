@@ -494,7 +494,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) 
     if (!ignoreCustomDraw && !ignoreDrawFocus && nmcd.nmcd.rc.left !is nmcd.nmcd.rc.right) {
         if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
             if (!explorerTheme && (style & SWT.FULL_SELECTION) !is 0) {
-                if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
+                if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
                     auto dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
                     if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) is 0) {
 //                      if ((nmcd.uItemState & OS.CDIS_FOCUS) !is 0) {
@@ -548,7 +548,7 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
     if (!ignoreCustomDraw) {
         if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
             if (!explorerTheme && (style & SWT.FULL_SELECTION) !is 0) {
-                if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
+                if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
                     auto dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
                     if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) is 0) {
                         if ((nmcd.nmcd.uItemState & OS.CDIS_FOCUS) !is 0) {
@@ -584,7 +584,7 @@ LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
     */
     if (--customCount is 0 && OS.IsWindowVisible (handle)) {
         if (!explorerTheme && (style & SWT.FULL_SELECTION) !is 0) {
-            if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
+            if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
                 auto dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
                 if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) is 0) {
                     int bits = OS.LVS_EX_FULLROWSELECT;
@@ -636,7 +636,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
     */
     if (customCount++ is 0 && OS.IsWindowVisible (handle)) {
         if (!explorerTheme && (style & SWT.FULL_SELECTION) !is 0) {
-            if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
+            if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
                 auto dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
                 if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) !is 0) {
                     int bits = OS.LVS_EX_FULLROWSELECT;
@@ -697,7 +697,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam) {
                 OS.SetRect (&rect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.right, nmcd.nmcd.rc.bottom);
                 fillImageBackground (nmcd.nmcd.hdc, control, &rect);
             } else {
-                if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
+                if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
                     if (OS.IsWindowEnabled (handle)) {
                         RECT rect;
                         OS.SetRect (&rect, nmcd.nmcd.rc.left, nmcd.nmcd.rc.top, nmcd.nmcd.rc.right, nmcd.nmcd.rc.bottom);
@@ -743,7 +743,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lPara
         * is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
         * in CDDS_SUBITEMPOSTPAINT.
         */
-        if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
+        if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
             if ((sortDirection & (SWT.UP | SWT.DOWN)) !is 0) {
                 if (sortColumn !is null && !sortColumn.isDisposed ()) {
                     auto oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
@@ -810,7 +810,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam
             if (isDisposed () || item.isDisposed ()) return null;
         }
         if (hooks (SWT.EraseItem)) {
-            sendEraseItemEvent (item, nmcd, cast(int)/*64bit*/lParam, measureEvent);
+            sendEraseItemEvent (item, nmcd, lParam, measureEvent);
             if (isDisposed () || item.isDisposed ()) return null;
             code |= OS.CDRF_NOTIFYPOSTPAINT;
         }
@@ -898,7 +898,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW* nmcd, WPARAM wParam, LPARAM lParam
                         Control control = findBackgroundControl ();
                         if (control is null) control = this;
                         if (control.backgroundImage is null) {
-                            if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
+                            if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
                                 nmcd.clrTextBk = control.getBackgroundPixel ();
                             }
                         }
@@ -3271,7 +3271,7 @@ public void selectAll () {
     ignoreSelect = false;
 }
 
-void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, int lParam, Event measureEvent) {
+void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW* nmcd, LPARAM lParam, Event measureEvent) {
     auto hDC = nmcd.nmcd.hdc;
     int clrText = item.cellForeground !is null ? item.cellForeground [nmcd.iSubItem] : -1;
     if (clrText is -1) clrText = item.foreground;
@@ -3834,7 +3834,7 @@ void setBackgroundImage (HBITMAP hBitmap) {
 }
 
 override void setBackgroundPixel (int newPixel) {
-    auto oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+    auto oldPixel = cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
     if (oldPixel !is OS.CLR_NONE) {
         if (findImageControl () !is null) return;
         if (newPixel is -1) newPixel = defaultBackground ();
@@ -3867,7 +3867,7 @@ void setBackgroundTransparent (bool transparent) {
     * other custom drawing.  The fix is to clear the selected
     * column.
     */
-    auto oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+    auto oldPixel = cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
     if (transparent) {
         if (oldPixel !is OS.CLR_NONE) {
             /*
@@ -5831,7 +5831,7 @@ override LRESULT WM_PAINT (WPARAM wParam, LPARAM lParam) {
                     OS.SetBrushOrgEx (hDC, ps.rcPaint.left, ps.rcPaint.top, &lpPoint2);
                     auto hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
                     auto hOldBitmap = OS.SelectObject (hDC, hBitmap);
-                    if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
+                    if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
                         RECT rect;
                         OS.SetRect (&rect, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right, ps.rcPaint.bottom);
                         drawBackground (hDC, &rect);
@@ -5971,7 +5971,7 @@ override LRESULT WM_SETREDRAW (WPARAM wParam, LPARAM lParam) {
     * turned off.
     */
     if (wParam is 1) {
-        if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
+        if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
             if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
                 OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
             }
@@ -5979,7 +5979,7 @@ override LRESULT WM_SETREDRAW (WPARAM wParam, LPARAM lParam) {
     }
     auto code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
     if (wParam is 0) {
-        if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
+        if (cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) is OS.CLR_NONE) {
             OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, 0xFFFFFF);
         }
     }
@@ -6004,7 +6004,7 @@ override LRESULT WM_SYSCOLORCHANGE (WPARAM wParam, LPARAM lParam) {
     if (findBackgroundControl () is null) {
         setBackgroundPixel (defaultBackground ());
     } else {
-        auto oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+        auto oldPixel = cast(int)OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
         if (oldPixel !is OS.CLR_NONE) {
             if (findImageControl () is null) {
                 if ((style & SWT.CHECK) !is 0) fixCheckboxImageListColor (true);
@@ -6435,6 +6435,7 @@ override LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
         case OS.NM_CUSTOMDRAW: {
             auto hwndHeader = cast(HWND) OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
             if (hdr.hwndFrom is hwndHeader) break;
+
             if (!customDraw && findImageControl () is null) {
                 /*
                 * Feature in Windows.  When the table is disabled, it draws

@@ -746,7 +746,7 @@ void setSortDirection (int direction) {
         parent.forceResize ();
         RECT rect;
         OS.GetClientRect (hwnd, &rect);
-        if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
+        if (cast(int)OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) !is OS.CLR_NONE) {
             auto oldColumn = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
             int newColumn = direction is SWT.NONE ? -1 : index;
             OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
