@@ -21,7 +21,7 @@ version(DYNLINK){
 }
 
 void loadLib(){
-    version(DYNLINK){        
+    version(DYNLINK){
         SharedLib.loadLibSymbols(symbols, "libpango-1.0.so");
     }
 }
@@ -391,6 +391,9 @@ _GSList * runs;
 guint bitfield0;
 // guint is_paragraph_start // bits 0 .. 1
 // guint resolved_dir // bits 1 .. 4
+
+extern (D):
+
 guint is_paragraph_start(){ return ( bitfield0 >> 0 ) & 0x01; }
 guint resolved_dir      (){ return ( bitfield0 >> 1 ) & 0x07; }
 
@@ -509,6 +512,9 @@ gint height;
 }
 struct _PangoLogAttr {
 guint bitfield0;
+
+extern (D):
+
 bool is_line_break              (){ return (bitfield0 & (1<< 0)) !is 0; }
 bool is_mandatory_break         (){ return (bitfield0 & (1<< 1)) !is 0; }
 bool is_char_break              (){ return (bitfield0 & (1<< 2)) !is 0; }
