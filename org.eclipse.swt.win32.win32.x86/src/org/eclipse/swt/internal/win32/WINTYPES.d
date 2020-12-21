@@ -15415,6 +15415,7 @@ struct SCRIPT_ANALYSIS {
     WORD BITS;
     SCRIPT_STATE s;
 
+extern(D):
     // getter
     uint eScript()      { return BITS & 0x03FFU; }
     uint fRTL()         { return btvg(&BITS, 10); }
@@ -15441,6 +15442,7 @@ align(1):
     BYTE BITS;
     BYTE fReserved;
 
+extern(D):
     // getter
     uint fContextDigits()       { return btvg(&BITS, 0); }
     uint fInvertPreBoundDir()   { return btvg(&BITS, 1); }
@@ -15479,6 +15481,7 @@ struct SCRIPT_LOGATTR {
 align(1):
     BYTE BITS;
 
+extern(D):
     // gettter
     uint fSoftBreak()   { return btvg(&BITS, 0); }
     uint fWhiteSpace()  { return btvg(&BITS, 1); }
@@ -15500,6 +15503,7 @@ struct SCRIPT_PROPERTIES {
     DWORD   BITS1;
     DWORD   BITS2;
 
+extern(D):
     uint langid()   { return BITS1 >> 16; }
     uint fNumeric() { return btvg(&BITS1, 16); }
     uint fComplex() { return btvg(&BITS1, 17); }
@@ -15536,6 +15540,8 @@ struct SCRIPT_PROPERTIES {
 
 struct SCRIPT_STATE {
     WORD BITS;
+
+extern(D):
     // getter
     uint uBidiLevel()           { return (BITS & 0x1F);}
     uint fOverrideDirection()   { return btvg(&BITS, 5); }
@@ -15568,6 +15574,7 @@ align(1):
     BYTE BITS;
     BYTE fShapeReserved;
 
+extern(D):
     // getter
     uint uJustification()   { return BITS & 0x0F; }
     uint fClusterStart()    { return btvg(&BITS, 4); }
