@@ -10,6 +10,7 @@ public import org.eclipse.swt.internal.c.atk;
 public import org.eclipse.swt.internal.c.cairo;
 public import org.eclipse.swt.internal.c.pango;
 public import org.eclipse.swt.internal.c.gdk;
+public import org.eclipse.swt.internal.c.gio_2_0;
 public import org.eclipse.swt.internal.c.glib_object;
 
 version(Tango){
@@ -37,7 +38,7 @@ version(DYNLINK){
 }
 
 void loadLib(){
-    version(DYNLINK){        
+    version(DYNLINK){
         SharedLib.loadLibSymbols(symbols, "libgtk-x11-2.0.so");
     }
 }
@@ -185,6 +186,7 @@ version( ARGS_TYPED ){
     alias _GtkIconThemeClass aGtkIconThemeClass;
     alias _GtkIconTheme aGtkIconTheme;
     alias _GtkIconFactoryClass aGtkIconFactoryClass;
+    alias _GtkIconInfo aGtkIconInfo;
     alias _GtkHSeparatorClass aGtkHSeparatorClass;
     alias _GtkHSeparator aGtkHSeparator;
     alias _GtkSeparatorClass aGtkSeparatorClass;
@@ -572,6 +574,7 @@ else{
     alias void aGtkIconThemeClass;
     alias void aGtkIconTheme;
     alias void aGtkIconFactoryClass;
+    alias void aGtkIconInfo;
     alias void aGtkHSeparatorClass;
     alias void aGtkHSeparator;
     alias void aGtkSeparatorClass;
@@ -1591,6 +1594,7 @@ GTK_ICON_LOOKUP_NO_SVG=1,
 GTK_ICON_LOOKUP_FORCE_SVG=2,
 GTK_ICON_LOOKUP_USE_BUILTIN=4,
 GTK_ICON_LOOKUP_GENERIC_FALLBACK=8,
+GTK_ICON_LOOKUP_FORCE_SIZE=16,
 }
 alias void GtkIconThemePrivate;
 alias _GtkIconThemeClass GtkIconThemeClass;
@@ -3897,6 +3901,7 @@ struct _GtkIconTheme {
 _GObject parent_instance;
 void * priv;
 }
+struct _GtkIconInfo;
 struct _GtkIconFactoryClass {
 _GObjectClass parent_class;
 _BCD_func__12122 _gtk_reserved1;
@@ -6275,6 +6280,13 @@ guint n_accels;
 _GtkAccelGroupEntry * priv_accels;
 }
 version(DYNLINK){
+    extern (C) @nogc nothrow {
+        alias TGTKgtk_icon_theme_lookup_by_gicon = GtkIconInfo* function(GtkIconTheme*, GIcon*, gint size, int);
+    }
+
+    __gshared extern(D) {
+        TGTKgtk_icon_theme_lookup_by_gicon gtk_icon_theme_lookup_by_gicon;
+    }
 mixin(gshared!(
 "alias extern (C) _GtkWidget * function()TGTKgtk_vseparator_new; extern(D) TGTKgtk_vseparator_new gtk_vseparator_new;
 alias extern (C) GType function()TGTKgtk_vseparator_get_type; extern(D) TGTKgtk_vseparator_get_type gtk_vseparator_get_type;
@@ -10860,6 +10872,7 @@ extern(D) static this () {
         Symbol( "gtk_icon_theme_load_icon",  cast(void**)& gtk_icon_theme_load_icon),
         Symbol( "gtk_icon_theme_choose_icon",  cast(void**)& gtk_icon_theme_choose_icon),
         Symbol( "gtk_icon_theme_lookup_icon",  cast(void**)& gtk_icon_theme_lookup_icon),
+        Symbol( "gtk_icon_theme_lookup_by_gicon",  cast(void**)& gtk_icon_theme_lookup_by_gicon),
         Symbol( "gtk_icon_theme_get_icon_sizes",  cast(void**)& gtk_icon_theme_get_icon_sizes),
         Symbol( "gtk_icon_theme_has_icon",  cast(void**)& gtk_icon_theme_has_icon),
         Symbol( "gtk_icon_theme_set_custom_theme",  cast(void**)& gtk_icon_theme_set_custom_theme),
@@ -14303,6 +14316,7 @@ extern (C) _GList * gtk_icon_theme_list_icons(aGtkIconTheme *, char *);
 extern (C) void * gtk_icon_theme_load_icon(aGtkIconTheme *, char *, gint, gint, _GError * *);
 extern (C) void * gtk_icon_theme_choose_icon(aGtkIconTheme *, char * *, gint, gint);
 extern (C) void * gtk_icon_theme_lookup_icon(aGtkIconTheme *, char *, gint, gint);
+extern (C) _GtkIconInfo * gtk_icon_theme_lookup_by_gicon(aGtkIconTheme*, _GError**);
 extern (C) gint * gtk_icon_theme_get_icon_sizes(aGtkIconTheme *, char *);
 extern (C) gint gtk_icon_theme_has_icon(aGtkIconTheme *, char *);
 extern (C) void gtk_icon_theme_set_custom_theme(aGtkIconTheme *, char *);
@@ -16596,4 +16610,3 @@ extern (C) void gtk_widget_set_can_focus(GtkWidget *, gboolean);
 extern (C) void gtk_widget_set_can_default(GtkWidget *, gboolean);
 extern (C) void gtk_widget_set_receives_default(GtkWidget *, gboolean);
 } // version(DYNLINK)
-

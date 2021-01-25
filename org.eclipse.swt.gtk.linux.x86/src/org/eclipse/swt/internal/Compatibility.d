@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,8 +9,9 @@
  *     IBM Corporation - initial API and implementation
  * Port to the D programming language:
  *     Frank Benoit <benoit@tionex.de>
+ *     alice <stigma@disroot.org>
  *******************************************************************************/
-module org.eclipse.swt.internal.Compatibility;
+module org.eclipse.swt.internal.Compatibility; // @suppress(dscanner.style.phobos_naming_convention)
 
 import java.lang.all;
 import java.io.BufferedInputStream;
@@ -26,11 +27,7 @@ import java.util.zip.DeflaterOutputStream;
 
 import org.eclipse.swt.SWT;
 
-version(Tango){
-import Unicode = tango.text.Unicode;
-import tango.sys.Process;
-} else { // Phobos
-}
+import std.process;
 
 /**
  * This class is a placeholder for utility methods commonly
@@ -59,8 +56,10 @@ public final class Compatibility {
 /**
  * Returns the PI constant as a double.
  */
+deprecated("This constant isn't required any more, use Math.PI")
 public static const real PI = Math.PI;
 
+deprecated("This constant isn't required any more, use Math.toRadians")
 static const real toRadians = PI / 180;
 
 /**
@@ -76,6 +75,7 @@ static const real toRadians = PI / 180;
  * @param length the length of the triangle's hypotenuse
  * @return the integer conversion of length * cos (angle)
  */
+deprecated("This method isn't required any more, use Math.cos")
 public static int cos(int angle, int length) {
     return cast(int)(Math.cos(angle * toRadians) * length);
 }
@@ -93,13 +93,14 @@ public static int cos(int angle, int length) {
  * @param length the length of the triangle's hypotenuse
  * @return the integer conversion of length * sin (angle)
  */
+deprecated("This method isn't required any more, use Math.sin")
 public static int sin(int angle, int length) {
     return cast(int)(Math.sin(angle * toRadians) * length);
 }
 
 /**
  * Answers the most negative (i.e. closest to negative infinity)
- * integer value which is greater than the number obtained by dividing
+ * integer value which is greater than or equal to the number obtained by dividing
  * the first argument p by the second argument q.
  *
  * @param p numerator
@@ -131,6 +132,7 @@ public static bool fileExists(String parent, String child) {
  * @param q denominator (must be different from zero)
  * @return the floor of the rational number p / q.
  */
+deprecated("This method isn't required any more, use Math.floor")
 public static int floor(int p, int q) {
     return cast(int)Math.floor(cast(double)p / q);
 }
@@ -180,6 +182,7 @@ public static int pow2(int n) {
  *
  * @since 3.4
  */
+deprecated("Use java.util.zip.DeflaterOutputStream instead")
 public static OutputStream newDeflaterOutputStream(OutputStream stream) {
     return new DeflaterOutputStream(stream);
 }
@@ -191,6 +194,7 @@ public static OutputStream newDeflaterOutputStream(OutputStream stream) {
  * @return a stream on the file if it could be opened.
  * @exception IOException
  */
+deprecated("Use java.io.FileInputStream instead")
 public static InputStream newFileInputStream(String filename) {
     return new FileInputStream(filename);
 }
@@ -202,6 +206,7 @@ public static InputStream newFileInputStream(String filename) {
  * @return a stream on the file if it could be opened.
  * @exception IOException
  */
+deprecated("Use java.io.FileOutputStream instead")
 public static OutputStream newFileOutputStream(String filename) {
     return new FileOutputStream(filename);
 }
@@ -215,6 +220,7 @@ public static OutputStream newFileOutputStream(String filename) {
  *
  * @since 3.3
  */
+deprecated("Use java.util.zip.InflaterInputStream instead")
 public static InflaterInputStream newInflaterInputStream(InputStream stream) {
     return new InflaterInputStream(stream);
 }
@@ -225,6 +231,7 @@ public static InflaterInputStream newInflaterInputStream(InputStream stream) {
  * @param c the character
  * @return true when the character is a letter
  */
+deprecated("This method isn't required any more, use Character.isLetter")
 public static bool isLetter(dchar c) {
     return Character.isLetter(c);
 }
@@ -235,6 +242,7 @@ public static bool isLetter(dchar c) {
  * @param c the character
  * @return true when the character is a letter or a digit
  */
+deprecated("This method isn't required any more, use Character.isLetterOrDigit")
 public static bool isLetterOrDigit(dchar c) {
     return Character.isLetterOrDigit(c);
 }
@@ -245,6 +253,7 @@ public static bool isLetterOrDigit(dchar c) {
  * @param c  the character
  * @return true when the character is a Unicode space character
  */
+deprecated("This method isn't required any more, use Character.isSpace")
 public static bool isSpaceChar(dchar c) {
     return Character.isSpace(c);
 }
@@ -255,8 +264,36 @@ public static bool isSpaceChar(dchar c) {
  * @param c the character to test
  * @return true if the character is whitespace
  */
+deprecated("This method isn't required any more, use Character.isWhitespace")
 public static bool isWhitespace(dchar c) {
     return Character.isWhitespace(c);
+}
+
+/**
+ * Execute prog[0] in a separate platform process if the
+ * underlying platform supports this.
+ * <p>
+ * The new process inherits the environment of the caller.
+ * <p>
+ *
+ * @param prog array containing the program to execute and its arguments
+ * @param envp
+ *            array of strings, each element of which has environment
+ *            variable settings in the format name=value
+ * @param workingDir
+ *            the working directory of the new process, or null if the new
+ *            process should inherit the working directory of the caller
+ *
+ * @exception ProcessException
+ *  if the program cannot be executed
+ * @exception	StdioException
+ *  on failure to capture output.
+ *
+ * @since 3.6
+ */
+public static void exec(String[] prog, String[] envp, String workingDir)
+{
+    execute(prog[0], null, Config.none, size_t.max, workingDir);
 }
 
 /**
@@ -270,14 +307,12 @@ public static bool isWhitespace(dchar c) {
  *
  * @exception ProcessException
  *  if the program cannot be executed
+ * @exception	StdioException
+ *  on failure to capture output.
  */
+deprecated("Use exec(String[], String[], String)")
 public static void exec(String prog) {
-    version(Tango){
-        auto proc = new Process( prog );
-        proc.execute;
-    } else { // Phobos
-        implMissingInPhobos();
-    }
+    Compatibility.exec([prog], null, null);
 }
 
 /**
@@ -291,14 +326,12 @@ public static void exec(String prog) {
  *
  * @exception ProcessException
  *  if the program cannot be executed
+ * @exception	StdioException
+ *  on failure to capture output.
  */
+deprecated("Use exec(String[], String[], String)")
 public static void exec(String[] progArray) {
-    version(Tango){
-        auto proc = new Process( progArray );
-        proc.execute;
-    } else { // Phobos
-        implMissingInPhobos();
-    }
+    Compatibility.exec(progArray, null, null);
 }
 
 static const ImportData[] SWTMessagesBundleData = [
@@ -399,6 +432,7 @@ public static String getMessage(String key, Object[] args) {
  * Note that this is not available on CLDC.
  * </p>
  */
+deprecated("This method isn't required any more")
 public static void interrupt() {
     //PORTING_FIXME: how to implement??
     //Thread.currentThread().interrupt();
@@ -412,6 +446,7 @@ public static void interrupt() {
  * @param s2 string
  * @return true if the two instances of class String are equal
  */
+deprecated("This method isn't required any more, see java.lang.String.equalsIgnoreCase")
 public static bool equalsIgnoreCase(in char[] s1, in char[] s2) {
     return .equalsIgnoreCase(s1, s2);
 }

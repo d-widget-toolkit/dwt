@@ -14,5 +14,7 @@
 /dub.selections.json
 .dub
 /org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet*
+/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/snippet*
 !org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet*.d
 /args.txt
+dwt-test-*

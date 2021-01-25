@@ -14,6 +14,7 @@
  * Port to the D programming language:
  *     Frank Benoit <benoit@tionex.de>
  *     John Reimer <terminal.node@gmail.com>
+ *     alice <stigma@disroot.org>
  *******************************************************************************/
 module org.eclipse.swt.internal.gtk.OS;
 
@@ -43,7 +44,8 @@ import  org.eclipse.swt.internal.c.gtk,
         org.eclipse.swt.internal.c.Xlib,
         org.eclipse.swt.internal.c.XTest,
         org.eclipse.swt.internal.c.Xrender,
-        org.eclipse.swt.internal.c.glib_object;
+        org.eclipse.swt.internal.c.glib_object,
+        org.eclipse.swt.internal.c.gio_2_0;
 
 //version=GTK_DYN_LINK;
 
@@ -95,6 +97,11 @@ public alias org.eclipse.swt.internal.c.gdk.GdkRegion GdkRegion;
 public alias org.eclipse.swt.internal.c.gdk.GdkWindow GdkWindow;
 public alias org.eclipse.swt.internal.c.gdk.GdkWindowAttr GdkWindowAttr;
 public alias org.eclipse.swt.internal.c.gdk.GdkXEvent GdkXEvent;
+
+public alias org.eclipse.swt.internal.c.gio_2_0.GAppInfo GAppInfo;
+public alias org.eclipse.swt.internal.c.gio_2_0.GFile GFile;
+public alias org.eclipse.swt.internal.c.gio_2_0.GFileInfo GFileInfo;
+public alias org.eclipse.swt.internal.c.gio_2_0.GIcon GIcon;
 
 public alias org.eclipse.swt.internal.c.pango.PangoAttrColor PangoAttrColor;
 public alias org.eclipse.swt.internal.c.pango.PangoAttribute PangoAttribute;
@@ -260,6 +267,7 @@ public alias org.eclipse.swt.internal.c.gtk.GtkIconView GtkIconView;
 public alias org.eclipse.swt.internal.c.gtk.GtkIconThemeClass GtkIconThemeClass;
 public alias org.eclipse.swt.internal.c.gtk.GtkIconTheme GtkIconTheme;
 public alias org.eclipse.swt.internal.c.gtk.GtkIconFactoryClass GtkIconFactoryClass;
+public alias org.eclipse.swt.internal.c.gtk.GtkIconInfo GtkIconInfo;
 public alias org.eclipse.swt.internal.c.gtk.GtkHSeparatorClass GtkHSeparatorClass;
 public alias org.eclipse.swt.internal.c.gtk.GtkHSeparator GtkHSeparator;
 public alias org.eclipse.swt.internal.c.gtk.GtkSeparatorClass GtkSeparatorClass;
@@ -698,6 +706,8 @@ public class OS : Platform {
     public static const bool IsHPUX  = false;
 
     /** Constants */
+    public static const int G_FILE_TEST_IS_DIR = 1 << 2;
+    public static const int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
     public static const int ATK_RELATION_LABELLED_BY = 4;
     public static const int G_SIGNAL_MATCH_DATA = 1 << 4;
     public static const int G_SIGNAL_MATCH_ID = 1 << 0;
@@ -1035,6 +1045,9 @@ public class OS : Platform {
     public static const int G_LOG_FLAG_FATAL = 0x2;
     public static const int G_LOG_FLAG_RECURSION = 0x1;
     public static const int G_LOG_LEVEL_MASK = 0xfffffffc;
+    public static const int G_APP_INFO_CREATE_NONE = 0;
+    public static const int G_APP_INFO_CREATE_NEEDS_TERMINAL = (1 << 0);
+    public static const int G_APP_INFO_CREATE_SUPPORTS_URIS = (1 << 1);
     public static const int None = 0;
     public static const int PANGO_ALIGN_LEFT = 0;
     public static const int PANGO_ALIGN_CENTER = 1;
@@ -1321,6 +1334,7 @@ public static const int PictOpOver = 3;
     // no lock for g_main_context_wakeup
     alias .g_main_context_wakeup g_main_context_wakeup;
 
+    mixin ForwardGtkOsCFunc!(.g_file_test);
     mixin ForwardGtkOsCFunc!(.g_filename_to_utf8);
     mixin ForwardGtkOsCFunc!(.g_filename_to_uri);
     mixin ForwardGtkOsCFunc!(.g_filename_from_utf8);
@@ -1563,6 +1577,30 @@ public static const int PictOpOver = 3;
     mixin ForwardGtkOsCFunc!(.gdk_window_show);
     mixin ForwardGtkOsCFunc!(.gdk_window_show_unraised);
     mixin ForwardGtkOsCFunc!(.gdk_window_thaw_updates);
+
+
+    /* gio.h */
+    mixin ForwardGtkOsCFunc!(.g_app_info_create_from_commandline);
+    mixin ForwardGtkOsCFunc!(.g_app_info_get_default_for_type);
+    mixin ForwardGtkOsCFunc!(.g_app_info_get_all);
+    mixin ForwardGtkOsCFunc!(.g_app_info_get_executable);
+    mixin ForwardGtkOsCFunc!(.g_app_info_get_icon);
+    mixin ForwardGtkOsCFunc!(.g_app_info_get_name);
+    mixin ForwardGtkOsCFunc!(.g_app_info_launch);
+    mixin ForwardGtkOsCFunc!(.g_app_info_launch_default_for_uri);
+    mixin ForwardGtkOsCFunc!(.g_app_info_supports_uris);
+    mixin ForwardGtkOsCFunc!(.g_content_type_equals);
+    mixin ForwardGtkOsCFunc!(.g_content_type_is_a);
+    mixin ForwardGtkOsCFunc!(.g_file_get_uri);
+    mixin ForwardGtkOsCFunc!(.g_file_new_for_commandline_arg);
+    mixin ForwardGtkOsCFunc!(.g_file_new_for_path);
+    mixin ForwardGtkOsCFunc!(.g_file_new_for_uri);
+    mixin ForwardGtkOsCFunc!(.g_file_query_info);
+    mixin ForwardGtkOsCFunc!(.g_file_info_get_content_type);
+    mixin ForwardGtkOsCFunc!(.g_icon_new_for_string);
+    mixin ForwardGtkOsCFunc!(.g_icon_to_string);
+
+
     mixin ForwardGtkOsCFunc!(.gtk_accel_group_new);
     mixin ForwardGtkOsCFunc!(.gtk_accel_groups_activate);
     mixin ForwardGtkOsCFunc!(.gtk_accel_label_set_accel_widget);
@@ -1726,6 +1764,10 @@ public static const int PictOpOver = 3;
     mixin ForwardGtkOsCFunc!(.gtk_icon_source_new);
     mixin ForwardGtkOsCFunc!(.gtk_icon_source_set_pixbuf);
     mixin ForwardGtkOsCFunc!(.gtk_icon_set_render_icon);
+    mixin ForwardGtkOsCFunc!(.gtk_icon_info_free);
+    mixin ForwardGtkOsCFunc!(.gtk_icon_info_load_icon);
+    mixin ForwardGtkOsCFunc!(.gtk_icon_theme_get_default);
+    mixin ForwardGtkOsCFunc!(.gtk_icon_theme_lookup_by_gicon);
     mixin ForwardGtkOsCFunc!(.gtk_im_context_filter_keypress);
     mixin ForwardGtkOsCFunc!(.gtk_im_context_focus_in);
     mixin ForwardGtkOsCFunc!(.gtk_im_context_focus_out);
@@ -3143,12 +3185,3 @@ public static const int PictOpOver = 3;
         }
     }
 }
-
-
-
-
-
-
-
-
-
