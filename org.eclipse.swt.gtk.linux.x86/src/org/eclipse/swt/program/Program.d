@@ -31,91 +31,6 @@ static import std.string;
 static import std.file;
 static import std.algorithm;
 
-// DWT TODO: move this and GIO into OS (though seems to be GTK in newer versions)
-
-private extern(C) {
-    struct GAppInfo;
-    struct GIcon;
-    struct GtkIconInfo;
-    struct GFile;
-    struct GFileInfo;
-    struct GAppLaunchContext;
-
-    enum : int
-    {
-        G_APP_INFO_CREATE_NONE,
-        G_APP_INFO_CREATE_NEEDS_TERMINAL,
-        G_APP_INFO_CREATE_SUPPORTS_URIS,
-        G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION,
-    }
-    alias GAppInfoCreateFlags = int;
-
-    GAppInfo* g_app_info_create_from_commandline(char* commandline, char* application_name, GAppInfoCreateFlags flags, void** error);
-    GAppInfo* g_app_info_get_default_for_type(char* content_type, bool must_support_uris);
-    char* g_app_info_get_name(GAppInfo* appinfo);
-    char* g_app_info_get_executable(GAppInfo* appinfo);
-    bool g_app_info_supports_uris(GAppInfo* appinfo);
-    GIcon* g_app_info_get_icon(GAppInfo* appinfo);
-    void g_object_unref(void* object);
-    GList* g_app_info_get_all();
-    bool g_app_info_launch(GAppInfo* appinfo, GList* files, GAppLaunchContext* context, void** error);
-    bool g_app_info_launch_default_for_uri(char* uri, GAppLaunchContext* context, void** error);
-
-    char* g_icon_to_string(GIcon* icon);
-    GIcon* g_icon_new_for_string(in char* str, void** error);
-
-    enum : int
-    {
-        G_FILE_TEST_IS_REGULAR,
-        G_FILE_TEST_IS_SYMLINK,
-        G_FILE_TEST_IS_DIR,
-        G_FILE_TEST_IS_EXECUTABLE,
-        G_FILE_TEST_EXISTS
-    }
-    alias GFileTest = int;
-
-    char* g_file_info_get_content_type(GFileInfo* info);
-    bool g_content_type_is_a(char* type, char* supertype);
-    bool g_content_type_equals(char* type1, char* type2);
-
-    bool g_file_test(char* filename, GFileTest test);
-    GFile* g_file_new_for_path(char* path);
-    GFileInfo* g_file_query_info(GFile* file, char* attributes, int flags, void* cancellable, void** error);
-    GFile* g_file_new_for_uri(in char* uri);
-    GFile* g_file_new_for_commandline_arg(char* arg);
-    char* g_file_get_uri(GFile* file);
-
-    enum : int
-    {
-        GTK_ICON_LOOKUP_NO_SVG,
-        GTK_ICON_LOOKUP_FORCE_SCG,
-        GTK_ICON_LOOKUP_USE_BUILTIN,
-        GTK_ICON_LOOKUP_GENERIC_FALLBACK,
-        GTK_ICON_LOOKUP_FORCE_SIZE,
-        GTK_ICON_LOOKUP_FORCE_REGULAR,
-        GTK_ICON_LOOKUP_FORCE_SYMBOLIC,
-        GTK_ICON_LOOKUP_DIR_LTR,
-        GTK_ICON_LOOKUP_DIR_RTL
-    }
-    alias GtkIconLookupFlags = int;
-
-    GtkIconTheme* gtk_icon_theme_get_default();
-    GtkIconInfo* gtk_icon_theme_lookup_by_gicon(GtkIconTheme* icon_theme, GIcon* icon, int size, GtkIconLookupFlags flags);
-    GdkPixbuf* gtk_icon_info_load_icon(GtkIconInfo* icon_info, void** error);
-    void gtk_icon_info_free(GtkIconInfo* icon_info);
-}
-
-private struct GIO
-{
-    alias g_app_info_get_all = .g_app_info_get_all;
-    alias g_app_info_get_default_for_type = .g_app_info_get_default_for_type;
-    alias g_app_info_get_name = .g_app_info_get_name;
-    alias g_app_info_get_executable = .g_app_info_get_executable;
-    alias g_app_info_supports_uris = .g_app_info_supports_uris;
-    alias g_app_info_get_icon = .g_app_info_get_icon;
-    alias g_icon_to_string = .g_icon_to_string;
-}
-
 /**
  * Instances of this class represent programs and
  * their associated file extensions in the operating
@@ -246,13 +161,13 @@ public static Program[] getPrograms() {
 public ImageData getImageData() {
     if (iconPath is null) return null;
     ImageData data = null;
-    GtkIconTheme* icon_theme = gtk_icon_theme_get_default();
+    GtkIconTheme* icon_theme = OS.gtk_icon_theme_get_default();
     char* icon = toStringz(iconPath);
-    GIcon* gicon = g_icon_new_for_string(icon, null);
+    GIcon* gicon = OS.g_icon_new_for_string(icon, null);
     if (gicon !is null) {
-        GtkIconInfo* gicon_info = gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16, 0);
+        GtkIconInfo* gicon_info = OS.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16, 0);
         if (gicon_info !is null) {
-            GdkPixbuf* pixbuf = gtk_icon_info_load_icon(gicon_info, null);
+            GdkPixbuf* pixbuf = OS.gtk_icon_info_load_icon(gicon_info, null);
             if (pixbuf !is null) {
                 int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
                 char* pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
@@ -261,7 +176,7 @@ public ImageData getImageData() {
                 bool hasAlpha = cast(bool)OS.gdk_pixbuf_get_has_alpha(pixbuf);
                 byte[] srcData = new byte[stride * height];
                 OS.memmove(cast(void*)srcData, pixels, srcData.length);
-                g_object_unref(pixbuf);
+                OS.g_object_unref(pixbuf);
                 if (hasAlpha) {
                     PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
                     data = new ImageData(width, height, 32, palette, 4, srcData);
@@ -283,12 +198,12 @@ public ImageData getImageData() {
                 }
             }
             if (OS.GTK_VERSION >= OS.buildVERSION(3, 8, 0)) {
-                g_object_unref(gicon_info);
+                OS.g_object_unref(gicon_info);
             } else {
-                gtk_icon_info_free(gicon_info);
+                OS.gtk_icon_info_free(gicon_info);
             }
         }
-        g_object_unref(gicon);
+        OS.g_object_unref(gicon);
     }
     return data;
 }
@@ -358,7 +273,7 @@ static String gio_getMimeType(String extension) {
 static Program gio_getProgram(Display display, String mimeType) {
     Program program = null;
     char* mimeTypeBuffer = toStringz(mimeType);
-    GAppInfo* application = GIO.g_app_info_get_default_for_type(mimeTypeBuffer, false);
+    GAppInfo* application = OS.g_app_info_get_default_for_type(mimeTypeBuffer, false);
     if (application !is null) {
         program = gio_getProgram(display, application);
     }
@@ -370,7 +285,7 @@ static Program gio_getProgram(Display display, GAppInfo* application) {
     program.display = display;
     int length;
     String buffer;
-    char* applicationName = GIO.g_app_info_get_name(application);
+    char* applicationName = OS.g_app_info_get_name(application);
     if (applicationName !is null) {
         length = OS.strlen(applicationName);
         if (length > 0) {
@@ -378,7 +293,7 @@ static Program gio_getProgram(Display display, GAppInfo* application) {
             program.name = buffer;
         }
     }
-    char* applicationCommand = GIO.g_app_info_get_executable(application);
+    char* applicationCommand = OS.g_app_info_get_executable(application);
     if (applicationCommand !is null) {
         length = OS.strlen(applicationCommand);
         if (length > 0) {
@@ -386,10 +301,10 @@ static Program gio_getProgram(Display display, GAppInfo* application) {
             program.command = buffer;
         }
     }
-    program.gioExpectUri = GIO.g_app_info_supports_uris(application);
-    GIcon* icon = GIO.g_app_info_get_icon(application);
+    program.gioExpectUri = cast(bool)OS.g_app_info_supports_uris(application);
+    GIcon* icon = OS.g_app_info_get_icon(application);
     if (icon !is null) {
-        char* icon_name = GIO.g_icon_to_string(icon);
+        char* icon_name = OS.g_icon_to_string(icon);
         if (icon_name !is null) {
             length = OS.strlen(icon_name);
             if (length > 0) {
@@ -398,7 +313,7 @@ static Program gio_getProgram(Display display, GAppInfo* application) {
             }
             OS.g_free(icon_name);
         }
-        g_object_unref(icon);
+        OS.g_object_unref(icon);
     }
     return program.command !is null ? program : null;
 }
@@ -408,7 +323,7 @@ static Program gio_getProgram(Display display, GAppInfo* application) {
  *      become public and the original method above can be deprecated.
  */
 static Program[] getPrograms(Display display) {
-    GList* applicationList = GIO.g_app_info_get_all();
+    GList* applicationList = OS.g_app_info_get_all();
     GList* list = applicationList;
     Program program;
     HashSet programs = new HashSet();
@@ -429,26 +344,26 @@ static Program[] getPrograms(Display display) {
 
 static bool isExecutable(String fileName) {
     char* fileNameBuffer = toStringz(fileName);
-    if (g_file_test(fileNameBuffer, G_FILE_TEST_IS_DIR)) return false;
-    if (!g_file_test(fileNameBuffer, G_FILE_TEST_IS_EXECUTABLE)) return false;
-    GFile* file = g_file_new_for_path(fileNameBuffer);
+    if (OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_DIR)) return false;
+    if (!OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE)) return false;
+    GFile* file = OS.g_file_new_for_path(fileNameBuffer);
     bool result = false;
     if (file !is null) {
         char* buffer = toStringz("*");
-        GFileInfo* fileInfo = g_file_query_info(file, buffer, 0, null, null);
+        GFileInfo* fileInfo = OS.g_file_query_info(file, buffer, 0, null, null);
         if (fileInfo !is null) {
-            char* contentType = g_file_info_get_content_type(fileInfo);
+            char* contentType = OS.g_file_info_get_content_type(fileInfo);
             if (contentType !is null) {
                 char* exeType = toStringz("application/x-executable");
-                result = g_content_type_is_a(contentType, exeType);
+                result = cast(bool)OS.g_content_type_is_a(contentType, exeType);
                 if (!result) {
                     char* shellType = toStringz("application/x-shellscript");
-                    result = g_content_type_equals(contentType, shellType);
+                    result = cast(bool)OS.g_content_type_equals(contentType, shellType);
                 }
             }
-            g_object_unref(fileInfo);
+            OS.g_object_unref(fileInfo);
         }
-        g_object_unref(file);
+        OS.g_object_unref(file);
     }
     return result;
 }
@@ -459,14 +374,14 @@ static bool isExecutable(String fileName) {
 static bool gio_launch(String fileName) {
     bool result = false;
     char* fileNameBuffer = toStringz(fileName);
-    GFile* file = g_file_new_for_commandline_arg(fileNameBuffer);
+    GFile* file = OS.g_file_new_for_commandline_arg(fileNameBuffer);
     if (file !is null) {
-        char* uri = g_file_get_uri(file);
+        char* uri = OS.g_file_get_uri(file);
         if (uri !is null) {
-            result = g_app_info_launch_default_for_uri(uri, null, null);
+            result = cast(bool)OS.g_app_info_launch_default_for_uri(uri, null, null);
             OS.g_free(uri);
         }
-        g_object_unref(file);
+        OS.g_object_unref(file);
     }
     return result;
 }
@@ -478,26 +393,26 @@ bool gio_execute(String fileName) {
     bool result = false;
     char* commandBuffer = toStringz(command);
     char* nameBuffer = toStringz(name);
-    GAppInfo* application = g_app_info_create_from_commandline(commandBuffer, nameBuffer,
-        gioExpectUri ? G_APP_INFO_CREATE_SUPPORTS_URIS : G_APP_INFO_CREATE_NONE, null);
+    GAppInfo* application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer,
+        gioExpectUri ? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, null);
     if (application !is null) {
         char* fileNameBuffer = toStringz(fileName);
         GFile* file = null;
         if (fileName.length > 0) {
-            if (g_app_info_supports_uris(application)) {
-                file = g_file_new_for_uri(fileNameBuffer);
+            if (OS.g_app_info_supports_uris(application)) {
+                file = OS.g_file_new_for_uri(fileNameBuffer);
             } else {
-                file = g_file_new_for_path(fileNameBuffer);
+                file = OS.g_file_new_for_path(fileNameBuffer);
             }
         }
         GList* list = null;
         if (file !is null) list = OS.g_list_append(null, file);
-        result = g_app_info_launch(application, list, null, null);
+        result = cast(bool)OS.g_app_info_launch(application, list, null, null);
         if (list !is null) {
             OS.g_list_free(list);
-            g_object_unref(file);
+            OS.g_object_unref(file);
         }
-        g_object_unref(application);
+        OS.g_object_unref(application);
     }
     return result;
 }
