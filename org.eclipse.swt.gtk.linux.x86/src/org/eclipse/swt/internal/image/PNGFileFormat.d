@@ -32,6 +32,7 @@ import org.eclipse.swt.internal.image.PngDecodingDataStream;
 import java.lang.all;
 
 import java.io.BufferedInputStream;
+import java.util.zip.InflaterInputStream;
 
 final class PNGFileFormat : FileFormat {
     static const int SIGNATURE_LENGTH = 8;
@@ -174,7 +175,7 @@ override bool isFileFormat(LEDataInputStream stream) {
         if ((signature[4] & 0xFF) !is 13) return false; //<RETURN>
         if ((signature[5] & 0xFF) !is 10) return false; //<LINEFEED>
         if ((signature[6] & 0xFF) !is 26) return false; //<CTRL/Z>
-        if ((signature[7] & 0xFF) !is 10) return false; //<LINEFEED>     
+        if ((signature[7] & 0xFF) !is 10) return false; //<LINEFEED>
         return true;
     } catch (Exception e) {
         return false;
@@ -311,7 +312,7 @@ void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader)  {
     //TEMPORARY CODE
     //PORTING_FIXME
     bool use3_2 = true;//System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") !is null;
-    InputStream inflaterStream = use3_2 ? null : Compatibility.newInflaterInputStream(stream);
+    InputStream inflaterStream = use3_2 ? null : new InflaterInputStream(stream);
     if (inflaterStream !is null) {
         stream = inflaterStream;
     } else {

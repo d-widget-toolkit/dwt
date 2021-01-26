@@ -40,7 +40,6 @@ import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.internal.cairo.Cairo : Cairo;
 import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.Compatibility;
 import java.lang.all;
 
 version(Tango){
@@ -673,18 +672,18 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
         double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
         if (width is height) {
             if (arcAngle >= 0) {
-                Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * cast(float)Compatibility.PI / 180, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * cast(float)Math.PI / 180, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             } else {
-                Cairo.cairo_arc(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * cast(float)Compatibility.PI / 180, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * cast(float)Math.PI / 180, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             }
         } else {
             Cairo.cairo_save(cairo);
             Cairo.cairo_translate(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f);
             Cairo.cairo_scale(cairo, width / 2f, height / 2f);
             if (arcAngle >= 0) {
-                Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * cast(float)Compatibility.PI / 180, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * cast(float)Math.PI / 180, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             } else {
-                Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * cast(float)Compatibility.PI / 180, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * cast(float)Math.PI / 180, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             }
             Cairo.cairo_restore(cairo);
         }
@@ -1222,12 +1221,12 @@ public void drawOval(int x, int y, int width, int height) {
     if (cairo !is null) {
         double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
         if (width is height) {
-            Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, 0, -2 * cast(float)Compatibility.PI);
+            Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, 0, -2 * cast(float)Math.PI);
         } else {
             Cairo.cairo_save(cairo);
             Cairo.cairo_translate(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f);
             Cairo.cairo_scale(cairo, width / 2f, height / 2f);
-            Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, -2 * cast(float)Compatibility.PI);
+            Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, -2 * cast(float)Math.PI);
             Cairo.cairo_restore(cairo);
         }
         Cairo.cairo_stroke(cairo);
@@ -1483,10 +1482,10 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
             Cairo.cairo_translate(cairo, nx + xOffset, ny + yOffset);
             Cairo.cairo_scale(cairo, naw2, nah2);
             Cairo.cairo_move_to(cairo, fw - 1, 0);
-            Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
-            Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
-            Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
-            Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);
+            Cairo.cairo_arc(cairo, fw - 1, 1, 1, Math.PI + Math.PI/2.0, Math.PI*2.0);
+            Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Math.PI/2.0);
+            Cairo.cairo_arc(cairo, 1, fh - 1, 1, Math.PI/2, Math.PI);
+            Cairo.cairo_arc(cairo, 1, 1, 1, Math.PI, 270.0*Math.PI/180.0);
             Cairo.cairo_close_path(cairo);
             Cairo.cairo_restore(cairo);
         }
@@ -1774,9 +1773,9 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
     if (cairo !is null) {
         if (width is height) {
             if (arcAngle >= 0) {
-                Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * cast(float)Compatibility.PI / 180,  -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * cast(float)Math.PI / 180,  -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             } else {
-                Cairo.cairo_arc(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * cast(float)Compatibility.PI / 180,  -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * cast(float)Math.PI / 180,  -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             }
             Cairo.cairo_line_to(cairo, x + width / 2f, y + height / 2f);
         } else {
@@ -1784,9 +1783,9 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
             Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
             Cairo.cairo_scale(cairo, width / 2f, height / 2f);
             if (arcAngle >= 0) {
-                Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * cast(float)Compatibility.PI / 180,  -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * cast(float)Math.PI / 180,  -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             } else {
-                Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * cast(float)Compatibility.PI / 180,  -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+                Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * cast(float)Math.PI / 180,  -(startAngle + arcAngle) * cast(float)Math.PI / 180);
             }
             Cairo.cairo_line_to(cairo, 0, 0);
             Cairo.cairo_restore(cairo);
@@ -1902,12 +1901,12 @@ public void fillOval(int x, int y, int width, int height) {
     auto cairo = data.cairo;
     if (cairo !is null) {
         if (width is height) {
-            Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, 0, 2 * cast(float)Compatibility.PI);
+            Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, 0, 2 * cast(float)Math.PI);
         } else {
             Cairo.cairo_save(cairo);
             Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
             Cairo.cairo_scale(cairo, width / 2f, height / 2f);
-            Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, 2 * cast(float)Compatibility.PI);
+            Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, 2 * cast(float)Math.PI);
             Cairo.cairo_restore(cairo);
         }
         Cairo.cairo_fill(cairo);
@@ -2088,10 +2087,10 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
             Cairo.cairo_translate(cairo, nx, ny);
             Cairo.cairo_scale(cairo, naw2, nah2);
             Cairo.cairo_move_to(cairo, fw - 1, 0);
-            Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
-            Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
-            Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
-            Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);
+            Cairo.cairo_arc(cairo, fw - 1, 1, 1, Math.PI + Math.PI/2.0, Math.PI*2.0);
+            Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Math.PI/2.0);
+            Cairo.cairo_arc(cairo, 1, fh - 1, 1, Math.PI/2, Math.PI);
+            Cairo.cairo_arc(cairo, 1, 1, 1, Math.PI, 270.0*Math.PI/180.0);
             Cairo.cairo_close_path(cairo);
             Cairo.cairo_restore(cairo);
         }
@@ -4023,5 +4022,3 @@ public override String toString () {
 }
 
 }
-
-

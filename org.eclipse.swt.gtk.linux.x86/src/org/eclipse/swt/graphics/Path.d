@@ -13,7 +13,6 @@
 module org.eclipse.swt.graphics.Path;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cairo.Cairo : Cairo;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.graphics.Resource;
@@ -48,7 +47,7 @@ version(Tango){
  * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public class Path : Resource {
@@ -111,11 +110,11 @@ public this (Device device) {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
  * @param path the path to make a copy
  * @param flatness the flatness value
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
@@ -127,7 +126,7 @@ public this (Device device) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @since 3.4
  */
@@ -166,10 +165,10 @@ public this (Device device, Path path, float flatness) {
  * graphics subsystem which may not be available on some
  * platforms.
  * </p>
- * 
+ *
  * @param device the device on which to allocate the path
  * @param data the data for the path
- * 
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
@@ -180,7 +179,7 @@ public this (Device device, Path path, float flatness) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
- * 
+ *
  * @see #dispose()
  * @since 3.4
  */
@@ -223,23 +222,23 @@ public void addArc(float x, float y, float width, float height, float startAngle
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     moved = true;
     if (width is height) {
-        float angle = -startAngle * cast(float)Compatibility.PI / 180;
+        float angle = -startAngle * cast(float)Math.PI / 180;
         if (closed) Cairo.cairo_move_to(handle, (x + width / 2f) + width / 2f * Math.cos(angle), (y + height / 2f) + height / 2f * Math.sin(angle));
         if (arcAngle >= 0) {
-            Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+            Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
         } else {
-            Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+            Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, angle, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
         }
     } else {
         Cairo.cairo_save(handle);
         Cairo.cairo_translate(handle, x + width / 2f, y + height / 2f);
         Cairo.cairo_scale(handle, width / 2f, height / 2f);
-        float angle = -startAngle * cast(float)Compatibility.PI / 180;
+        float angle = -startAngle * cast(float)Math.PI / 180;
         if (closed) Cairo.cairo_move_to(handle, Math.cos(angle), Math.sin(angle));
         if (arcAngle >= 0) {
-            Cairo.cairo_arc_negative(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+            Cairo.cairo_arc_negative(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
         } else {
-            Cairo.cairo_arc(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * cast(float)Compatibility.PI / 180);
+            Cairo.cairo_arc(handle, 0, 0, 1, angle, -(startAngle + arcAngle) * cast(float)Math.PI / 180);
         }
         Cairo.cairo_restore(handle);
     }

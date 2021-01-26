@@ -18,11 +18,11 @@ import org.eclipse.swt.internal.image.LEDataOutputStream;
 import org.eclipse.swt.internal.image.PngDeflater;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.zip.DeflaterOutputStream;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.image.PngChunk;
 
 final class PngEncoder {
@@ -238,7 +238,7 @@ void writeTransparency() {
 void writeImageData() {
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-    OutputStream os = Compatibility.newDeflaterOutputStream(baos);
+    OutputStream os = new DeflaterOutputStream(baos);
     if (os is null) os = baos;
 
     if (colorType is 3) {
