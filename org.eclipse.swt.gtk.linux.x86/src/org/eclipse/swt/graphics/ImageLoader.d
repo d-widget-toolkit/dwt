@@ -13,6 +13,8 @@
 module org.eclipse.swt.graphics.ImageLoader;
 
 import java.lang.all;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Vector;
 
 
@@ -21,7 +23,6 @@ public import org.eclipse.swt.graphics.ImageLoaderEvent;
 public import org.eclipse.swt.graphics.ImageData;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.image.FileFormat;
 
 version(Tango){
@@ -174,7 +175,7 @@ public ImageData[] load(String filename) {
         }
     }
     try {
-        stream = Compatibility.newFileInputStream(filename);
+        stream = new FileInputStream(filename);
         scope(exit) close();
 
         return load(stream);
@@ -253,7 +254,7 @@ public void save(String filename, int format) {
     if (filename is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     OutputStream stream = null;
     try {
-        stream = Compatibility.newFileOutputStream(filename);
+        stream = new FileOutputStream(filename);
     } catch (IOException e) {
         SWT.error(SWT.ERROR_IO, e);
     }

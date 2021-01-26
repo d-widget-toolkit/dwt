@@ -22,7 +22,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
-import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.gtk.OS;
 import java.lang.all;
 
@@ -275,7 +274,7 @@ static Device findDevice (void* xDisplay) {
 }
 
 static void deregister (Device device) {
-    synchronized {   
+    synchronized {
         for (int i=0; i<Devices.length; i++) {
             if (device is Devices [i]) Devices [i] = null;
         }
@@ -436,7 +435,7 @@ public FontData[] getFontList (String faceName, bool scalable) {
         bool match = true;
         if (faceName !is null) {
             auto familyName = OS.pango_font_family_get_name(family);
-            match = Compatibility.equalsIgnoreCase(faceName, fromStringz( familyName ));
+            match = faceName.equalsIgnoreCase(fromStringz(familyName));
         }
         if (match) {
             OS.pango_font_family_list_faces(family, &faces, &n_faces);

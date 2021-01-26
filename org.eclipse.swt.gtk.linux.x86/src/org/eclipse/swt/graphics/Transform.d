@@ -15,7 +15,6 @@ module org.eclipse.swt.graphics.Transform;
 import java.lang.all;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.graphics.Device;
@@ -36,7 +35,7 @@ import org.eclipse.swt.graphics.Device;
  *
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.1
  */
 public class Transform : Resource {
@@ -184,12 +183,12 @@ public void getElements(float[] elements) {
 
 /**
  * Modifies the receiver such that the matrix it represents becomes the
- * identity matrix. 
+ * identity matrix.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void identity() {
@@ -277,7 +276,7 @@ public void multiply(Transform matrix) {
  */
 public void rotate(float angle) {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-    Cairo.cairo_matrix_rotate(cast(cairo_matrix_t*)handle.ptr, angle * cast(float)Compatibility.PI / 180);
+    Cairo.cairo_matrix_rotate(cast(cairo_matrix_t*)handle.ptr, angle * cast(float)Math.PI / 180);
 }
 
 /**
@@ -319,14 +318,14 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
 /**
  * Modifies the receiver so that it represents a transformation that is
  * equivalent to its previous transformation sheared by (shearX, shearY).
- * 
+ *
  * @param shearX the shear factor in the X direction
  * @param shearY the shear factor in the Y direction
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
+ *
  * @since 3.4
  */
 public void shear(float shearX, float shearY) {
