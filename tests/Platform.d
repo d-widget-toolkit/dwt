@@ -13,7 +13,8 @@
  *******************************************************************************/
 module tests.Platform;
 
-import java.lang.util.HashSet;
+import java.lang.all;
+import java.util.HashSet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
