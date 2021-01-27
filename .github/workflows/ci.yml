@@ -45,4 +45,6 @@ jobs:
           compiler: ${{ matrix.dc }}
       - name: Run Build
         run: |
-          dub build
+          dub build --arch=${{ matrix.arch }}
+      - name: Test Snippets
+        run: dub --single tools/test_snippets.d -- --arch=${{ matrix.arch }}
