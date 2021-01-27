@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: '*'
+    tags: v*
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    name: DUB Build & Test
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019]
+        dc:
+          - dmd-master
+          - ldc-master
+          - dmd-beta
+          - dmd-latest
+          - ldc-latest
+          - dmd-2.078.3
+          - dmd-2.085.1
+          - dmd-2.090.1
+        arch: [x86_64]
+        include:
+          - os: windows-2019
+            dc: dmd-latest
+            arch: x86
+          - os: windows-2019
+            dc: ldc-latest
+            arch: x86
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Install D Compiler ${{ matrix.dc }}
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ${{ matrix.dc }}
+      - name: Run Build
+        run: |
+          dub build
