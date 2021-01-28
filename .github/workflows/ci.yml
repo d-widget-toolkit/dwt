@@ -48,3 +48,6 @@ jobs:
           dub build --arch=${{ matrix.arch }}
       - name: Test Snippets
         run: dub --single tools/test_snippets.d -- --arch=${{ matrix.arch }}
+      - name: Test base package
+        run: |
+          dub test dwt:base
