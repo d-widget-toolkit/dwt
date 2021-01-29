@@ -1,8 +1,8 @@
-/** 
+/**
  * Stuff for working with narrow strings.
  * This module shouldn't be imported directly.
  * Use SafeUtf/UnsafeUtf modules instead.
- * 
+ *
  * Authors: Denis Shelomovskij <verylonglogin.reg@gmail.com>
  */
 module java.nonstandard.UtfBase;
@@ -27,39 +27,39 @@ static if(UTFTypeCheck) {
     /*struct UTF16index {
         ptrdiff_t internalValue;
         alias internalValue val;
-        
+
         private static UTF16index opCall(ptrdiff_t _val) {
             UTF16index t = { _val };
             return t;
         }
-        
+
         void opOpAssign(string op)(in UTF16shift di) if (op == "+") {
             val += di;
         }
-        
+
         void opOpAssign(string op)(in UTF16shift di) if (op == "-") {
             val -= di;
         }
-        
+
 mixin(constFuncs!("
         UTF16index opBinary(string op)(in UTF16shift di) if (op == \"+\") {
             return UTF16index(val + di);
         }
-        
+
         UTF16index opBinary(string op)(in UTF16shift di) if (op == \"-\") {
             return UTF16index(val - di);
         }
-        
+
         version(Windows) {
             UTF16index opBinary(string op)(in ptrdiff_t di) if (op == \"+\") {
                 return UTF16index(val + di);
             }
-            
+
             UTF16index opBinary(string op)(in ptrdiff_t di) if (op == \"-\") {
                 return UTF16index(val - di);
             }
         }
-        
+
         int opCmp(in UTF16index i2) {
             return cast(int)(val - i2.val);
         }
@@ -74,86 +74,92 @@ mixin(constFuncs!("
     struct UTF8index {
         ptrdiff_t internalValue;
         alias internalValue val;
-        
+
         private static UTF8index opCall(ptrdiff_t _val) {
             UTF8index t = { _val };
             return t;
         }
-        
+
         void opOpAssign(string op)(in UTF8shift di) if (op == "+") {
             val += di.val;
         }
-        
+
         void opOpAssign(string op)(in UTF8shift di) if (op == "-") {
             val -= di.val;
         }
-        
+
 mixin(constFuncs!("
         UTF8index opBinary(string op)(in UTF8shift di) if (op == \"+\") {
             return UTF8index(val + di.val);
         }
-        
+
         UTF8index opBinary(string op)(in UTF8shift di) if (op == \"-\") {
             return UTF8index(val - di.val);
         }
-        
+
         UTF8shift opBinary(string op)(in UTF8index di) if (op == \"-\") {
             return UTF8shift(val - di.val);
         }
-        
+
         int opCmp(in UTF8index i2) {
             return cast(int)(val - i2.val);
         }
 "));
     }
-    
+
     private UTF8index newUTF8index(ptrdiff_t i) {
         return UTF8index(i);
     }
-    
+
     private ptrdiff_t val(T)(T i) {
         static if(is(T : UTF16index))
             return cast(ptrdiff_t) i;
         else
             return i.val;
     }
-    
+
     private void dec(ref UTF8index i) {
         --i.val;
     }
-    
+
     struct UTF8shift {
         ptrdiff_t internalValue;
         alias internalValue val;
-        
+
         private static UTF8shift opCall(ptrdiff_t _val) {
             UTF8shift t = { _val };
             return t;
         }
-        
+
         void opOpAssign(string op)(in UTF8shift di) if (op == "+") {
             val += di.val;
         }
-        
+
         void opOpAssign(string op)(in UTF8shift di) if (op == "-") {
             val -= di.val;
         }
-        
+
+        bool opEquals(T)(in T s)
+        if (__traits(isArithmetic, s))
+        {
+            return val == s;
+        }
+
 mixin(constFuncs!("
         UTF8shift opBinary(string op)(in UTF8shift di) if (op == \"+\") {
             return UTF8shift(val + di.val);
         }
-        
+
         UTF8shift opBinary(string op)(in UTF8shift di) if (op == \"-\") {
             return UTF8shift(val - di.val);
         }
-        
+
         int opCmp(in UTF8shift di2) {
             return cast(int)(val - di2.val);
         }
 "));
     }
-    
+
 
     UTF8index asUTF8index(ptrdiff_t i) {
         return UTF8index(i);
@@ -165,14 +171,14 @@ mixin(constFuncs!("
 } else {
     alias ptrdiff_t UTF16index;
     alias ptrdiff_t UTF16shift;
-    
+
     alias ptrdiff_t UTF8index;
     alias ptrdiff_t UTF8shift;
-    
+
     private ptrdiff_t val(ptrdiff_t i) {
         return i;
     }
-    
+
     private void dec(ref UTF8index i) {
         --i;
     }
@@ -331,7 +337,7 @@ will return the position of the first byte of this sequence.
 void adjustUTF8index( in char[] s, ref UTF8index i ){
     if(i == s.endIndex() || s.isUTF8sequenceStart(i))
         return;
-    
+
     int l = 0;
     alias i res;
     do {
