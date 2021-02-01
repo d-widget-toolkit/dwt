@@ -1,4 +1,4 @@
-module java.util.HashSet; // @suppress(dscanner.style.phobos_naming_convention)
+module java.util.HashSet;
 
 import java.lang.all;
 import java.util.Set;
@@ -83,7 +83,7 @@ class HashSet : Set {
             // already initialized (to null)
         }
     }
-    
+
     /**
      * Adds the specified element to this set if it is not already present.
      * More formally, adds the specified element {@code e} to this set if
@@ -100,12 +100,25 @@ class HashSet : Set {
         version(Tango) {
             return set.add(o);
         } else { // Phobos
-            bool res = false;
-            set.update(o, {
-                res = true;
-                return (void[0]).init;
-            }, (ref void[0]) {});
-            return res;
+            static if (__traits(hasMember, .object, "update"))
+            {
+                bool res = false;
+                set.update(o, {
+                    res = true;
+                    return (void[0]).init;
+                }, (ref void[0] v) {
+                    /* Keep "return" for D versions < 2.092.0 */
+                    return v;
+                });
+                return res;
+            }
+            else
+            {
+                /* D versions < 2.082.0  */
+                if (this.contains(o)) return false;
+                set[o] = (void[0]).init;
+                return true;
+            }
         }
     }
 
