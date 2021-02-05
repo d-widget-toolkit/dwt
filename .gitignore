@@ -17,4 +17,4 @@
 /org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/snippet*
 !org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet*.d
 /args.txt
-dwt-test-*
+dwt-*-test-*

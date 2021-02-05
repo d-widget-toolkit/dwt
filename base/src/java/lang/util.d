@@ -25,7 +25,7 @@ version(Tango){
     static import std.exception;
     static import std.string;
     static import std.utf;
-    alias core.stdc.stdlib.exit exit;
+    alias exit = core.stdc.stdlib.exit;
 }
 
 version(Tango){
@@ -78,28 +78,23 @@ version(Tango){
         private this( String name ) {
         }
         void trace(T...)( String file, ulong line, String fmt, T args ){
-            fmt = fmtFromTangoFmt(fmt);
-            std.stdio.writefln( "TRC %s %s: %s", file, line, std.string.format(fmt, args) );
+            std.stdio.writefln( "TRC %s %s: %s", file, line, Format(fmt, args) );
         }
         void info(T...)( String file, ulong line, String fmt, T args ){
-            fmt = fmtFromTangoFmt(fmt);
-            std.stdio.writefln( "INF %s %s: %s", file, line, std.string.format(fmt, args) );
+            std.stdio.writefln( "INF %s %s: %s", file, line, Format(fmt, args) );
         }
         void warn(T...)( String file, ulong line, String fmt, T args ){
-            fmt = fmtFromTangoFmt(fmt);
-            std.stdio.writefln( "WRN %s %s: %s", file, line, std.string.format(fmt, args) );
+            std.stdio.writefln( "WRN %s %s: %s", file, line, Format(fmt, args));
         }
         void error(T...)( String file, ulong line, String fmt, T args ){
-            fmt = fmtFromTangoFmt(fmt);
-            std.stdio.writefln( "ERR %s %s: %s", file, line, std.string.format(fmt, args) );
+            std.stdio.writefln( "ERR %s %s: %s", file, line, Format(fmt, args) );
         }
         void fatal(T...)( String file, ulong line, String fmt, T args ){
-            fmt = fmtFromTangoFmt(fmt);
-            std.stdio.writefln( "FAT %s %s: %s", file, line, std.string.format(fmt, args) );
+            std.stdio.writefln( "FAT %s %s: %s", file, line, Format(fmt, args) );
         }
     }
 
-    alias IDwtLogger DwtLogger;
+    alias DwtLogger = IDwtLogger;
 }
 
 private IDwtLogger dwtLoggerInstance;
@@ -145,63 +140,10 @@ version(Tango){
 version(Tango){
     public alias tango.text.convert.Format.Format Format;
 } else { // Phobos
-	private string fmtFromTangoFmt(string tangoFmt) {
-		auto app = std.array.appender!(string)();
-		app.reserve(tangoFmt.length);
-	L:	for(int i = 0; i < tangoFmt.length; ++i) {
-			char c = tangoFmt[i];
-			if(c == '%')
-				app.put("%%");
-			else if(c == '{') {
-                if(i + 1 < tangoFmt.length && tangoFmt[i + 1] == '{') {
-                    app.put('{');
-                    ++i;
-                } else {
-                    int j = i;
-                    do {
-                        ++j;
-                        if(j == tangoFmt.length) {
-                            app.put("{malformed format}");
-                            break L;
-                        }
-                    } while(tangoFmt[j] != '}');
-                    string f = tangoFmt[i + 1 .. j];
-                    i = j;
-                    if(f.length) {
-                        string fres = "%";
-                        try {
-                            if(std.ascii.isDigit(f[0])) {
-                                int n = std.conv.parse!(int)(f);
-                                fres ~= std.conv.to!(string)(n + 1) ~ '$';
-                            }
-                            if(f.length) {
-                                std.exception.enforce(f[0] == ':' && f.length > 1);
-                                c = f[1];
-                                if(f.length == 2 && "bodxXeEfFgG".indexOf(c) != -1)
-                                    fres ~= c;
-                                else
-                                    fres = null;
-                            } else
-                                fres ~= 's';
-                        } catch (Exception) {
-                            fres = "{malformed format}";
-                        }
-                        if(fres)
-                            app.put(fres);
-                        else
-                            implMissingInPhobos();
-                    } else
-                        app.put("%s");
-                }
-			} else
-				app.put(c);
-		}
-        return app.data();
-	}
 
     unittest
     {
-        alias Format Formatter;
+        alias Formatter = Format;
 
         // basic layout tests
         assert( Formatter( "abc" ) == "abc" );
@@ -210,7 +152,7 @@ version(Tango){
 
         assert( Formatter( "{}", 1 ) == "1" );
         assert( Formatter( "{} {}", 1, 2) == "1 2" );
-        // assert( Formatter( "{} {0} {}", 1, 3) == "1 1 3" );
+        assert( Formatter( "{} {0} {}", 1, 3) == "1 1 3" );
         // assert( Formatter( "{} {0} {} {}", 1, 3) == "1 1 3 {invalid index}" );
         // assert( Formatter( "{} {0} {} {:x}", 1, 3) == "1 1 3 {invalid index}" );
         assert( Formatter( "{0} {0} {1}", 1, 3) == "1 1 3" );
@@ -329,7 +271,7 @@ version(Tango){
         assert( Formatter( "{0:f}", 1.23f+1i ) == "1.230000+1.000000i" );
         // assert( Formatter( "{0:f4}", 1.23456789L+1i ) == "1.2346+1.0000*1i" );
         // assert( Formatter( "{0:e4}", 0.0001+1i) == "1.0000e-04+1.0000e+00*1i");
-        assert( Formatter( "{0:f}", 1.23f-1i ) == "1.230000+-1.000000i" );
+        assert( Formatter( "{0:f}", 1.23f-1i ) == "1.230000-1.000000i" );
         // assert( Formatter( "{0:f4}", 1.23456789L-1i ) == "1.2346-1.0000*1i" );
         // assert( Formatter( "{0:e4}", 0.0001-1i) == "1.0000e-04-1.0000e+00*1i");
 
@@ -385,33 +327,123 @@ version(Tango){
                 Formatter( "{}", f ) == "{3.14 => PI, 1.00 => one}");*/
     }
 
-    class Format{
-        template UnTypedef(T) {
-            version(Tango){
-                mixin(r"static if (is(T U == typedef))
-                    alias std.traits.Unqual!(U) UnTypedef;
-                else
-                    alias std.traits.Unqual!(T) UnTypedef;");
-            } else { // Phobos
-                alias std.traits.Unqual!(T) UnTypedef;
-            }
+    class Format {
+
+        /// assitive enum for `Format`.
+        private enum ArgType {
+            basic,
+            array,
+            assocArray
         }
-        static String opCall(A...)( String _fmt, A _args ){
-            //Formatting a typedef is deprecated
+
+        template UnTypedef(T) {
+            alias UnTypedef = std.traits.Unqual!(T);
+        }
+
+        static String opCall(A...)(in String fmt, A _args) {
+            auto app = std.array.appender!(String)();
             std.typetuple.staticMap!(UnTypedef, A) args;
-            foreach(i, _a; _args) {
-                version(Tango){
-                    mixin(r"static if (is(T U == typedef))
-                        args[i] = cast(U) _a;
-                    else
-                        args[i] = _a;");
-                } else { // Phobos
-                    args[i] = _a;
+
+            ArgType[_args.length] argTypes;
+            foreach(i, a; _args) {
+                args[i] = a;
+
+                if (std.traits.isSomeString!(typeof(a))) {
+                    // while strings are a range, we don't want to
+                    // format them differently
+                    argTypes[i] = ArgType.basic;
+                } else if (std.traits.isArray!(typeof(a))) {
+                    // output should be [elem, elem, elem]
+                    argTypes[i] = ArgType.array;
+                } else if (std.traits.isAssociativeArray!(typeof(a))) {
+                    // output should be {key => value, key2 => value2}
+                    // (not implemented yet)
+                    argTypes[i] = ArgType.assocArray;
+                } else {
+                    // no special formatting by default
+                    argTypes[i] = ArgType.basic;
                 }
             }
 
-			auto writer = std.array.appender!(String)();
-            std.format.formattedWrite(writer, fmtFromTangoFmt(_fmt), args);
+            /// Marks the start of the format
+            size_t mark;
+            /// Flag for checking if currently in a format specification
+            bool inFormat = false;
+            /// Should the current iteration be skipped (i.e. `i += 1; continue`)
+            bool skip = false;
+            /// Current "continuous" argument position
+            int argIndex = 0;
+            /// Should `argIndex` be incremented.
+            bool increment = false;
+
+            foreach (i, ref c; fmt) {
+                if (skip) {
+                    skip = false;
+                    continue;
+                }
+
+                if (c == '%') {
+                    app.put("%%");
+                } else if (c == '{') {
+                    if (i + 1 < fmt.length && fmt[i + 1] == '{') {
+                        // escape e.g. d{{0}d => d{0}d
+                        app.put('{');
+                        skip = true;
+                        continue;
+                    } else {
+                        mark = i;
+                        inFormat = true;
+                    }
+                } else if (inFormat == false) {
+                    app.put(c);
+                } else {
+                    if (c != '}') continue;
+
+                    inFormat = false;
+                    string f = fmt[mark + 1 .. i];
+                    if (f.length) {
+                        if (std.ascii.isDigit(f[0])) {
+                            immutable n = std.conv.parse!(int)(f);
+                            increment = false;
+                            app.put("%" ~ std.conv.to!(string)(n + 1) ~ "$");
+                        } else {
+                            increment = true;
+                            app.put(argTypes[argIndex] == ArgType.basic ? "%" : "[%(%");
+                            // insert the "coninuous" positional argument
+                            app.put(std.conv.to!(string)(argIndex + 1));
+                        }
+                        if (f.length) {
+                            //NOTE: to support widths, this will need to be changed.
+                            std.exception.enforce(f[0] == ':' && f.length > 1);
+                            if (f.length == 2 && "bodxXeEfFgG".indexOf(f[1]) != -1) {
+                                // e.g. {:x}
+                                app.put(f[1]);
+                                if (argTypes[argIndex] == ArgType.array) {
+                                    app.put(", %)]");
+                                }
+                            } else {
+                                implMissingInPhobos();
+                            }
+                        } else {
+                            // fallback format char
+                            app.put('s');
+                            if (argTypes[argIndex] == ArgType.array) {
+                                app.put(", %)]");
+                            }
+                        }
+                    } else {
+                        // no format length (i.e. {})
+                        increment = true;
+                        app.put("%" ~ std.conv.to!(string)(argIndex + 1) ~ "$s");
+                    }
+                    if (increment) {
+                        argIndex += 1;
+                    }
+                }
+            }
+
+            auto writer = std.array.appender!(String)();
+            std.format.formattedWrite(writer, app.data, args);
             auto res = writer.data();
             return std.exception.assumeUnique(res);
         }
