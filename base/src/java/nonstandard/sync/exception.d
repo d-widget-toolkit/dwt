@@ -12,28 +12,10 @@
  *    (See accompanying file LICENSE or copy at
  *          http://www.boost.org/LICENSE_1_0.txt)
  */
+deprecated("Use core.sync.exception (SyncException is now SyncError)")
 module java.nonstandard.sync.exception;
 
-version(Tango){
+public import core.sync.exception;
 
-    public import tango.core.Exception : SyncException;
-
-} else { // Phobos
-
-/**
- * Base class for synchronization exceptions.
- */
-class SyncException : Exception
-{
-    @safe pure nothrow this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable next = null)
-    {
-        super(msg, file, line, next);
-    }
-
-    @safe pure nothrow this(string msg, Throwable next, string file = __FILE__, size_t line = __LINE__)
-    {
-        super(msg, file, line, next);
-    }
-}
-
-}
+deprecated("Use core.sync.exception.SyncError instead")
+public alias SyncException = SyncError;
