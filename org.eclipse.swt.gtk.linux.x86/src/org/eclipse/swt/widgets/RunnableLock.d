@@ -15,13 +15,9 @@ module org.eclipse.swt.widgets.RunnableLock;
 import java.lang.all;
 
 import java.lang.Thread;
-version(Tango){
-    import tango.core.sync.Condition;
-    import tango.core.sync.Mutex;
-} else { // Phobos
-    import java.nonstandard.sync.condition;
-    import java.nonstandard.sync.mutex;
-}
+
+import core.sync.condition;
+import core.sync.mutex;
 
 /**
  * Instances of this class are used to ensure that an
