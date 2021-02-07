@@ -2,7 +2,7 @@
 /+
 dub.sdl:
     name "snippet8"
-    dependency "dwt" path="../../../../../../"
+    dependency "dwt" path="../../../../../../" version="*"
     libs \
       "atk-1.0" \
       "cairo" \
@@ -10,10 +10,9 @@ dub.sdl:
       "fontconfig" \
       "gdk-x11-2.0" \
       "gdk_pixbuf-2.0" \
+      "gio-2.0" \
       "glib-2.0" \
       "gmodule-2.0" \
-      "gnomeui-2" \
-      "gnomevfs-2" \
       "gobject-2.0" \
       "gthread-2.0" \
       "gtk-x11-2.0" \
@@ -34,7 +33,7 @@ dub.sdl:
 +/
 
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -65,29 +64,27 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import java.lang.all;
-version(Tango){
-    import tango.io.FilePath;
-    import tango.io.FileSystem;
-} else { // Phobos
-    import std.file;
-    import std.path;
-    class FileSystem {
-        static string[] roots() {return [absolutePath(dirSeparator)];}
-    }
-    class FilePath {
-        string path;
-        this (string path) {this.path = path;}
-        FilePath[] toList() {
-            FilePath[] r;
-            foreach (string file; dirEntries(path, SpanMode.shallow)) {
-                r ~= new FilePath(std.path.buildPath(path, file));
-            }
-            return r;
+
+import std.file;
+import std.path;
+
+/* DWT Compatibility */
+class FileSystem {
+    static string[] roots() {return [absolutePath(dirSeparator)];}
+}
+class FilePath {
+    string path;
+    this (string path) {this.path = path;}
+    FilePath[] toList() {
+        FilePath[] r;
+        foreach (string file; dirEntries(path, SpanMode.shallow)) {
+            r ~= new FilePath(std.path.buildPath(path, file));
         }
-        bool isFolder() {return exists(path) && isDir(path);}
-        override
-        string toString() {return path;}
+        return r;
     }
+    bool isFolder() {return exists(path) && isDir(path);}
+    override
+    string toString() {return path;}
 }
 
 void main () {
