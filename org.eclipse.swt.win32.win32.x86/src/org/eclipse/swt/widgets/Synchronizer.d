@@ -22,12 +22,6 @@ import org.eclipse.swt.SWT;
 import java.lang.all;
 import java.lang.Thread;
 
-version(Tango){
-    import tango.core.Exception: SyncException;
-} else { // Phobos
-    import java.nonstandard.sync.exception;
-}
-
 /**
  * Instances of this class provide synchronization support
  * for displays. A default instance is created automatically
@@ -207,11 +201,7 @@ public void syncExec (Runnable runnable) {
     synchronized (lock) {
         bool interrupted = false;
         while (!lock.done ()) {
-            try {
-                lock.wait ();
-            } catch (SyncException e) {
-                interrupted = true;
-            }
+            lock.wait();
         }
         if (interrupted) {
             Compatibility.interrupt();

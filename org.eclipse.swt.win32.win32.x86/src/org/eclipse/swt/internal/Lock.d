@@ -14,13 +14,9 @@ module org.eclipse.swt.internal.Lock;
 
 import java.lang.all;
 import java.lang.Thread;
-version(Tango){
-    import tango.core.sync.Mutex;
-    import tango.core.sync.Condition;
-} else {
-    import java.nonstandard.sync.mutex;
-    import java.nonstandard.sync.condition;
-}
+
+import core.sync.condition;
+import core.sync.mutex;
 
 /**
  * Instance of this represent a recursive monitor.
@@ -48,11 +44,7 @@ public class Lock {
             if (owner !is current) {
                 waitCount++;
                 while (count > 0) {
-                    try {
-                        cond.wait();
-                    } catch (SyncException e) {
-                        /* Wait forever, just like synchronized blocks */
-                    }
+                    cond.wait();
                 }
                 --waitCount;
                 owner = current;
