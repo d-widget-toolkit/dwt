@@ -2,7 +2,7 @@
 /+
 dub.sdl:
     name "snippet9"
-    dependency "dwt" path="../../../../../../"
+    dependency "dwt" path="../../../../../../" version="*"
     libs \
       "atk-1.0" \
       "cairo" \
@@ -10,10 +10,9 @@ dub.sdl:
       "fontconfig" \
       "gdk-x11-2.0" \
       "gdk_pixbuf-2.0" \
+      "gio-2.0" \
       "glib-2.0" \
       "gmodule-2.0" \
-      "gnomeui-2" \
-      "gnomevfs-2" \
       "gobject-2.0" \
       "gthread-2.0" \
       "gtk-x11-2.0" \
@@ -34,7 +33,7 @@ dub.sdl:
 +/
 
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -119,6 +118,7 @@ void main () {
             composite.setLocation (location);
         }
     });
+    shell.setSize(600, 500);
     shell.open ();
     while (!shell.isDisposed()) {
         if (!display.readAndDispatch ()) display.sleep ();
