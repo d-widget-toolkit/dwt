@@ -20,11 +20,6 @@ import java.lang.all;
 import org.eclipse.swt.SWT;
 import java.lang.Thread;
 import org.eclipse.swt.graphics.Device;
-version(Tango){
-    import tango.core.Exception;
-} else { // Phobos
-    import java.nonstandard.sync.exception: SyncException;
-}
 
 /**
  * Instances of this class provide synchronization support
@@ -199,11 +194,7 @@ public void syncExec (Runnable runnable) {
     synchronized (lock) {
         bool interrupted = false;
         while (!lock.done ()) {
-            try {
-                lock.wait ();
-            } catch (SyncException e) {
-                interrupted = true;
-            }
+            lock.wait();
         }
         if (interrupted) {
             Compatibility.interrupt();
