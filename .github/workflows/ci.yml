@@ -51,3 +51,20 @@ jobs:
       - name: Test base package
         run: |
           dub test dwt:base
+
+      - name: Install Gtk dependencies
+        if: ${{ matrix.os == 'ubuntu-20.04' }}
+        run: |
+          sudo apt-get install -y libatk1.0-dev libcairo2-dev \
+            libfontconfig1-dev libgdk-pixbuf2.0-dev libglib2.0-dev \
+            libgl-dev libglx-dev libgtk2.0-dev libopengl-dev libpango1.0-dev \
+            libx11-dev libxcomposite-dev libxcursor-dev libxdamage-dev \
+            libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxrandr-dev \
+            libxrender-dev libxtst-dev
+
+      - name: Test DWT Gtk
+        if: ${{ matrix.os == 'ubuntu-20.04' }}
+        uses: GabrielBB/xvfb-action@v1 # X virtual framebuffer
+        with:
+          working-directory: ./
+          run: dub test -c unittest-gtk
