@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     IBM Corporation - initial API and implementation
  * Port to the D programming language:
  *     Frank Benoit <benoit@tionex.de>
+ *     alice <stigma@disroot.org>
  *******************************************************************************/
 module org.eclipse.swt.graphics.Color;
 
@@ -19,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.graphics.Device;
 
 
@@ -27,7 +29,7 @@ import org.eclipse.swt.graphics.Device;
  * Instances of this class manage the operating system resources that
  * implement SWT's RGB color model. To create a color you can either
  * specify the individual color components as integers in the range
- * 0 to 255 or provide an instance of an <code>RGB</code>.
+ * 0 to 255 or provide an instance of an <code>RGB</code> or <code>RGBA</code>.
  * <p>
  * Application code must explicitly invoke the <code>Color.dispose()</code>
  * method to release the operating system resources managed by each instance
@@ -35,6 +37,7 @@ import org.eclipse.swt.graphics.Device;
  * </p>
  *
  * @see RGB
+ * @see RGBA
  * @see Device#getSystemColor
  * @see <a href="http://www.eclipse.org/swt/snippets/#color">Color and RGB snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: PaintExample</a>
@@ -51,8 +54,11 @@ public final class Color : Resource {
      * within the packages provided by SWT. It is not available on all
      * platforms and should never be accessed from application code.
      * </p>
+     *
+     * @noreference This field is not intended to be referenced by clients.
      */
     public GdkColor* handle;
+    package int alpha = 255;
 
 this(Device device) {
     super(device);
@@ -84,7 +90,39 @@ this(Device device) {
  */
 public this(Device device, int red, int green, int blue) {
     super(device);
-    init_(red, green, blue);
+    init_(red, green, blue, 255);
+    init_();
+}
+
+/**
+ * Constructs a new instance of this class given a device and the
+ * desired red, green, blue & alpha values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness). On limited
+ * color devices, the color instance created by this call may not have
+ * the same RGB values as the ones specified by the arguments. The
+ * RGB values on the returned instance will be the color values of
+ * the operating system color.
+ * <p>
+ * You must dispose the color when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ * @since 3.104
+ */
+public this(Device device, int red, int green, int blue, int alpha) {
+    super(device);
+    init_(red, green, blue, alpha);
     init_();
 }
 
@@ -113,7 +151,69 @@ public this(Device device, int red, int green, int blue) {
 public this(Device device, in RGB rgb) {
     super(device);
     if (rgb is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-    init_(rgb.red, rgb.green, rgb.blue);
+    init_(rgb.red, rgb.green, rgb.blue, 255);
+    init_();
+}
+
+/**
+ * Constructs a new instance of this class given a device and an
+ * <code>RGBA</code> describing the desired red, green, blue & alpha values.
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGBA values as the ones specified by the
+ * argument. The RGBA values on the returned instance will be the color
+ * values of the operating system color + alpha.
+ * <p>
+ * You must dispose the color when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgba argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ * @since 3.104
+ */
+public this(Device device, RGBA rgba) {
+    super(device);
+    if (rgba is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+    init_(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
+    init_();
+}
+
+/**
+ * Constructs a new instance of this class given a device, an
+ * <code>RGB</code> describing the desired red, green and blue values,
+ * alpha specifying the level of transparency.
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGB values as the ones specified by the
+ * argument. The RGB values on the returned instance will be the color
+ * values of the operating system color.
+ * <p>
+ * You must dispose the color when it is no longer required.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param rgb the RGB values of the desired color
+ * @param alpha the alpha value of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ * @since 3.104
+ */
+public this(Device device, RGB rgb, int alpha) {
+    super(device);
+    if (rgb is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+    init_(rgb.red, rgb.green, rgb.blue, alpha);
     init_();
 }
 
@@ -126,8 +226,10 @@ void destroy() {
             device.gdkColors[pixel] = null;
         }
     }
-    auto colormap = OS.gdk_colormap_get_system();
-    OS.gdk_colormap_free_colors(colormap, handle, 1);
+    if (!OS.GTK3) {
+        auto colormap = OS.gdk_colormap_get_system();
+        OS.gdk_colormap_free_colors(colormap, handle, 1);
+    }
     handle = null;
 }
 
@@ -141,15 +243,31 @@ void destroy() {
  *
  * @see #hashCode
  */
-public override equals_t opEquals(Object object) {
+public override bool opEquals(Object object) const {
     if (object is this) return true;
     if ( auto color = cast(Color)object ){
         GdkColor* gdkColor = color.handle;
         if (handle is gdkColor) return true;
         return device is color.device && handle.red is gdkColor.red &&
-            handle.green is gdkColor.green && handle.blue is gdkColor.blue;
+            handle.green is gdkColor.green && handle.blue is gdkColor.blue &&
+            alpha == color.alpha;
     }
     return false;
+}
+
+/**
+ * Returns the amount of alpha in the color, from 0 (transparent) to 255 (opaque).
+ *
+ * @return the alpha component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.104
+ */
+public int getAlpha() const {
+    if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    return alpha;
 }
 
 /**
@@ -161,7 +279,7 @@ public override equals_t opEquals(Object object) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getBlue() {
+public int getBlue() const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return (handle.blue >> 8) & 0xFF;
 }
@@ -175,7 +293,7 @@ public int getBlue() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getGreen() {
+public int getGreen() const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return (handle.green >> 8) & 0xFF;
 }
@@ -189,7 +307,7 @@ public int getGreen() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getRed() {
+public int getRed() const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return (handle.red >> 8) & 0xFF;
 }
@@ -204,7 +322,7 @@ public int getRed() {
  *
  * @see #equals
  */
-public override hash_t toHash() {
+public override hash_t toHash() const {
     if (handle is null) return 0;
     return handle.red ^ handle.green ^ handle.blue;
 }
@@ -218,9 +336,24 @@ public override hash_t toHash() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public RGB getRGB () {
+public RGB getRGB () const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return new RGB(getRed(), getGreen(), getBlue());
+}
+
+/**
+ * Returns an <code>RGBA</code> representing the receiver.
+ *
+ * @return the RGBA for the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.104
+ */
+public RGBA getRGBA () const {
+    if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    return new RGBA(getRed(), getGreen(), getBlue(), getAlpha());
 }
 
 /**
@@ -234,31 +367,73 @@ public RGB getRGB () {
  * </p>
  *
  * @param device the device on which to allocate the color
- * @param handle the handle for the color
+ * @param gdkColor the handle for the color
  *
- * @private
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Color gtk_new(Device device, GdkColor* gdkColor) {
+    return gtk_new(device, gdkColor, 255);
+}
+
+/**
+ * Invokes platform specific functionality to allocate a new color.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param gdkColor the handle for the color
+ * @param alpha the int for the alpha content in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static Color gtk_new(Device device, GdkColor* gdkColor, int alpha) {
     Color color = new Color(device);
     color.handle = gdkColor;
+    color.alpha = alpha;
     return color;
 }
 
-void init_(int red, int green, int blue) {
+/**
+ * Allocates the operating system resources associated
+ * with the receiver.
+ *
+ * @param device the device on which to allocate the color
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #dispose
+ */
+package void init_(int red, int green, int blue, int alpha) {
     if ((red > 255) || (red < 0) ||
         (green > 255) || (green < 0) ||
-        (blue > 255) || (blue < 0)) {
+        (blue > 255) || (blue < 0) ||
+        (alpha > 255) || (alpha < 0)) {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
     }
     GdkColor* gdkColor = new GdkColor();
     gdkColor.red = cast(short)((red & 0xFF) | ((red & 0xFF) << 8));
     gdkColor.green = cast(short)((green & 0xFF) | ((green & 0xFF) << 8));
     gdkColor.blue = cast(short)((blue & 0xFF) | ((blue & 0xFF) << 8));
-    auto colormap = OS.gdk_colormap_get_system();
-    if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
-        /* Allocate black. */
-        gdkColor = new GdkColor();
-        OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+    this.alpha = alpha;
+
+    if (!OS.GTK3) {
+        auto colormap = OS.gdk_colormap_get_system();
+        if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
+            /* Allocate black. */
+            gdkColor = new GdkColor();
+            OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+        }
     }
     handle = gdkColor;
     if (device.colorRefCount !is null) {
@@ -279,11 +454,11 @@ void init_(int red, int green, int blue) {
  * <p>
  * This method gets the dispose state for the color.
  * When a color has been disposed, it is an error to
- * invoke any other method using the color.
+ * invoke any other method (except {@link #dispose()}) using the color.
  *
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
-public override bool isDisposed() {
+public override bool isDisposed() const {
     return handle is null;
 }
 
@@ -293,9 +468,9 @@ public override bool isDisposed() {
  *
  * @return a string representation of the receiver
  */
-public override String toString () {
+public override String toString () const {
     if (isDisposed()) return "Color {*DISPOSED*}";
-    return Format( "Color {{{}, {}, {}}", getRed(), getGreen(), getBlue());
+    return Format( "Color {{{}, {}, {}, {}}", getRed(), getGreen(), getBlue(), getAlpha());
 }
 
 }

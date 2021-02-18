@@ -26,6 +26,7 @@ public import org.eclipse.swt.graphics.PathData;
 public import org.eclipse.swt.graphics.Pattern;
 public import org.eclipse.swt.graphics.Point;
 public import org.eclipse.swt.graphics.RGB;
+public import org.eclipse.swt.graphics.RGBA;
 public import org.eclipse.swt.graphics.Rectangle;
 public import org.eclipse.swt.graphics.Region;
 public import org.eclipse.swt.graphics.Resource;

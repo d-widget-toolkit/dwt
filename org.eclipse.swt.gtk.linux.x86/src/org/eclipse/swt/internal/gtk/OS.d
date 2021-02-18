@@ -1179,6 +1179,10 @@ public class OS : Platform {
         return .GLIB_VERSION();
     }
 
+    public static bool GTK3() {
+        return GTK_VERSION() >= buildVERSION(3, 0, 0);
+    }
+
 public static gint buildVERSION(gint major, gint minor, gint micro) {
     return .buildVERSION( major, minor, micro );
 }
