@@ -50,7 +50,7 @@ jobs:
         run: dub --single tools/test_snippets.d -- --arch=${{ matrix.arch }}
       - name: Test base package
         run: |
-          dub test dwt:base
+          dub test dwt:base --arch=${{ matrix.arch }}
 
       - name: Install Gtk dependencies
         if: ${{ matrix.os == 'ubuntu-20.04' }}
