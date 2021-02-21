@@ -1,5 +1,0 @@
-language: d
-script: dub build && ./tools/test_snippets.d
-
-d:
-  - dmd-2.078.1
