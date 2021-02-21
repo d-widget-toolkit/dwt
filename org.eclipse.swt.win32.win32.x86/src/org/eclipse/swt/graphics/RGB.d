@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,7 @@ import java.lang.all;
  */
 
 public final class RGB : SerializableCompatibility {
-
+  package:
     /**
      * the red component of the RGB
      */
@@ -156,11 +156,16 @@ public this (float hue, float saturation, float brightness) {
 /**
  * Returns the hue, saturation, and brightness of the color.
  *
- * @return color space values in float format (hue, saturation, brightness)
+ * @return color space values in float format:<ul>
+ *             <li>hue (from 0 to 360)</li>
+ *             <li>saturation (from 0 to 1)</li>
+ *             <li>brightness (from 0 to 1)</li>
+ *             </ul>
+ * @see #RGB(float, float, float)
  *
  * @since 3.2
  */
-public float[] getHSB() {
+public float[] getHSB() const {
     float r = red / 255f;
     float g = green / 255f;
     float b = blue / 255f;
@@ -196,7 +201,7 @@ public float[] getHSB() {
  *
  * @see #hashCode()
  */
-public override equals_t opEquals(Object object) {
+public override bool opEquals(Object object) const {
     if (object is this) return true;
     if( auto rgb = cast(RGB) object ){
         return (rgb.red is this.red) && (rgb.green is this.green) && (rgb.blue is this.blue);
@@ -214,7 +219,7 @@ public override equals_t opEquals(Object object) {
  *
  * @see #equals(Object)
  */
-override public hash_t toHash() {
+override public size_t toHash() const @safe pure nothrow {
     return (blue << 16) | (green << 8) | red;
 }
 
@@ -224,11 +229,10 @@ override public hash_t toHash() {
  *
  * @return a String representation of the <code>RGB</code>
  */
-public override String toString() {
+public override String toString() const {
     return Format( "RGB {{{}, {}, {}}", red, green, blue ); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }
 
 }
 
 alias TryConst!(RGB) constRGB;
-
