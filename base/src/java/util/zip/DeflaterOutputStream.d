@@ -3,6 +3,8 @@
  */
 module java.util.zip.DeflaterOutputStream;
 
+static import java.io.OutputStream;
+
 version (Tango) {
     version (Windows) {
         pragma (lib, "zlib.lib");
