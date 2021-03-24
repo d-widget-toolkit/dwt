@@ -33,12 +33,7 @@ import org.eclipse.swt.widgets.Control;
 
 import java.lang.all;
 
-version(Tango){
-    import tango.text.convert.Utf;
-} else {
-    import std.conv;
-    alias to!(string) toString;
-}
+import std.conv;
 
 /**
  * Instances of this class are selectable user interface
@@ -1490,7 +1485,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
             break;
         default:    /* Tab and other characters */
             if (key !is '\t' && key < 0x20) return true;
-            oldText = .toString(key);
+            oldText = .to!string(key);
             break;
     }
     String newText = verifyText (oldText, start, end, event);
