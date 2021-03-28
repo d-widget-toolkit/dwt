@@ -279,7 +279,7 @@ void init_( String name, float height, int style, String fontString) {
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
-public override bool isDisposed() {
+public override bool isDisposed() const {
     return handle is null;
 }
 
@@ -290,7 +290,7 @@ public override bool isDisposed() {
  * @return a string representation of the receiver
  */
 override
-public String toString () {
+public String toString () const {
     if (isDisposed()) return "Font {*DISPOSED*}";
     return Format( "Font {{{}}", handle );
 }
