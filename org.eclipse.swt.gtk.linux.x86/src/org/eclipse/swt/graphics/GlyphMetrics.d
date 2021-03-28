@@ -112,7 +112,7 @@ public override hash_t toHash () {
  *
  * @return a string representation of the <code>GlyphMetrics</code>
  */
-public override String toString () {
+public override String toString () const {
     return Format( "GlyphMetrics {{{}, {}, {}}", ascent, descent, width ); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }
 

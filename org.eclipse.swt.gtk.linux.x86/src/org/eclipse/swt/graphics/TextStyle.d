@@ -305,7 +305,7 @@ bool isAdherentStrikeout(TextStyle style) {
  *
  * @return a string representation of the <code>TextStyle</code>
  */
-override public String toString () {
+override public String toString () const {
     String buffer = "TextStyle {";
     auto startLength = buffer.length;
     if (font !is null) {
