@@ -195,7 +195,7 @@ public /+override+/ Object clone() {
  *
  * @return a string representation of the StyleRange
  */
-public override String toString() {
+public override String toString() const {
     StringBuffer buffer = new StringBuffer();
     buffer.append("StyleRange {");
     buffer.append(start);

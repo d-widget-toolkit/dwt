@@ -174,7 +174,7 @@ public this (Font font, Color foreground, Color background) {
 /**
  * Create a new text style from an existing text style.
  *
- * @param style the style to copy 
+ * @param style the style to copy
  *
  * @since 3.4
  */
@@ -300,7 +300,7 @@ bool isAdherentStrikeout(TextStyle style) {
  *
  * @return a string representation of the <code>TextStyle</code>
  */
-override public String toString () {
+override public String toString () const {
     String buffer = "TextStyle {";
     int startLength = cast(int)/*64bit*/buffer.length;
     if (font !is null) {

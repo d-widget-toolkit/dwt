@@ -167,7 +167,7 @@ public override equals_t opEquals (Object object) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getBlue () {
+public int getBlue () const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return (handle & 0xFF0000) >> 16;
 }
@@ -181,7 +181,7 @@ public int getBlue () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getGreen () {
+public int getGreen () const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return (handle & 0xFF00) >> 8 ;
 }
@@ -195,7 +195,7 @@ public int getGreen () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getRed () {
+public int getRed () const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return handle & 0xFF;
 }
@@ -209,7 +209,7 @@ public int getRed () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public RGB getRGB () {
+public RGB getRGB () const {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return new RGB(cast(int)handle & 0xFF,cast(int) (handle & 0xFF00) >> 8,cast(int) (handle & 0xFF0000) >> 16);
 }
@@ -301,7 +301,7 @@ void init_(int red, int green, int blue) {
  *
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
-override public bool isDisposed() {
+override public bool isDisposed() const {
     return handle is -1;
 }
 
@@ -311,7 +311,7 @@ override public bool isDisposed() {
  *
  * @return a string representation of the receiver
  */
-override public String toString () {
+override public String toString () const {
     if (isDisposed()) return "Color {*DISPOSED*}"; //$NON-NLS-1$
     return Format( "Color {{{}, {}, {}}", getRed(), getGreen(), getBlue()); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }

@@ -233,7 +233,7 @@ void init_ (FontData fd) {
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
-override public bool isDisposed() {
+override public bool isDisposed() const {
     return handle is null;
 }
 
@@ -243,7 +243,7 @@ override public bool isDisposed() {
  *
  * @return a string representation of the receiver
  */
-override public String toString () {
+override public String toString () const {
     if (isDisposed()) return "Font {*DISPOSED*}";
     return Format( "Font {{{}}", handle );
 //
