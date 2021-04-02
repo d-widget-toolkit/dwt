@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,17 @@
  *     IBM Corporation - initial API and implementation
  * Port to the D programming language:
  *     Frank Benoit <benoit@tionex.de>
+ *     alice <stigma@disroot.org>
  *******************************************************************************/
 module org.eclipse.swt.accessibility.AccessibleTextEvent;
 
+import org.eclipse.swt.accessibility.Accessible;
 
-import org.eclipse.swt.internal.SWTEventObject;
+
 import java.lang.all;
+import java.util.EventObject;
+
+import org.eclipse.swt.graphics.all;
 
 /**
  * Instances of this class are sent as a result of
@@ -33,9 +38,33 @@ import java.lang.all;
  *
  * @since 3.0
  */
-public class AccessibleTextEvent : SWTEventObject {
+public class AccessibleTextEvent : EventObject {
     public int childID;             // IN
     public int offset, length;      // OUT
+    /** @since 3.6 */
+    public Accessible accessible;
+
+    /**
+     * The value of this field must be set in the accessible text extended listener method
+     * before returning. What to set it to depends on the listener method called.
+     * @since 3.6
+     */
+    public String result;
+
+    /** @since 3.6 */
+    public int count;
+    /** @since 3.6 */
+    public int index;
+    /** @since 3.6 */
+    public int start, end;
+    /** @since 3.6 */
+    public int type;
+    /** @since 3.6 */
+    public int x, y, width, height;
+    /** @since 3.6 */
+    public int [] ranges;
+    /** @since 3.6 */
+    public Rectangle [] rectangles;
 
     //static final long serialVersionUID = 3977019530868308275L;
 

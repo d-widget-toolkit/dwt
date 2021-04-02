@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@ module org.eclipse.swt.accessibility.AccessibleControlEvent;
 
 import org.eclipse.swt.accessibility.Accessible;
 
-import org.eclipse.swt.internal.SWTEventObject;
 import java.lang.all;
+import java.util.EventObject;
 
 /**
  * Instances of this class are sent as a result of
@@ -34,7 +34,7 @@ import java.lang.all;
  *
  * @since 2.0
  */
-public class AccessibleControlEvent : SWTEventObject {
+public class AccessibleControlEvent : EventObject {
     public int childID;         // IN/OUT
     public Accessible accessible;   // OUT
     public int x, y;                // IN/OUT
@@ -62,7 +62,7 @@ public this(Object source) {
  */
 override
 public String toString () {
-    return Format( "AccessibleControlEvent {{childID={} accessible={} x={} y={} width={} heigth={} detail={} result={}}",
+    return Format( "AccessibleControlEvent {{childID={} accessible={} x={} y={} width={} height={} detail={} result={}}",
         childID, accessible, x, y, width, height, detail, result);
 }
 }

@@ -13,8 +13,8 @@
 module org.eclipse.swt.accessibility.AccessibleTextAttributeEvent;
 
 import java.lang.all;
+import java.util.EventObject;
 
-import org.eclipse.swt.internal.SWTEventObject;
 
 import org.eclipse.swt.graphics.all;
 
@@ -32,7 +32,7 @@ import std.conv : to;
  *
  * @since 3.6
  */
-public class AccessibleTextAttributeEvent : SWTEventObject {
+public class AccessibleTextAttributeEvent : EventObject {
 
     /**
      * [in] the 0-based text offset for which to return attribute information
