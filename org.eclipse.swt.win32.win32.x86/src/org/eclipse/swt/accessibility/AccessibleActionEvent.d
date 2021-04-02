@@ -12,9 +12,8 @@
  *******************************************************************************/
 module org.eclipse.swt.accessibility.AccessibleActionEvent;
 
-import org.eclipse.swt.internal.SWTEventObject;
-
 import java.lang.all;
+import java.util.EventObject;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
@@ -25,7 +24,7 @@ import java.lang.all;
  *
  * @since 3.6
  */
-public class AccessibleActionEvent : SWTEventObject {
+public class AccessibleActionEvent : EventObject {
 
     /**
      * The value of this field must be set in the accessible action listener method
