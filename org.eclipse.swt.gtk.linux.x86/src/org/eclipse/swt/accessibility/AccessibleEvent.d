@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,8 @@
 module org.eclipse.swt.accessibility.AccessibleEvent;
 
 
-import org.eclipse.swt.internal.SWTEventObject;
 import java.lang.all;
+import java.util.EventObject;
 
 /**
  * Instances of this class are sent as a result of
@@ -31,7 +31,7 @@ import java.lang.all;
  *
  * @since 2.0
  */
-public class AccessibleEvent : SWTEventObject {
+public class AccessibleEvent : EventObject {
     /**
      * The value of this field is set by an accessibility client
      * before the accessible listener method is called.
