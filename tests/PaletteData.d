@@ -27,17 +27,18 @@ import org.eclipse.swt.graphics.RGB;
 @("test_Constructor$Lorg_eclipse_swt_graphics_RGB")
 unittest
 {
+    /* SWT extension: allow null and zero length arrays
     try {
         new PaletteData(cast(RGB[])null);
         assert(false, "No exception thrown for rgb is null");
     } catch (IllegalArgumentException e) {
     }
+    */
 
-    // D treats zero length arrays as null.
-    // PaletteData data = new PaletteData(new RGB[] {});
-    // assert(false == data.isDirect, ":a:");
+    PaletteData data = new PaletteData([]);
+    assert(false == data.isDirect, ":a:");
 
-    PaletteData data = new PaletteData([null, null]);
+    data = new PaletteData([null, null]);
     assert(false == data.isDirect, ":b:");
 
     data = new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));

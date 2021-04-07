@@ -112,7 +112,8 @@ public final class PaletteData {
  * </ul>
  */
 public this(RGB[] colors ...) {
-    if (colors is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+    // SWT extension: allow for null and zero length arrays
+    // if (colors is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     this.colors = colors;
     this.isDirect = false;
 }
