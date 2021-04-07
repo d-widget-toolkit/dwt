@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,8 @@
  *     Frank Benoit <benoit@tionex.de>
  *******************************************************************************/
 module org.eclipse.swt.graphics.PaletteData;
+
+import java.lang.all;
 
 
 import org.eclipse.swt.SWT;
@@ -109,7 +111,7 @@ public final class PaletteData {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  */
-public this(RGB[] colors) {
+public this(RGB[] colors ...) {
     if (colors is null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     this.colors = colors;
     this.isDirect = false;
@@ -153,7 +155,7 @@ public int getPixel(RGB rgb) {
         return pixel;
     } else {
         for (int i = 0; i < colors.length; i++) {
-            if (colors[i].opEquals(rgb)) return i;
+            if (colors[i].opEquals(rgb) ) return i;
         }
         /* The RGB did not exist in the palette */
         SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -207,7 +209,7 @@ public RGB[] getRGBs() {
  *
  * @see PaletteData
  */
-int shiftForMask(int mask) {
+package int shiftForMask(int mask) {
     for (int i = 31; i >= 0; i--) {
         if (((mask >> i) & 0x1) !is 0) return 7 - i;
     }
