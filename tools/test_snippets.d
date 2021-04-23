@@ -45,6 +45,7 @@ version (linux)
     immutable skipList = commonSkipList ~ windowsOnly;
     immutable compilerArgs = [
         "-Iorg.eclipse.swt.gtk.linux.x86/src",
+        `-I"org.eclipse.swt/Eclipse SWT/common"`,
         "-Jorg.eclipse.swt.gtk.linux.x86/res"
     ];
 }
@@ -53,6 +54,7 @@ else version (Windows)
     immutable skipList = commonSkipList;
     immutable compilerArgs = [
         "-Iorg.eclipse.swt.win32.win32.x86/src",
+        `-I"org.eclipse.swt/Eclipse SWT/common"`,
         "-Jorg.eclipse.swt.win32.win32.x86/res"
     ];
 }
