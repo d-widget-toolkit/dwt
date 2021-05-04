@@ -147,6 +147,7 @@ public class CTabFolder : Composite {
     int fixedTabHeight = SWT.DEFAULT;
     int tabHeight;
     int minChars = 20;
+    bool borderVisible = false;
 
     /* item management */
     CTabItem[] items;
@@ -337,6 +338,7 @@ public this(Composite parent, int style) {
 //  showMin = (style2 & SWT.MIN) !is 0; - conflicts with SWT.TOP
 //  showMax = (style2 & SWT.MAX) !is 0; - conflicts with SWT.BOTTOM
     single = (style2 & SWT.SINGLE) !is 0;
+    borderVisible = (style & SWT.BORDER) !is 0;
     borderLeft = borderRight = (style & SWT.BORDER) !is 0 ? 1 : 0;
     borderTop = onBottom ? borderLeft : 0;
     borderBottom = onBottom ? 0 : borderLeft;
