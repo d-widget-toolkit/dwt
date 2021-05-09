@@ -922,8 +922,6 @@ protected override void create (DeviceData data) {
 
 private static extern(C) int XErrorHandler( void*, XErrorEvent* ){
     getDwtLogger().error ( __FILE__, __LINE__, "*** XError" );
-    byte* p;
-    *p = 3;
     return 0;
 }
 
@@ -4287,4 +4285,3 @@ package struct CallbackData {
     Display display;
     void* data;
 }
-
