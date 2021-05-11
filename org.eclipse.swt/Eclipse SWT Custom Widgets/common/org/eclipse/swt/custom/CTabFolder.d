@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     IBM Corporation - initial API and implementation
  * Port to the D programming language:
  *     Frank Benoit <benoit@tionex.de>
+ *     alice <stigma@disroot.org>
  *******************************************************************************/
 module org.eclipse.swt.custom.CTabFolder;
 
@@ -40,12 +41,15 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TypedListener;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.CTabFolder2Listener;
 import org.eclipse.swt.custom.CTabFolderListener;
 import org.eclipse.swt.custom.CTabFolderLayout;
 import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabFolderRenderer;
 
 import java.lang.all;
 import java.nonstandard.UnsafeUtf;
@@ -81,9 +85,11 @@ import java.nonstandard.UnsafeUtf;
  * @see <a href="http://www.eclipse.org/swt/snippets/#ctabfolder">CTabFolder, CTabItem snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 
 public class CTabFolder : Composite {
+package(org.eclipse.swt.custom):
 
     /**
      * marginWidth specifies the number of pixels of horizontal margin
@@ -109,6 +115,7 @@ public class CTabFolder : Composite {
      *
      * @deprecated This field is no longer used.  See setMinimumCharacters(int)
      */
+    deprecated("This field is no longer used.  See setMinimumCharacters(int)")
     public int MIN_TAB_WIDTH = 4;
 
     /**
@@ -119,6 +126,7 @@ public class CTabFolder : Composite {
      *
      * @deprecated drop shadow border is no longer drawn in 3.0
      */
+    deprecated("drop shadow border is no longer drawn in 3.0")
     public static RGB borderInsideRGB;
     /**
      * Color of middle line of drop shadow border.
@@ -128,6 +136,7 @@ public class CTabFolder : Composite {
      *
      * @deprecated drop shadow border is no longer drawn in 3.0
      */
+    deprecated("drop shadow border is no longer drawn in 3.0")
     public static RGB borderMiddleRGB;
     /**
      * Color of outermost line of drop shadow border.
@@ -137,10 +146,10 @@ public class CTabFolder : Composite {
      *
      * @deprecated drop shadow border is no longer drawn in 3.0
      */
+    deprecated("drop shadow border is no longer drawn in 3.0")
     public static RGB borderOutsideRGB;
 
     /* sizing, positioning */
-    int xClient, yClient;
     bool onBottom = false;
     bool single = false;
     bool simple = true;
@@ -150,12 +159,58 @@ public class CTabFolder : Composite {
     bool borderVisible = false;
 
     /* item management */
+    CTabFolderRenderer renderer;
     CTabItem[] items;
-    int firstIndex = -1; // index of the left most visible tab.
+    /** index of the left msot visible tab */
+    int firstIndex = -1;
     int selectedIndex = -1;
+
+	/**
+	 * Indices of the elements in the {@link #items} array, used to manage tab
+	 * visibility and candidates to be hidden/shown next.
+	 * <p>
+	 * If there is not enough place for all tabs, tabs starting from the end of
+	 * the {@link #priority} array will be hidden first (independently from the
+	 * {@link #mru} flag!) => the right most elements have the highest priority
+	 * to be hidden.
+	 * <p>
+	 * If there is more place to show previously hidden tabs, tabs starting from
+	 * the beginning of the {@link #priority} array will be made visible first
+	 * (independently from the {@link #mru} flag!) => the left most elements
+	 * have the highest priority to be shown.
+	 * <p>
+	 * The update strategy of the {@link #priority} array however depends on the
+	 * {@link #mru} flag.
+	 * <p>
+	 * If {@link #mru} flag is set, the first index is always the index of the
+	 * currently selected tab, next one is the tab selected before current
+	 * etc...
+	 * <p>
+	 * Example: [4,2,5,1,3,0], just representing the last selection order.
+	 * <p>
+	 * If {@link #mru} flag is not set, the first index is always the index of
+	 * the left most visible tab ({@link #firstIndex} field), next indices are
+	 * incremented by one up to <code>priority.length-1</code>, and the rest
+	 * filled with indices starting with <code>firstIndex-1</code> and
+	 * decremented by one until 0 index is reached.
+	 * <p>
+	 * The tabs between first index and the index of the currently selected tab
+	 * are always visible.
+	 * <p>
+	 * Example: 6 tabs, 2 and 3 are indices of currently shown tabs:
+	 * [2,3,4,5,1,0]. The array consists of two blocks: sorted ascending from
+	 * first visible (2) to last available (5), and the rest sorted descending
+	 * (1,0). 4 and 5 are the hidden tabs on the right side, 0 and 1 are the
+	 * hidden tabs on the left side from the visible tabs 2 and 3.
+	 *
+	 * @see #updateItems(int)
+	 * @see #setItemLocation(GC)
+	 */
     int[] priority;
     bool mru = false;
     Listener listener;
+    bool ignoreTraverse;
+    bool useDefaultRenderer;
 
     /* External Listener management */
     CTabFolder2Listener[] folderListeners;
@@ -168,64 +223,55 @@ public class CTabFolder : Composite {
     int[] selectionGradientPercents;
     bool selectionGradientVertical;
     Color selectionForeground;
-    Color selectionBackground;  //selection fade end
-    Color selectionFadeStart;
-
-    Color selectionHighlightGradientBegin = null;  //null is no highlight
-    //Although we are given new colours all the time to show different states (active, etc),
-    //some of which may have a highlight and some not, we'd like to retain the highlight colours
-    //as a cache so that we can reuse them if we're again told to show the highlight.
-    //We are relying on the fact that only one tab state usually gets a highlight, so only
-    //a single cache is required. If that happens to not be true, cache simply becomes less effective,
-    //but we don't leak colours.
-    Color[] selectionHighlightGradientColorsCache = null;  //null is a legal value, check on access
+    Color selectionBackground;
 
     /* Unselected item appearance */
-    Image bgImage;
     Color[] gradientColors;
     int[] gradientPercents;
     bool gradientVertical;
     bool showUnselectedImage = true;
 
-    static Color borderColor;
-
     // close, min/max and chevron buttons
     bool showClose = false;
     bool showUnselectedClose = true;
 
-    Rectangle chevronRect;
-    int chevronImageState = NORMAL;
+    bool showMin = false;
+    bool minimized = false;
+    bool showMax = false;
+    bool maximized = false;
+    ToolBar minMaxTb;
+    ToolItem maxItem;
+    ToolItem minItem;
+    Image maxImage;
+    Image minImage;
+    bool hoverTb;
+    Rectangle hoverRect = new Rectangle(0,0,0,0);
+    bool hovering;
+    bool hoverTimerRunning;
+    bool highlight;
+    bool highlightEnabled = true;
+
     bool showChevron = false;
     Menu showMenu;
+    ToolBar chevronTb;
+    ToolItem chevronItem;
+    int chevronCount;
+    bool chevronVisible = true;
 
-    bool showMin = false;
-    Rectangle minRect;
-    bool minimized = false;
-    int minImageState = NORMAL;
-
-    bool showMax = false;
-    Rectangle maxRect;
-    bool maximized = false;
-    int maxImageState = NORMAL;
-
+    Image chevronImage;
     Control topRight;
-    Rectangle topRightRect;
     int topRightAlignment = SWT.RIGHT;
+    bool ignoreResize;
+    Control[] controls;
+    int[] controlAlignments;
+    Rectangle[] controlRects;
+    Image[] controlBkImages;
 
-    // borders and shapes
-    int borderLeft = 0;
-    int borderRight = 0;
-    int borderTop = 0;
-    int borderBottom = 0;
-
-    int highlight_margin = 0;
-    int highlight_header = 0;
-
-    int[] curve;
-    int[] topCurveHighlightStart;
-    int[] topCurveHighlightEnd;
-    int curveWidth = 0;
-    int curveIndent = 0;
+    int updateFlags;
+    const static int REDRAW = 1 << 1;
+    const static int REDRAW_TABS = 1 << 2;
+    const static int UPDATE_TAB_HEIGHT = 1 << 3;
+    Runnable updateRun;
 
     // when disposing CTabFolder, don't try to layout the items or
     // change the selection as each child is destroyed.
@@ -239,58 +285,20 @@ public class CTabFolder : Composite {
     // internal constants
     static const int DEFAULT_WIDTH = 64;
     static const int DEFAULT_HEIGHT = 64;
-    static const int BUTTON_SIZE = 18;
-
-    static const int[] TOP_LEFT_CORNER = [0,6, 1,5, 1,4, 4,1, 5,1, 6,0];
-
-    //TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
-    //so can fade in same direction as right swoop curve
-    static const int[] TOP_LEFT_CORNER_HILITE = [5,2, 4,2, 3,3, 2,4, 2,5, 1,6];
-
-    static const int[] TOP_RIGHT_CORNER = [-6,0, -5,1, -4,1, -1,4, -1,5, 0,6];
-    static const int[] BOTTOM_LEFT_CORNER = [0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0];
-    static const int[] BOTTOM_RIGHT_CORNER = [-6,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-6];
-
-    static const int[] SIMPLE_TOP_LEFT_CORNER = [0,2, 1,1, 2,0];
-    static const int[] SIMPLE_TOP_RIGHT_CORNER = [-2,0, -1,1, 0,2];
-    static const int[] SIMPLE_BOTTOM_LEFT_CORNER = [0,-2, 1,-1, 2,0];
-    static const int[] SIMPLE_BOTTOM_RIGHT_CORNER = [-2,0, -1,-1, 0,-2];
-    static const int[] SIMPLE_UNSELECTED_INNER_CORNER = [0,0];
-
-    static const int[] TOP_LEFT_CORNER_BORDERLESS = [0,6, 1,5, 1,4, 4,1, 5,1, 6,0];
-    static const int[] TOP_RIGHT_CORNER_BORDERLESS = [-7,0, -6,1, -5,1, -2,4, -2,5, -1,6];
-    static const int[] BOTTOM_LEFT_CORNER_BORDERLESS = [0,-6, 1,-6, 1,-5, 2,-4, 4,-2, 5,-1, 6,-1, 6,0];
-    static const int[] BOTTOM_RIGHT_CORNER_BORDERLESS = [-7,0, -7,-1, -6,-1, -5,-2, -3,-4, -2,-5, -2,-6, -1,-6];
-
-    static const int[] SIMPLE_TOP_LEFT_CORNER_BORDERLESS = [0,2, 1,1, 2,0];
-    static const int[] SIMPLE_TOP_RIGHT_CORNER_BORDERLESS= [-3,0, -2,1, -1,2];
-    static const int[] SIMPLE_BOTTOM_LEFT_CORNER_BORDERLESS = [0,-3, 1,-2, 2,-1, 3,0];
-    static const int[] SIMPLE_BOTTOM_RIGHT_CORNER_BORDERLESS = [-4,0, -3,-1, -2,-2, -1,-3];
 
     static const int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
     static const int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
-    static const int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
+
     static const int FOREGROUND = SWT.COLOR_WIDGET_FOREGROUND;
     static const int BACKGROUND = SWT.COLOR_WIDGET_BACKGROUND;
-    static const int BUTTON_BORDER = SWT.COLOR_WIDGET_DARK_SHADOW;
-    static const int BUTTON_FILL = SWT.COLOR_LIST_BACKGROUND;
 
-    static const int NONE = 0;
-    static const int NORMAL = 1;
-    static const int HOT = 2;
-    static const int SELECTED = 3;
-    static const RGB CLOSE_FILL;
-
-    static const int CHEVRON_CHILD_ID = 0;
-    static const int MINIMIZE_CHILD_ID = 1;
-    static const int MAXIMIZE_CHILD_ID = 2;
-    static const int EXTRA_CHILD_ID_COUNT = 3;
+    //TODO: add setter for spacing?
+    static const int SPACING = 3;
 
 static this(){
     borderInsideRGB  = new RGB (132, 130, 132);
     borderMiddleRGB  = new RGB (143, 141, 138);
     borderOutsideRGB = new RGB (171, 168, 165);
-    CLOSE_FILL = new RGB(252, 160, 160);
 }
 
 /**
