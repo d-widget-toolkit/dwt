@@ -920,26 +920,19 @@ protected override void create (DeviceData data) {
     if (Default is null) Default = this;
 }
 
-private static extern(C) int XErrorHandler( void*, XErrorEvent* ){
-    getDwtLogger().error ( __FILE__, __LINE__, "*** XError" );
-    return 0;
-}
-
 void createDisplay (DeviceData data) {
     /* Required for g_main_context_wakeup */
     if (!OS.g_thread_supported ()) {
         OS.g_thread_init (null);
     }
     OS.gtk_set_locale();
-    int cnt = 2;
-    auto args = [ "name".ptr, "--sync".ptr, "".ptr ];
-    auto a = args.ptr;
-    if (!OS.gtk_init_check (&cnt, &a )) {
+    // DWT: Needed to pass int* to gtk_init_check
+    int argc = 0;
+    if (!OS.gtk_init_check (&argc, null)) {
+        SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
     }
-    assert( cnt is 1 );
     if (OS.GDK_WINDOWING_X11 ()) xDisplay = cast(void*) OS.GDK_DISPLAY ();
 
-    OS.XSetErrorHandler( &Display.XErrorHandler );
     char* ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
     if (ptr !is null) {
         char [] buffer = fromStringz(ptr);
