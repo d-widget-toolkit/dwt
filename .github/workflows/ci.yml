@@ -26,6 +26,7 @@ jobs:
           - dmd-2.085.1
           - dmd-2.090.1
         arch: [x86_64]
+        buildType: [unittest]
         include:
           - os: windows-2019
             dc: dmd-latest
@@ -33,6 +34,14 @@ jobs:
           - os: windows-2019
             dc: ldc-latest
             arch: x86
+          - os: ubuntu-20.04
+            dc: dmd-latest
+            arch: x86_64
+            buildType: optimized-unittests
+          - os: ubuntu-20.04
+            dc: ldc-latest
+            arch: x86_64
+            buildType: optimized-unittests
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Repository
@@ -62,9 +71,9 @@ jobs:
             libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxrandr-dev \
             libxrender-dev libxtst-dev
 
-      - name: Test DWT Gtk
+      - name: Test DWT Gtk (${{ matrix.buildType }})
         if: ${{ matrix.os == 'ubuntu-20.04' }}
         uses: GabrielBB/xvfb-action@v1 # X virtual framebuffer
         with:
           working-directory: ./
-          run: dub test -c unittest-gtk
+          run: dub test -c unittest-gtk -b ${{ matrix.buildType }}
