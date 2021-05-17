@@ -54,6 +54,10 @@ bool shouldBuildSnippet(string path)
 Snippet build(string path)
 {
     auto command = ["dub", "build", "--single"] ~ options.extraArgs ~ path;
+  
+    version (Windows)
+        command ~= "--arch=x86";
+    
     immutable exitCode = spawnProcess(command).wait();
 
     if (options.failFast)
