@@ -67,7 +67,11 @@ configuration "windows-win32" {
   dependency ":base" version="*"
 }
 
-# Test configurations
+# unittest settings
+buildType "optimized-unittests" {
+  buildOptions "optimize" "unittests"
+}
+
 configuration "unittest-gtk" {
   platforms "linux"
 
