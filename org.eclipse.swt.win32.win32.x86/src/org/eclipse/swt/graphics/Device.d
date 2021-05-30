@@ -951,6 +951,12 @@ public void setWarnings (bool warnings) {
     checkDevice ();
 }
 
+// DWT Custom
+
+// D doesn't support "default" in interfaces
+// originally in org.eclipse.swt.graphics.Drawable
+public bool isAutoScalable () {
+    return true;
 }
 
-
+}

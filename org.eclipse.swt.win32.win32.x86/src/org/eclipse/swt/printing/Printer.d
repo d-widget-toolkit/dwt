@@ -284,6 +284,14 @@ public void internal_dispose_GC(HDC hDC, GCData data) {
 }
 
 /**
+ * @noreference This method is not intended to be referenced by clients.
+ */
+override
+public bool isAutoScalable() {
+    return false;
+}
+
+/**
  * Starts a print job and returns true if the job started successfully
  * and false otherwise.
  * <p>

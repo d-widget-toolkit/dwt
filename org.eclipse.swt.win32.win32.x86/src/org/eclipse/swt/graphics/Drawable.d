@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2016 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.win32.WINTYPES;
  * their associated GC. SWT images, and device objects such as the Display
  * device and the Printer device, are drawables.
  * <p>
- * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT
+ * <b>IMPORTANT:</b> This interface is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
  * within the packages provided by SWT. It should never be
  * referenced from application code.
@@ -46,6 +46,8 @@ public interface Drawable {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
+ *
+ * @noreference This method is not intended to be referenced by clients.
  */
 
 public HDC internal_new_GC (GCData data);
@@ -62,7 +64,21 @@ public HDC internal_new_GC (GCData data);
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data
+ *
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC ( HDC handle, GCData data);
+
+/**
+ * Returns <code>true</code> iff coordinates can be auto-scaled on this
+ * drawable and <code>false</code> if not. E.g. a {@link GC} method should not
+ * auto-scale the bounds of a figure drawn on a Printer device, but it may have
+ * to auto-scale when drawing on a high-DPI Display monitor.
+ *
+ * @return <code>true</code> if auto-scaling is enabled for this drawable
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public bool isAutoScalable ();
 
 }

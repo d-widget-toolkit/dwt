@@ -2156,4 +2156,12 @@ public static Image win32_new(Device device, int type, HGDIOBJ handle) {
     return image;
 }
 
+// DWT Custom
+
+// D doesn't support "default" in interfaces
+// originally in org.eclipse.swt.graphics.Drawable
+public bool isAutoScalable () {
+    return true;
+}
+
 }

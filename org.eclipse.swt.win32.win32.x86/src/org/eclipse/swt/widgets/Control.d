@@ -77,7 +77,7 @@ version(Tango){
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
- * 
+ *
  * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -4771,6 +4771,14 @@ LRESULT wmNotifyChild (NMHDR* hdr, WPARAM wParam, LPARAM lParam) {
 
 LRESULT wmScrollChild (WPARAM wParam, LPARAM lParam) {
     return null;
+}
+
+// DWT Custom
+
+// D doesn't support "default" in interfaces
+// originally in org.eclipse.swt.graphics.Drawable
+public bool isAutoScalable () {
+    return true;
 }
 
 }
