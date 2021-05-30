@@ -55,6 +55,8 @@ import org.eclipse.swt.all;
 import org.eclipse.swt.layout.all;
 import org.eclipse.swt.widgets.all;
 
+import java.lang.String;
+
 void main(string[] args) {
     Display display = new Display();
     Shell shell = new Shell(display);
