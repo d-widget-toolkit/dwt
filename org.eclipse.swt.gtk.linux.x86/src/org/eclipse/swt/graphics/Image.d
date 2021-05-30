@@ -1186,5 +1186,12 @@ public override String toString () {
     return Format( "Image {{{}}", pixmap);
 }
 
+// DWT Custom
+
+// D doesn't support "default" in interfaces
+// originally in org.eclipse.swt.graphics.Drawable
+public bool isAutoScalable () {
+    return true;
 }
 
+}

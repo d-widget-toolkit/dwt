@@ -437,6 +437,14 @@ public override void internal_dispose_GC(GdkGC* gdkGC, GCData data) {
 }
 
 /**
+ * @noreference This method is not intended to be referenced by clients.
+ */
+override
+public bool isAutoScalable() {
+    return false;
+}
+
+/**
  * Releases any internal state prior to destroying this printer.
  * This method is called internally by the dispose
  * mechanism of the <code>Device</code> class.

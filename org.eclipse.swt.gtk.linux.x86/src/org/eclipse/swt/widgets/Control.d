@@ -4532,4 +4532,13 @@ override int windowProc (GtkWidget* handle, ptrdiff_t arg0, ptrdiff_t user_data)
     }
     return super.windowProc (handle, arg0, user_data);
 }
+
+// DWT Custom
+
+// D doesn't support "default" in interfaces
+// originally in org.eclipse.swt.graphics.Drawable
+public bool isAutoScalable () {
+    return true;
+}
+
 }
