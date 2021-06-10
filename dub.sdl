@@ -18,11 +18,9 @@ subPackage {
 configuration "linux-gtk" {
   platforms "linux"
   sourcePaths "org.eclipse.swt.gtk.linux.x86/src" \
-    "org.eclipse.swt/Eclipse SWT/common" \
-    "org.eclipse.swt/Eclipse SWT Custom Widgets/common"
+    "org.eclipse.swt/Eclipse SWT/common"
   importPaths "org.eclipse.swt.gtk.linux.x86/src" \
-    "org.eclipse.swt/Eclipse SWT/common" \
-    "org.eclipse.swt/Eclipse SWT Custom Widgets/common"
+    "org.eclipse.swt/Eclipse SWT/common"
   stringImportPaths "org.eclipse.swt.gtk.linux.x86/res"
 
   excludedSourceFiles \
@@ -35,11 +33,9 @@ configuration "linux-gtk" {
 configuration "windows-win32" {
   platforms "windows"
   sourcePaths "org.eclipse.swt.win32.win32.x86/src" \
-    "org.eclipse.swt/Eclipse SWT/common" \
-    "org.eclipse.swt/Eclipse SWT Custom Widgets/common"
+    "org.eclipse.swt/Eclipse SWT/common"
   importPaths "org.eclipse.swt.win32.win32.x86/src" \
-    "org.eclipse.swt/Eclipse SWT/common" \
-    "org.eclipse.swt/Eclipse SWT Custom Widgets/common"
+    "org.eclipse.swt/Eclipse SWT/common"
   stringImportPaths "org.eclipse.swt.win32.win32.x86/res"
 
   excludedSourceFiles \
@@ -78,14 +74,12 @@ configuration "unittest-gtk" {
   sourcePaths \
     "tests/" \
     "org.eclipse.swt.gtk.linux.x86/src" \
-    "org.eclipse.swt/Eclipse SWT/common" \
-    "org.eclipse.swt/Eclipse SWT Custom Widgets/common"
+    "org.eclipse.swt/Eclipse SWT/common"
 
   importPaths \
     "tests/" \
     "org.eclipse.swt.gtk.linux.x86/src" \
-    "org.eclipse.swt/Eclipse SWT/common" \
-    "org.eclipse.swt/Eclipse SWT Custom Widgets/common"
+    "org.eclipse.swt/Eclipse SWT/common"
 
   stringImportPaths "org.eclipse.swt.gtk.linux.x86/res"
 
