@@ -196,8 +196,7 @@ package(org.eclipse.swt.custom):
      *
      * @see Widget#getStyle
      */
-    // DWT: Needs to be public since it can't be accessed in other classes if protected
-    public this(CTabFolder parent) {
+    protected this(CTabFolder parent) {
         if (parent is null) return;
         if (parent.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         this.parent = parent;
@@ -269,8 +268,7 @@ package(org.eclipse.swt.custom):
      *
      * @since 3.6
      */
-    // DWT: Needs to be public since it can't be accessed in other classes if protected
-    public Point computeSize (int part, int state, GC gc, int wHint, int hHint) {
+    protected Point computeSize (int part, int state, GC gc, int wHint, int hHint) {
         int width = 0, height = 0;
         switch (part) {
             case PART_HEADER:
@@ -383,8 +381,7 @@ package(org.eclipse.swt.custom):
      *
      * @since 3.6
      */
-    // DWT: Needs to be public since it can't be accessed in other classes if protected
-    public Rectangle computeTrim (int part, int state, int x, int y, int width, int height) {
+    protected Rectangle computeTrim (int part, int state, int x, int y, int width, int height) {
         int borderLeft = parent.borderVisible ? 1 : 0;
         int borderRight = borderLeft;
         int borderTop = parent.onBottom ? borderLeft : 0;

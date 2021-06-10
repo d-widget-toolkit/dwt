@@ -71,10 +71,18 @@ public class CTabItem : Item {
     Image disabledImage;
 
     Rectangle closeRect;
-    int closeImageState = SWT.BACKGROUND;
-    int state = SWT.NONE;
+    int closeImageState = CTabFolder.NONE;
     bool showClose = false;
     bool showing = false;
+
+    // internal constants
+    static const int TOP_MARGIN = 2;
+    static const int BOTTOM_MARGIN = 2;
+    static const int LEFT_MARGIN = 4;
+    static const int RIGHT_MARGIN = 4;
+    static const int INTERNAL_SPACING = 4;
+    static const int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
+    static const String ELLIPSIS = "..."; //$NON-NLS-1$ // could use the ellipsis glyph on some platforms "\u2026"
 
 /**
  * Constructs a new instance of this class given its parent
@@ -150,7 +158,7 @@ public this (CTabFolder parent, int style, int index) {
 bool useEllipses() {
     return parent.simple;
 }
-/+
+
 String shortenText(GC gc, String text, int width) {
     return useEllipses()
         ? shortenText(gc, text, width, ELLIPSIS)
@@ -174,7 +182,7 @@ String shortenText(GC gc, String text, int width, String ellipses) {
     }
     layout.dispose();
     return end is 0 ? .toString(toString32(text)[0 .. 1]) : text ~ ellipses;
-}+/
+}
 
 public override void dispose() {
     if (isDisposed ()) return;
@@ -187,7 +195,6 @@ public override void dispose() {
     shortenedText = null;
     font = null;
 }
-/+
 void drawClose(GC gc) {
     if (closeRect.width is 0 || closeRect.height is 0) return;
     Display display = getDisplay();
@@ -693,8 +700,7 @@ void drawUnselected(GC gc) {
     }
     // draw close
     if (parent.showUnselectedClose && (parent.showClose || showClose)) drawClose(gc);
-}+/
-
+}
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -708,9 +714,9 @@ void drawUnselected(GC gc) {
  */
 public Rectangle getBounds () {
     //checkWidget();
-    // DWT: Port CTabFolder.runUpdate
-    // parent.runUpdate();
-    return new Rectangle(x, y, width, height);
+    int w = width;
+    if (!parent.simple && !parent.single && parent.indexOf(this) is parent.selectedIndex) w += parent.curveWidth - parent.curveIndent;
+    return new Rectangle(x, y, w, height);
 }
 /**
 * Gets the control that is displayed in the content area of the tab item.
@@ -826,7 +832,6 @@ public bool isShowing () {
     checkWidget();
     return showing;
 }
-/+
 void onPaint(GC gc, bool isSelected) {
     if (width is 0 || height is 0) return;
     if (isSelected) {
@@ -864,7 +869,7 @@ int preferredWidth(GC gc, bool isSelected, bool minimum) {
         text = minChars is 0 ? null : getText();
         if (text !is null && toString32(text).length > minChars) {
             if (useEllipses()) {
-                int end = cast(int)/*64bit*/(minChars < ELLIPSIS.length + 1 ? minChars : minChars - ELLIPSIS.length);
+                int end = minChars < cast(int)/*64bit*/ELLIPSIS.length + 1 ? minChars : minChars - cast(int)/*64bit*/ELLIPSIS.length;
                 text = .toString(toString32(text)[ 0 .. end ]);
                 if (minChars > ELLIPSIS.length + 1) text ~= ELLIPSIS;
             } else {
@@ -893,7 +898,7 @@ int preferredWidth(GC gc, bool isSelected, bool minimum) {
         }
     }
     return w + LEFT_MARGIN + RIGHT_MARGIN;
-}+/
+}
 /**
  * Sets the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.
@@ -979,18 +984,49 @@ public void setFont (Font font){
         parent.redrawTabs();
     }
 }
-override
-public void setImage (Image image) {
+public override void setImage (Image image) {
     checkWidget();
     if (image !is null && image.isDisposed ()) {
         SWT.error(SWT.ERROR_INVALID_ARGUMENT);
     }
     Image oldImage = getImage();
     if (image is null && oldImage is null) return;
-    if (image !is null && image == oldImage) return;
+    if (image !is null && image==oldImage) return;
     super.setImage(image);
-    // DWT: Port CTabFolder.updateFolder
-    // parent.updateFolder(CTabFolder.UPDATE_TAB_HEIGHT | CTabFolder.REDRAW_TABS);
+    if (!parent.updateTabHeight(false)) {
+        // If image is the same size as before,
+        // redraw only the image
+        if (oldImage !is null && image !is null) {
+            Rectangle oldBounds = oldImage.getBounds();
+            Rectangle bounds = image.getBounds();
+            if (bounds.width is oldBounds.width && bounds.height is oldBounds.height) {
+                if (showing) {
+                    bool selected = parent.indexOf(this) is parent.selectedIndex;
+                    if (selected || parent.showUnselectedImage) {
+                        int imageX = x + LEFT_MARGIN, maxImageWidth;
+                        if (selected) {
+                            if (parent.single && (parent.showClose || showClose)) imageX += CTabFolder.BUTTON_SIZE;
+                            int rightEdge = Math.min (x + width, parent.getRightItemEdge());
+                            maxImageWidth = rightEdge - imageX - RIGHT_MARGIN;
+                            if (!parent.single && closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+                        } else {
+                            maxImageWidth = x + width - imageX - RIGHT_MARGIN;
+                            if (parent.showUnselectedClose && (parent.showClose || showClose)) {
+                                maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+                            }
+                        }
+                        if (bounds.width < maxImageWidth) {
+                            int imageY = y + (height - bounds.height) / 2 + (parent.onBottom ? -1 : 1);
+                            parent.redraw(imageX, imageY, bounds.width, bounds.height, false);
+                        }
+                    }
+                }
+                return;
+            }
+        }
+        parent.updateItems();
+        parent.redrawTabs();
+    }
 }
 /**
  * Sets to <code>true</code> to indicate that the receiver's close button should be shown.
