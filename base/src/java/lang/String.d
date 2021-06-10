@@ -20,8 +20,6 @@ version(Tango){
 alias TryImmutable!(char)[]  String;
 alias TryImmutable!(wchar)[] String16;
 
-alias toString = std.conv.to!string;
-
 String new_String( String cont, int offset, int len ){
     return _idup(cont[ offset .. offset+len ]);
 }
