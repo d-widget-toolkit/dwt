@@ -60,14 +60,6 @@ version(Tango){
  */
 public class SWT {
 
-    /**
-     * MenuDetect event detail value indicating that a context menu
-     * was requested by a keyboard or other focus-based device (value is 1).
-     *
-     * @since 3.8
-     */
-    public static const int MENU_KEYBOARD = 1;
-
     /* Widget Event Constants */
 
     /**
