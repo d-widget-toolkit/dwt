@@ -879,4 +879,12 @@ private static extern(C)  int XIOErrorProcFunc (void* xDisplay) {
     return 0;
 }
 
+// DWT Custom
+
+// D doesn't support "default" in interfaces
+// originally in org.eclipse.swt.graphics.Drawable
+public bool isAutoScalable () {
+    return true;
+}
+
 }
