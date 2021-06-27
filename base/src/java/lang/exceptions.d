@@ -5,6 +5,49 @@ import java.lang.String;
 
 public import core.exception : ArrayIndexOutOfBoundsException = RangeError;
 
+/**
+ * Thrown when an application tries to load in a class through its string
+ * name using:
+ *
+ * $(UL
+ *   $(LI The `forName` method in class `Class`)
+ *   $(LI The `findSystemClass` method in class `ClassLoader`)
+ *   $(LI The `loadClass` method in class `ClassLoader`)
+ * )
+ *
+ * but not definition for the class with the specified name could be found.
+ */
+class ClassNotFoundException : Exception {
+    /**
+     * Constructs a new `ClassNotFoundException` with no detail provided.
+     */
+    public this() {
+        super("null");
+    }
+
+    /**
+     * Constructs a new `ClassNotFoundException` with the provided detail.
+     *
+     * Params:
+     *   s = The detail message.
+     */
+    public this(String s) {
+        super(s);
+    }
+
+    /**
+     * Constructs a new `ClassNotFoundException` with the provided detail and
+     * optional exception that was raised while loading the class.
+     *
+     * Params:
+     *  s = The detail message.
+     *  ex = The exception that was raised while loading the class.
+     */
+    public this(String s, Exception ex) {
+        super(s, ex);
+    }
+}
+
 class PlatformException : Exception {
     this( String e = null ){
         super(e);
