@@ -19,7 +19,13 @@ public import org.eclipse.swt.graphics.ImageData;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.image.FileFormat;
+
+/*
+ * DWT: Don't change this to a selective import as it's required to make a call
+ * to Object.factory work correctly (needs to know that the module exists).
+ * See: https://github.com/d-widget-toolkit/dwt/pull/105
+ */
+import org.eclipse.swt.internal.image.all;
 
 import java.util.Vector;
 import java.lang.all;
