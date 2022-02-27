@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Control;
 
 import java.lang.all;
 
-import std.conv;
+import std.utf;
 
 /**
  * Instances of this class are selectable user interface
@@ -1485,7 +1485,7 @@ override bool sendKeyEvent (int type, int msg, WPARAM wParam, LPARAM lParam, Eve
             break;
         default:    /* Tab and other characters */
             if (key !is '\t' && key < 0x20) return true;
-            oldText = .to!string(key);
+            oldText = .toUTF8([key]);
             break;
     }
     String newText = verifyText (oldText, start, end, event);
