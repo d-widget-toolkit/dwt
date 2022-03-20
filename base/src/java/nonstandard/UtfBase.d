@@ -8,7 +8,7 @@
 module java.nonstandard.UtfBase;
 
 package const UtfBaseText = `
-# line 11 "java\nonstandard\UtfBase.d"
+# line 11 "java/nonstandard/UtfBase.d"
 import java.lang.util;
 
 version(Tango){
