@@ -21,10 +21,9 @@ Current supported platforms are Windows, using Win32 and Linux, using GTK.
           "fontconfig" \
           "gdk-x11-2.0" \
           "gdk_pixbuf-2.0" \
+          "gio-2.0" \
           "glib-2.0" \
           "gmodule-2.0" \
-          "gnomeui-2" \
-          "gnomevfs-2" \
           "gobject-2.0" \
           "gthread-2.0" \
           "gtk-x11-2.0" \
@@ -89,7 +88,6 @@ packages available in the system package manager.
 
 * libcairo2-dev
 * libglib2.0-dev
-* libgnomeui-dev
 * libgtk2.0-dev
 * libpango1.0-dev
 * libxcomposite-dev
