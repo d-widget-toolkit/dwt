@@ -14,6 +14,7 @@ Current supported platforms are Windows, using Win32 and Linux, using GTK.
     dub.sdl:
         name "main"
         dependency "dwt" version="~>1.0.0"
+        lflags "/subsystem:console:4" platform="x86_omf"
         libs \
           "atk-1.0" \
           "cairo" \
