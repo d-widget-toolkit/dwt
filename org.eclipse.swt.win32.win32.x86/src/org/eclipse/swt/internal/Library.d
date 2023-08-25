@@ -100,6 +100,17 @@ public static int buildJAVA_VERSION (int major, int minor, int micro) {
 public static int buildSWT_VERSION (int major, int minor) {
     return .buildSWT_VERSION(major, minor);
 }
+
+public static bool isLoadable () {
+    /*
+     * DWT: Return true until a reason presents itself otherwise.
+     *
+     * SWT will return true if it determines it's running in a development
+     * environment or if the currently executing OS and ARCH match the
+     * OS and ARCH of the .JAR file.
+     */
+    return true;
+}
 /+ PORTING_LEFT
 static bool extract (String fileName, String mappedName) {
     FileOutputStream os = null;
