@@ -628,7 +628,7 @@ private char* localeconv_decimal_point(){
 
 // fontconfig.h
 struct FcConfig{};
-private extern(C) int FcConfigAppFontAddFile (FcConfig *config, in char  *file);
+private extern(C) int FcConfigAppFontAddFile (FcConfig *config, const scope char *file);
 
 
 template NameOfFunc(alias f) {

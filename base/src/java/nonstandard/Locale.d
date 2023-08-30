@@ -81,29 +81,25 @@ version(Tango){
 }
 /// Get a omitted calture name. for example: "en-US"
 String caltureName() {
-    version(Tango){
-        return Culture.current.name;
-    } else { // Phobos
-        version (Windows) {
-            if (W_VERSION) {
-                return caltureNameImpl!(wchar, GetLocaleInfoW)();
-            } else {
-                return caltureNameImpl!(char, GetLocaleInfoA)();
-            }
-        } else version (Posix) {
-            // LC_ALL is override to settings of all category.
-            // This is undefined in almost case.
-            String res = .environment.get("LC_ALL", "");
-            if (!res || !res.length) {
-                // LANG is basic Locale setting.
-                // A settings of each category override this. 
-                res = .environment.get("LANG", "");
-            }
-            ptrdiff_t dot = .indexOf(res, '.');
-            if (dot != -1) res = res[0 .. dot];
-            return .replace(res, "_", "-");
+    version (Windows) {
+        if (W_VERSION) {
+            return caltureNameImpl!(wchar, GetLocaleInfoW)();
         } else {
-            static assert(0);
+            return caltureNameImpl!(char, GetLocaleInfoA)();
         }
+    } else version (Posix) {
+        // LC_ALL is override to settings of all category.
+        // This is undefined in almost case.
+        String res = .environment.get("LC_ALL", "");
+        if (!res || !res.length) {
+            // LANG is basic Locale setting.
+            // A settings of each category override this.
+            res = .environment.get("LANG", "en_US");
+        }
+        ptrdiff_t dot = .indexOf(res, '.');
+        if (dot != -1) res = res[0 .. dot];
+        return .replace(res, "_", "-");
+    } else {
+        static assert(0, "Unsupported platform (locale)");
     }
 }

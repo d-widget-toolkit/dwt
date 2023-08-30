@@ -291,7 +291,7 @@ out {
         segmentsText.validateUTF8index(run.UTF8start);
         segmentsText.validateUTF8index(run.UTF8start + run.UTF8length);
     }
-} body {
+} do {
     if (runs !is null) return;
     auto hDC = gc !is null ? gc.handle : device.internal_new_GC(null);
     auto srcHdc = OS.CreateCompatibleDC(hDC);
@@ -3146,7 +3146,7 @@ UTF8index getUTF8index(UTF16index i)
 out(res) {
     assert(res != segmentsText.preFirstIndex());
 }
-body {
+do {
     return index16to8[i];
 }
 
@@ -3154,7 +3154,7 @@ UTF16index getUTF16index(UTF8index i)
 out(res) {
     assert(res != -1);
 }
-body {
+do {
     return index8to16[i.internalValue];
 }
 
