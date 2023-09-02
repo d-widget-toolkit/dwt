@@ -5,22 +5,12 @@ module java.io.File;
 
 import java.lang.all;
 
-version(Tango){
-    static import tango.io.model.IFile;
-    static import tango.io.FilePath;
-    static import tango.io.Path;
-    static import tango.io.FileSystem;
-    static import tango.sys.Environment;
-    static import tango.sys.Common;
-    static import tango.stdc.stringz; //for toStringz
-    version(Posix) static import tango.stdc.posix.unistd; //for access
-} else { // Phobos
-    static import std.file;
-    static import std.path;
-    static import std.string; //for toStringz
-    version(Posix) static import core.sys.posix.unistd; //for access
-}
-// Implement this more efficient by using FilePath in Tango 
+
+static import std.file;
+static import std.path;
+static import std.string; //for toStringz
+version(Posix) static import core.sys.posix.unistd; //for access
+
 public class File {
 
     public static char separatorChar;
@@ -31,32 +21,17 @@ public class File {
     private String mFilePath;
 
     static this(){
-        version(Tango){
-            separator = tango.io.model.IFile.FileConst.PathSeparatorString;
-            separatorChar = tango.io.model.IFile.FileConst.PathSeparatorChar;
-            pathSeparator = tango.io.model.IFile.FileConst.SystemPathString;
-            pathSeparatorChar = tango.io.model.IFile.FileConst.SystemPathChar;
-        } else { // Phobos
-            separator = std.path.dirSeparator;
-            separatorChar = std.path.dirSeparator[0];
-            pathSeparator = std.path.pathSeparator;
-            pathSeparatorChar = std.path.pathSeparator[0];
-        }
+        separator = std.path.dirSeparator;
+        separatorChar = std.path.dirSeparator[0];
+        pathSeparator = std.path.pathSeparator;
+        pathSeparatorChar = std.path.pathSeparator[0];
     }
 
     private static String toStd( String path ){
-        version(Tango){
-            return tango.io.Path.standard( path.dup );
-        } else { // Phobos
-            return path;
-        }
+        return path;
     }
     private static String join( String path, String file ){
-        version(Tango){
-            return tango.io.Path.join( toStd(path), toStd(file) );
-        } else { // Phobos
-            return std.path.buildPath( toStd(path), toStd(file) );
-        }
+        return std.path.buildPath( toStd(path), toStd(file) );
     }
 
     public this ( String pathname ){
@@ -68,11 +43,7 @@ public class File {
     }
 
     public this ( java.io.File.File parent, String child ){
-        version(Tango){
-            mFilePath = tango.io.Path.join( parent.mFilePath, toStd(child) );
-        } else { // Phobos
-            mFilePath = std.path.buildPath( parent.mFilePath, toStd(child) );
-        }
+        mFilePath = std.path.buildPath( parent.mFilePath, toStd(child) );
     }
 
     public int getPrefixLength(){
@@ -106,11 +77,7 @@ public class File {
     }
 
     public String getAbsolutePath(){
-        version(Tango){
-            return (new tango.io.FilePath.FilePath(mFilePath)).absolute(tango.sys.Environment.Environment.cwd).toString;
-        } else { // Phobos
-            return std.path.absolutePath(mFilePath);
-        }
+        return std.path.absolutePath(mFilePath);
     }
 
     public java.io.File.File getAbsoluteFile(){
@@ -134,35 +101,19 @@ public class File {
 
     public bool canWrite(){
         version(Windows) { //Windows's ACL isn't supported
-            version(Tango) {
-                return tango.io.Path.isWritable(mFilePath);
-            } else { // Phobos
-                return !(std.file.getAttributes(mFilePath) & 1); //FILE_ATTRIBUTE_READONLY = 1
-            }
-        } else version(Posix) { //workaround Tango's bug (isWritable is always true)
-            version(Tango) {
-                return tango.stdc.posix.unistd.access (tango.stdc.stringz.toStringz(mFilePath), 2) is 0; //W_OK = 2
-            } else { // Phobos
-                return core.sys.posix.unistd.access (std.string.toStringz(mFilePath), 2) is 0; //W_OK = 2
-            }
+            return !(std.file.getAttributes(mFilePath) & 1); //FILE_ATTRIBUTE_READONLY = 1
+        } else version(Posix) {
+            return core.sys.posix.unistd.access (std.string.toStringz(mFilePath), 2) is 0; //W_OK = 2
         } else
             static assert(0);
     }
 
     public bool exists(){
-        version(Tango){
-            return tango.io.Path.exists(mFilePath);
-        } else { // Phobos
-            return std.file.exists(mFilePath);
-        }
+        return std.file.exists(mFilePath);
     }
 
     public bool isDirectory(){
-        version(Tango){
-            return tango.io.Path.isFolder(mFilePath);
-        } else { // Phobos
-            return std.file.isDir(mFilePath);
-        }
+        return std.file.isDir(mFilePath);
     }
 
     public bool isFile(){
