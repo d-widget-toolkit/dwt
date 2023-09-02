@@ -1,12 +1,7 @@
 module java.lang.Math;
 
-version(Tango){
-    static import tango.math.Math;
-    alias tango.math.Math MathLib;
-} else {
-    static import std.math;
-    alias std.math MathLib;
-}
+static import std.math;
+alias std.math MathLib;
 
 class Math {
 
@@ -27,10 +22,7 @@ class Math {
     static long   round(double a) { return cast(long)MathLib.round(a); }
     static int    round(float a)  { return cast(int)MathLib.round(a); }
     static int    round(int a)  { return a; }
-    static double rint(double a) {
-        version(Tango) return MathLib.rndint(a);
-        else           return MathLib.rint(a);
-    }
+    static double rint(double a) { return MathLib.rint(a); }
     static double ceil(double a) { return MathLib.ceil(a); }
     static double floor(double a) { return MathLib.floor(a); }
     static double sqrt(double a) { return MathLib.sqrt(a); }

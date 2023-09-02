@@ -6,34 +6,18 @@ import java.lang.Number;
 import java.lang.Class;
 import java.lang.String;
 
-version(Tango){
-    static import tango.text.convert.Integer;
-} else { // Phobos
-    static import std.conv;
-}
+static import std.conv;
+
 class Short : Number {
     public static const short MIN_VALUE = short.min;
     public static const short MAX_VALUE = short.max;
     private short value;
     public static short parseShort( String s ){
-        version(Tango){
-            try{
-                int res = tango.text.convert.Integer.parse( s );
-                if( res < short.min || res > short.max ){
-                    throw new NumberFormatException( "out of range" );
-                }
-                return res;
-            }
-            catch( IllegalArgumentException e ){
-                throw new NumberFormatException( e );
-            }
-        } else { // Phobos
-            try{
-                return std.conv.to!(short)(s);
-            }
-            catch( std.conv.ConvException e ){
-                throw new NumberFormatException( e );
-            }
+        try{
+            return std.conv.to!(short)(s);
+        }
+        catch( std.conv.ConvException e ){
+            throw new NumberFormatException( e );
         }
     }
     this( short value ){

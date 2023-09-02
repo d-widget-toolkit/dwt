@@ -7,17 +7,9 @@ import java.lang.util;
 import java.lang.exceptions;
 import java.io.PrintStream;
 
-version(Tango){
-    static import tango.sys.Environment;
-    static import tango.core.Exception;
-    static import tango.io.model.IFile;
-    static import tango.time.Clock;
-    static import tango.stdc.stdlib;
-} else { // Phobos
-    static import core.stdc.stdlib;
-    static import std.datetime;
-    static import std.path;
-}
+static import core.stdc.stdlib;
+static import std.datetime;
+static import std.path;
 
 template SimpleType(T) {
     debug{
@@ -136,13 +128,11 @@ class System {
     }
 
     static long currentTimeMillis(){
-        version(Tango) return tango.time.Clock.Clock.now().ticks() / 10000;
-        else           return std.datetime.Clock.currStdTime() / 10000;
+       return std.datetime.Clock.currStdTime() / 10000;
     }
 
     static void exit( int code ){
-        version(Tango) tango.stdc.stdlib.exit(code);
-        else           core.stdc.stdlib.exit(code);
+        core.stdc.stdlib.exit(code);
     }
     public static int identityHashCode(Object x){
         if( x is null ){
@@ -170,9 +160,7 @@ class System {
                 case "user.name": return "";
                 case "user.home": return "";
                 case "user.dir" : return "";
-                case "file.separator" : 
-                    version(Tango) return tango.io.model.IFile.FileConst.PathSeparatorString ;
-                    else           return std.path.dirSeparator;
+                case "file.separator" : return std.path.dirSeparator;
                 default: return null;
             }
         }

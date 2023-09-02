@@ -3,13 +3,8 @@
  */
 module java.lang.Runnable;
 
-version(Tango){
-    import tango.core.Tuple;
-    import tango.core.Traits;
-} else { // Phobos
-    static import std.traits;
-    static import std.typetuple;
-}
+static import std.traits;
+static import std.typetuple;
 
 public interface Runnable  {
 
@@ -19,15 +14,9 @@ public interface Runnable  {
 
 class _DgRunnableT(Dg,T...) : Runnable {
 
-    version(Tango){
-        alias ParameterTupleOf!(Dg) DgArgs;
-        static assert( is(DgArgs == Tuple!(T)),
-                "Delegate args not correct: "~DgArgs.stringof~" vs "~T.stringof );
-    } else { // Phobos
-        alias std.traits.ParameterTypeTuple!(Dg) DgArgs;
-        static assert( is(DgArgs == std.typetuple.TypeTuple!(T)),
-                "Delegate args not correct: "~DgArgs.stringof~" vs "~T.stringof );
-    }
+    alias std.traits.ParameterTypeTuple!(Dg) DgArgs;
+    static assert( is(DgArgs == std.typetuple.TypeTuple!(T)),
+            "Delegate args not correct: "~DgArgs.stringof~" vs "~T.stringof );
 
     Dg dg;
     T t;
