@@ -104,3 +104,43 @@ String caltureName() {
         return loc[0..len].dup;
     }
 }
+
+
+
+version (Posix)
+{
+    // Check that an empty LC_ALL and LANG still will default
+    // to en_US.
+    //
+    // See: https://github.com/d-widget-toolkit/dwt/pull/115
+    //      https://github.com/d-widget-toolkit/dwt/pull/117
+    unittest
+    {
+        import std.process : environment;
+        import java.lang.util : Format;
+
+        immutable lc_all = environment.get("LC_ALL", null);
+        immutable lang = environment.get("LANG", null);
+        immutable locale = caltureName();
+
+        scope(exit)
+        {
+            environment["LC_ALL"] = lc_all;
+            environment["LANG"] = lang;
+        }
+
+        environment.remove("LC_ALL");
+        environment.remove("LANG");
+
+        if (null !is lc_all) {
+            assert(
+                lc_all == locale,
+                Format("caltureName {} does not equal LC_ALL {}", locale, lc_all));
+        }
+
+        assert(
+            "en_US" == caltureName(),
+            Format("Failed to set default locale of en_US (got {})", locale));
+    }
+}
+
