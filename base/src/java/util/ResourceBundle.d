@@ -9,12 +9,8 @@ import java.lang.exceptions;
 import java.util.MissingResourceException;
 import java.util.Enumeration;
 import java.nonstandard.Locale;
-version(Tango){
-    //import tango.text.Util;
-    import tango.io.device.File;
-} else { // Phobos
-    static import std.file;
-}
+
+static import std.file;
 
 
 class ResourceBundle {
@@ -37,12 +33,14 @@ class ResourceBundle {
                 }
             }
         }
-        char[] end = "_" ~ name[0..2] ~ ".properties";
-        foreach( entry; data ){
-            if( entry.name.length > end.length && entry.name[ $-end.length .. $ ] == end ){
-                //Trace.formatln( "ResourceBundle {}", entry.name );
-                initialize( cast(String)entry.data );
-                return;
+        if (name.length >= 2) {
+            char[] end = "_" ~ name[0..2] ~ ".properties";
+            foreach(entry; data) {
+                if (entry.name.length > end.length && entry.name[$-end.length..$] == end) {
+                    //Trace.formatln( "ResourceBundle {}", entry.name ):
+                    initialize(cast(String)entry.data);
+                    return;
+                }
             }
         }
         //Trace.formatln( "ResourceBundle default" );
