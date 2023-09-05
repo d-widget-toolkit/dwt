@@ -7,13 +7,8 @@ import java.lang.Class;
 import java.lang.Character;
 import java.lang.String;
 
-version(Tango){
-    static import tango.text.convert.Integer;
-} else { // Phobos
-    static import std.conv;
-    static import std.string;
-}
-
+static import std.conv;
+static import std.string;
 
 class Integer : Number {
 
@@ -39,23 +34,7 @@ class Integer : Number {
     public static String toString( int i, int radix ){
         if(radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
             radix = 10;
-        version(Tango){
-            switch( radix ){
-                case 10:
-                    return tango.text.convert.Integer.toString(i);
-                case 16:
-                    return tango.text.convert.Integer.toString(i, "x" );
-                case 2:
-                    return tango.text.convert.Integer.toString(i, "b" );
-                case 8:
-                    return tango.text.convert.Integer.toString(i, "o" );
-                default:
-                    implMissingInTango( __FILE__, __LINE__ );
-                    return null;
-            }
-        } else { // Phobos
-            return std.conv.to!(String)(i, radix);
-        }
+        return std.conv.to!(String)(i, radix);
     }
 
     public static String toHexString( int i ){
@@ -77,23 +56,14 @@ class Integer : Number {
     public static int parseInt( String s, int radix ){
         if(radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
             throw new NumberFormatException("The radix is out of range");
-        version(Tango){
-            try{
-                return tango.text.convert.Integer.toInt( s, radix );
-            }
-            catch( IllegalArgumentException e ){
-                throw new NumberFormatException( e );
-            }
-        } else { // Phobos
-            try{
-                immutable res = std.conv.parse!(int)( s, radix );
-                if(s.length)
-                    throw new NumberFormatException("String has invalid characters: " ~ s);
-                return res;
-            }
-            catch( std.conv.ConvException e ){
-                throw new NumberFormatException( e );
-            }
+        try{
+            immutable res = std.conv.parse!(int)( s, radix );
+            if(s.length)
+                throw new NumberFormatException("String has invalid characters: " ~ s);
+            return res;
+        }
+        catch( std.conv.ConvException e ){
+            throw new NumberFormatException( e );
         }
     }
 

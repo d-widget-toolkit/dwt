@@ -6,11 +6,7 @@ import java.lang.Number;
 import java.lang.Class;
 import java.lang.String;
 
-version(Tango){
-    static import tango.text.convert.Float;
-} else { // Phobos
-    static import std.conv;
-}
+static import std.conv;
 
 class Double : Number {
     public static double POSITIVE_INFINITY = double.infinity;
@@ -30,20 +26,11 @@ class Double : Number {
         return String_valueOf(value);
     }
     public static double parseDouble(String s){
-        version(Tango){
-            try{
-                return tango.text.convert.Float.toFloat( s );
-            }
-            catch( IllegalArgumentException e ){
-                throw new NumberFormatException( e );
-            }
-        } else { // Phobos
-            try{
-                return std.conv.to!(double)(s);
-            }
-            catch( std.conv.ConvException e ){
-                throw new NumberFormatException( e );
-            }
+        try{
+            return std.conv.to!(double)(s);
+        }
+        catch( std.conv.ConvException e ){
+            throw new NumberFormatException( e );
         }
     }
 

@@ -4,11 +4,8 @@ import java.lang.util;
 import java.lang.System;
 import java.lang.Class;
 
-version(Tango){
-    static import tango.text.Ascii;
-} else { // Phobos
-    static import std.string;
-}
+static import std.string;
+
 class Boolean : ValueWrapperT!(bool) {
     public static Boolean TRUE;
     public static Boolean FALSE;
@@ -45,11 +42,7 @@ class Boolean : ValueWrapperT!(bool) {
         return b ? TRUE : FALSE;
     }
     public static bool getBoolean(String name){
-        version(Tango){
-            return tango.text.Ascii.icompare(System.getProperty(name, "false"), "true" ) is 0;
-        } else { // Phobos
-            return std.string.icmp(System.getProperty(name, "false"), "true" ) is 0;
-        }
+        return std.string.icmp(System.getProperty(name, "false"), "true" ) is 0;
     }
 
     private static Class TYPE_;

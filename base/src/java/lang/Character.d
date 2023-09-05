@@ -5,68 +5,31 @@ import java.lang.exceptions;
 import java.lang.Class;
 import java.lang.String;
 
-version(Tango){
-    static import tango.text.Unicode;
-    static import tango.text.UnicodeData; //for getUnicodeData
-} else { // Phobos
-    static import std.utf;
-    static import std.conv;
-    static import std.uni;
-    static import std.string;
-}
+static import std.utf;
+static import std.conv;
+static import std.uni;
+static import std.string;
 
 class Character {
     public static const int MIN_RADIX = 2;
     public static const int MAX_RADIX = 36;
     public static bool isUpperCase( dchar c ){
-        version(Tango){
-            implMissingInTango( __FILE__, __LINE__);
-            return false;
-        } else { // Phobos
-            return !!std.uni.isUpper(c);
-        }
+        return !!std.uni.isUpper(c);
     }
     public static dchar toUpperCase( dchar c ){
-        version(Tango){
-            dchar[1] src = c;
-            dchar[] r = tango.text.Unicode.toUpper( src );
-            return r[0];
-        } else { // Phobos
-            return std.uni.toUpper( c );
-        }
+        return std.uni.toUpper( c );
     }
     public static String toString( char c ){
-        version(Tango){
-            implMissingInTango(__FILE__, __LINE__ );
-            return null;
-        } else { // Phobos
-            return std.conv.to!(String)( c );
-        }
+        return std.conv.to!(String)( c );
     }
     public static String toString( wchar c ){
-        version(Tango){
-            implMissingInTango(__FILE__, __LINE__ );
-            return null;
-        } else { // Phobos
-            return std.conv.to!(String)( c );
-        }
+        return std.conv.to!(String)( c );
     }
     public static String toString( dchar c ){
-        version(Tango){
-            implMissingInTango(__FILE__, __LINE__ );
-            return null;
-        } else { // Phobos
-            return std.conv.to!(String)( c );
-        }
+        return std.conv.to!(String)( c );
     }
     public static dchar toLowerCase( dchar c ){
-        version(Tango){
-            dchar[1] src = c;
-            dchar[] r = tango.text.Unicode.toLower( src );
-            return r[0];
-        } else { // Phobos
-            return std.uni.toLower( c );
-        }
+        return std.uni.toLower( c );
     }
     ///Determines if the specified character is ISO-LATIN-1 white space.
     public static bool isSpace( dchar c ){
@@ -74,11 +37,7 @@ class Character {
     }
     ///Determines if the specified character is a Unicode space character.
     public static bool isSpaceChar( dchar c ){
-        version(Tango){
-            return tango.text.Unicode.isWhitespace( c );
-        } else { // Phobos
-            return std.uni.isWhite(c);
-        }
+        return std.uni.isWhite(c);
     }
     alias isWhitespace isWhiteSpace;
     ///Determines if the specified character is white space according to Java.
@@ -97,10 +56,7 @@ class Character {
             || c == '\u001F'; // It is '\u001F', UNIT SEPARATOR. 
     }
     public static bool isDigit( dchar c ){
-        version(Tango){
-            return tango.text.Unicode.isDigit( c );
-        } else { // Phobos
-            const dchar[] unicodeNd = [
+        const dchar[] unicodeNd = [
 '\u0030', '\u0031', '\u0032', '\u0033', '\u0034', '\u0035', '\u0036', '\u0037', '\u0038', '\u0039', '\u0660', '\u0661', '\u0662', 
 '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669', '\u06F0', '\u06F1', '\u06F2', '\u06F3', '\u06F4', '\u06F5', 
 '\u06F6', '\u06F7', '\u06F8', '\u06F9', '\u07C0', '\u07C1', '\u07C2', '\u07C3', '\u07C4', '\u07C5', '\u07C6', '\u07C7', '\u07C8', 
@@ -136,20 +92,15 @@ class Character {
 '\U0001D7ED', '\U0001D7EE', '\U0001D7EF', '\U0001D7F0', '\U0001D7F1', '\U0001D7F2', '\U0001D7F3', '\U0001D7F4', '\U0001D7F5', '\U0001D7F6', 
 '\U0001D7F7', '\U0001D7F8', '\U0001D7F9', '\U0001D7FA', '\U0001D7FB', '\U0001D7FC', '\U0001D7FD', '\U0001D7FE', '\U0001D7FF'
 ];
-            foreach(dchar Nd; unicodeNd)
-                if(Nd == c)
-                    return true;
-                else if(Nd > c)
-                    break;
-            return false;
-        }
+        foreach(dchar Nd; unicodeNd)
+            if(Nd == c)
+                return true;
+            else if(Nd > c)
+                break;
+        return false;
     }
     public static bool isLetter( dchar c ){
-        version(Tango){
-            return tango.text.Unicode.isLetter(c);
-        } else { // Phobos
-            return !!std.uni.isAlpha(c);
-        }
+        return !!std.uni.isAlpha(c);
     }
     public static bool isLetterOrDigit( dchar c ){
         return isDigit(c) || isLetter(c);
@@ -191,11 +142,7 @@ class Character {
 }
 
 bool CharacterIsDefined( dchar ch ){
-    version(Tango){
-    	return tango.text.UnicodeData.getUnicodeData(ch) !is null;
-    } else { // Phobos
-        return std.utf.isValidDchar(ch);
-    }
+    return std.utf.isValidDchar(ch);
 }
 
 dchar CharacterToLower( dchar c ){
