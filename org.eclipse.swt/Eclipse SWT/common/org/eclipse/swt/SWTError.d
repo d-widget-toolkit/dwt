@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ module org.eclipse.swt.SWTError;
 import java.lang.all;
 
 import org.eclipse.swt.SWT;
+
 
 /**
  * This error is thrown whenever an unrecoverable error
@@ -43,7 +44,7 @@ import org.eclipse.swt.SWT;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
-public class SWTError : PlatformException {
+public class SWTError : Error {
     /**
      * The SWT error code, one of SWT.ERROR_*.
      */
@@ -53,15 +54,15 @@ public class SWTError : PlatformException {
      * The underlying throwable that caused the problem,
      * or null if this information is not available.
      */
-    public Throwable throwable( Throwable e ){
-        this.next = e;
-        return this.next;
-    }
-    public Throwable throwable(){
+    public Throwable throwable() {
         return this.next;
     }
 
-    //static final long serialVersionUID = 3833467327105808433L;
+    public void throwable(Throwable t) {
+        this.next = t;
+    }
+
+    //static const long serialVersionUID = 3833467327105808433L;
 
 /**
  * Constructs a new instance of this class with its
@@ -147,14 +148,14 @@ public String getMessage () {
  * </p>
  */
 public void printStackTrace () {
-    getDwtLogger().error(  __FILE__, __LINE__, "stacktrace follows (if feature compiled in)" );
+    getDwtLogger().error( __FILE__, __LINE__,  "stacktrace follows (if feature compiled in)" );
     foreach( msg; info ){
-        getDwtLogger().error(  __FILE__, __LINE__, "{}", msg );
+        getDwtLogger().error( __FILE__, __LINE__,  "{}", msg );
     }
     if ( throwable !is null) {
         getDwtLogger().error ( __FILE__, __LINE__, "*** Stack trace of contained error ***"); //$NON-NLS-1$
         foreach( msg; throwable.info ){
-            getDwtLogger().error(  __FILE__, __LINE__, "{}", msg );
+            getDwtLogger().error( __FILE__, __LINE__,  "{}", msg );
         }
     }
 }

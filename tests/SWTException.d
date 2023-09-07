@@ -82,6 +82,9 @@ unittest
         return;
     }
 
+    import java.lang.util : getDwtLogger;
+    getDwtLogger().warn(__FILE__, __LINE__, "Incomplete unit tests");
+
     /*
     DWT: The following tests are commented out since there are a few things missing:
      * System.setErr
