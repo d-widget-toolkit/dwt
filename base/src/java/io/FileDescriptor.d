@@ -65,7 +65,7 @@ public final class FileDescriptor
      */
     public static const FileDescriptor err;
 
-    shared static this()
+    static this()
     {
         in_ = new FileDescriptor(0);
         out_ = new FileDescriptor(1);
