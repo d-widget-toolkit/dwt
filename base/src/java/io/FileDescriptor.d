@@ -5,7 +5,7 @@ version(Posix) {
     import core.stdc.string : strerror;
     import core.sys.posix.unistd : fsync;
 } else version(Windows) {
-    import core.sys.windows.winbase;
+    import core.sys.windows.core;
 }
 
 import std.string : fromStringz;
@@ -26,8 +26,8 @@ import java.io.SyncFailedException;
  */
 public final class FileDescriptor
 {
-    private const int fFD;
-    private const void* fHandle;
+    private int fFD;
+    private void* fHandle;
 
     /// UNIX file descriptor
     package int getFD()
@@ -36,7 +36,7 @@ public final class FileDescriptor
     }
 
     /// Windows file HANDLE
-    package const(void*) getHandle()
+    package void* getHandle()
     {
         return fHandle;
     }
@@ -47,7 +47,7 @@ public final class FileDescriptor
      * Usually, this file descriptor is not used directly, but rather via the
      * output stream known as `System.in`.
      */
-    public static immutable FileDescriptor in_;
+    public static const FileDescriptor in_;
 
     /**
      * A handle to the standard output stream.
@@ -55,7 +55,7 @@ public final class FileDescriptor
      * Usually, this file descriptor is not used directly, but rather via the
      * output stream known as `System.out`.
      */
-    public static immutable FileDescriptor out_;
+    public static const FileDescriptor out_;
 
     /**
      * A handle to the standard error stream.
@@ -63,13 +63,13 @@ public final class FileDescriptor
      * Usually, this file descriptor is not used directly, but rather via the
      * output stream known as `System.err`.
      */
-    public static immutable FileDescriptor err;
+    public static const FileDescriptor err;
 
     shared static this()
     {
-        in_ = new immutable FileDescriptor(0);
-        out_ = new immutable FileDescriptor(1);
-        err = new immutable FileDescriptor(2);
+        in_ = new FileDescriptor(0);
+        out_ = new FileDescriptor(1);
+        err = new FileDescriptor(2);
     }
 
     /**
@@ -81,7 +81,7 @@ public final class FileDescriptor
         fHandle = null;
     }
 
-    private immutable this(int fd)
+    private this(int fd)
     {
         fFD = fd;
         version (Posix) {
@@ -143,7 +143,7 @@ public final class FileDescriptor
                 throw new SyncFailedException(getLastError());
             }
         } else version(Windows) {
-            BOOL res = FlushFileBuffers(fHandle);
+            const res = FlushFileBuffers(cast(void*)fHandle);
             if (res == 0) {
                 throw new SyncFailedException(getLastError());
             }
@@ -159,7 +159,26 @@ public final class FileDescriptor
     } else version(Windows) {
         private string getLastError() const
         {
-            return fromStringz(GetLastError()).dup;
+            import java.lang.String : String_valueOf, fromString16z;
+
+            LPWSTR buffer;
+            DWORD errorCode = GetLastError();
+
+            FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                FORMAT_MESSAGE_FROM_SYSTEM |
+                FORMAT_MESSAGE_IGNORE_INSERTS,
+                null,
+                errorCode,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                cast(LPWSTR)&buffer,
+                0,
+                null);
+
+            wstring result = fromString16z(buffer);
+            LocalFree(buffer);
+
+            return String_valueOf(result);
         }
     }
 }
