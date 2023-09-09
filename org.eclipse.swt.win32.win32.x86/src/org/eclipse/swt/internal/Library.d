@@ -105,9 +105,8 @@ public static bool isLoadable () {
     /*
      * DWT: Return true until a reason presents itself otherwise.
      *
-     * SWT will return true if it determines it's running in a development
-     * environment or if the currently executing OS and ARCH match the
-     * OS and ARCH of the .JAR file.
+     * SWT uses this function to load the compiled JNI binding for
+     * the platform implementation.
      */
     return true;
 }
