@@ -45,9 +45,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          persist-credentials: false
+        uses: actions/checkout@v4
       - name: Install D Compiler ${{ matrix.dc }}
         uses: dlang-community/setup-dlang@v1
         with:
@@ -73,7 +71,7 @@ jobs:
 
       - name: Test DWT Gtk (${{ matrix.buildType }})
         if: ${{ matrix.os == 'ubuntu-20.04' }}
-        uses: GabrielBB/xvfb-action@v1 # X virtual framebuffer
+        uses: coactions/setup-xvfb@v1 # X virtual framebuffer
         with:
           working-directory: ./
           run: dub test -c unittest-gtk -b ${{ matrix.buildType }}
