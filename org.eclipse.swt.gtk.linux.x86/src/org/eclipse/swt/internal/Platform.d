@@ -19,11 +19,16 @@ module org.eclipse.swt.internal.Platform;
 import java.lang.all;
 
 import org.eclipse.swt.internal.Lock;
+import org.eclipse.swt.internal.Library;
 
 public class Platform {
     public static const String PLATFORM = "gtk"; //$NON-NLS-1$
     public static Lock lock;
     static this() {
         lock = new Lock();
+    }
+
+    public static bool isLoadable() {
+        return Library.isLoadable();
     }
 }

@@ -9,10 +9,17 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 module org.eclipse.swt.internal.Platform;
-import java.lang.all;
+
+import java.lang.all : String;
+
+import org.eclipse.swt.internal.Library;
 
 public class Platform {
 
 public static const String PLATFORM = "win32"; //$NON-NLS-1$
+
+public static bool isLoadable () {
+    return Library.isLoadable();
+}
 
 }

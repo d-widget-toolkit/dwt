@@ -100,6 +100,16 @@ public static int buildJAVA_VERSION (int major, int minor, int micro) {
 public static int buildSWT_VERSION (int major, int minor) {
     return .buildSWT_VERSION(major, minor);
 }
+
+public static bool isLoadable () {
+    /*
+     * DWT: Return true until a reason presents itself otherwise.
+     *
+     * SWT uses this function to load the compiled JNI binding for
+     * the platform implementation.
+     */
+    return true;
+}
 /+ PORTING_LEFT
 static bool extract (String fileName, String mappedName) {
     FileOutputStream os = null;
