@@ -4,6 +4,7 @@ dub.sdl:
     name "snippet258"
     dependency "dwt" path="../../../../../../"
     stringImportPaths "../../../../../res"
+    lflags "/subsystem:console:4" platform="x86_omf"
     libs \
       "atk-1.0" \
       "cairo" \
