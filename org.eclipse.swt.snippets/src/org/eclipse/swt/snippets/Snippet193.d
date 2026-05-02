@@ -3,6 +3,7 @@
 dub.sdl:
     name "snippet193"
     dependency "dwt" path="../../../../../../"
+    lflags "/subsystem:console:4" platform="x86_omf"
     libs \
       "atk-1.0" \
       "cairo" \
